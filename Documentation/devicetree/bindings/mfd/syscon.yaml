@@ -129,6 +129,7 @@ select:
           - ti,am625-dss-oldi-io-ctrl
           - ti,am625-dss-clk-ctrl
           - ti,am62-dss-ctrl
+          - ti,am62-main-conf-ctrl
           - ti,am62p-cpsw-mac-efuse
           - ti,am654-dss-oldi-io-ctrl
           - ti,j784s4-acspcie-proxy-ctrl
@@ -245,6 +246,7 @@ properties:
               - ti,am625-dss-oldi-io-ctrl
               - ti,am625-dss-clk-ctrl
               - ti,am62-dss-ctrl
+              - ti,am62-main-conf-ctrl
               - ti,am62p-cpsw-mac-efuse
               - ti,am654-dss-oldi-io-ctrl
               - ti,j784s4-acspcie-proxy-ctrl
