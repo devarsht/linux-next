@@ -503,20 +503,28 @@ static int phy_gmii_sel_probe(struct platform_device *pdev)
 		priv->qsgmii_main_ports |= PHY_GMII_PORT(main_ports);
 	}
 
-	priv->regmap = syscon_node_to_regmap(node->parent);
+	/* Try syscon lookup with offset first (consolidated approach) */
+	priv->regmap = syscon_regmap_lookup_by_phandle_args(node->parent,
+							     "syscon", 1, &priv->reg_offset);
 	if (IS_ERR(priv->regmap)) {
-		void __iomem *base;
+		/* Try parent syscon node (existing behavior) */
+		priv->regmap = syscon_node_to_regmap(node->parent);
+		if (IS_ERR(priv->regmap)) {
+			void __iomem *base;
 
-		base = devm_platform_ioremap_resource(pdev, 0);
-		if (IS_ERR(base))
-			return dev_err_probe(dev, PTR_ERR(base),
-					     "failed to get base memory resource\n");
+			base = devm_platform_ioremap_resource(pdev, 0);
+			if (IS_ERR(base))
+				return dev_err_probe(dev, PTR_ERR(base),
+						     "failed to get base memory resource\n");
 
-		priv->regmap = devm_regmap_init_mmio(dev, base, &phy_gmii_sel_regmap_cfg);
-		if (IS_ERR(priv->regmap))
-			return dev_err_probe(dev, PTR_ERR(priv->regmap),
-					     "Failed to get syscon\n");
-		priv->no_offset = true;
+			priv->regmap = devm_regmap_init_mmio(dev, base, &phy_gmii_sel_regmap_cfg);
+			if (IS_ERR(priv->regmap))
+				return dev_err_probe(dev, PTR_ERR(priv->regmap),
+						     "Failed to get syscon\n");
+			priv->no_offset = true;
+		} else {
+			priv->reg_offset = 0;
+		}
 	}
 
 	ret = phy_gmii_sel_init_ports(priv);
