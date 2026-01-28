@@ -46,40 +46,56 @@
 		#size-cells = <1>;
 		ranges = <0x00 0x00 0x00100000 0x20000>;
 
-		audio_refclk0: clock-controller@82e0 {
-			compatible = "ti,am62-audio-refclk";
-			reg = <0x82e0 0x4>;
-			clocks = <&k3_clks 157 0>;
-			assigned-clocks = <&k3_clks 157 0>;
-			assigned-clock-parents = <&k3_clks 157 16>;
-			#clock-cells = <0>;
+		main_conf_ctrl_4000: main-conf-ctrl@4000 {
+			compatible = "ti,am62-main-conf-ctrl", "syscon", "simple-bus";
+			reg = <0x4000 0x200>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0x0 0x4000 0x200>;
+
+			phy_gmii_sel: phy@44 {
+				compatible = "ti,am654-phy-gmii-sel";
+				reg = <0x44 0x8>;
+				#phy-cells = <1>;
+			};
+
+			epwm_tbclk: clock-controller@130 {
+				compatible = "ti,am62-epwm-tbclk";
+				reg = <0x130 0x4>;
+				#clock-cells = <1>;
+			};
 		};
 
-		audio_refclk1: clock-controller@82e4 {
-			compatible = "ti,am62-audio-refclk";
-			reg = <0x82e4 0x4>;
-			clocks = <&k3_clks 157 18>;
-			assigned-clocks = <&k3_clks 157 18>;
-			assigned-clock-parents = <&k3_clks 157 34>;
-			#clock-cells = <0>;
-		};
-
-		phy_gmii_sel: phy@4044 {
-			compatible = "ti,am654-phy-gmii-sel";
-			reg = <0x4044 0x8>;
-			#phy-cells = <1>;
-		};
-
-		epwm_tbclk: clock-controller@4130 {
-			compatible = "ti,am62-epwm-tbclk";
-			reg = <0x4130 0x4>;
-			#clock-cells = <1>;
-		};
-
-		dss_ctrl: dss-ctrl@8000 {
+		main_conf_ctrl_8000: main-conf-ctrl@8000 {
 			bootph-all;
-			compatible = "ti,am62-dss-ctrl", "syscon";
-			reg = <0x8000 0x800>;
+			compatible = "ti,am62-main-conf-ctrl", "syscon", "simple-bus";
+			reg = <0x8000 0x400>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0x0 0x8000 0x400>;
+
+			dss_ctrl: dss-ctrl@0 {
+				compatible = "ti,am62-dss-ctrl", "syscon";
+				reg = <0x0 0x800>;
+			};
+
+			audio_refclk0: clock-controller@2e0 {
+				compatible = "ti,am62-audio-refclk";
+				reg = <0x2e0 0x4>;
+				clocks = <&k3_clks 157 0>;
+				assigned-clocks = <&k3_clks 157 0>;
+				assigned-clock-parents = <&k3_clks 157 16>;
+				#clock-cells = <0>;
+			};
+
+			audio_refclk1: clock-controller@2e4 {
+				compatible = "ti,am62-audio-refclk";
+				reg = <0x2e4 0x4>;
+				clocks = <&k3_clks 157 18>;
+				assigned-clocks = <&k3_clks 157 18>;
+				assigned-clock-parents = <&k3_clks 157 34>;
+				#clock-cells = <0>;
+			};
 		};
 	};
 
