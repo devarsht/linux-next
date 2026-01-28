@@ -75,6 +75,12 @@
 			reg = <0x4130 0x4>;
 			#clock-cells = <1>;
 		};
+
+		dss_ctrl: dss-ctrl@8000 {
+			bootph-all;
+			compatible = "ti,am62-dss-ctrl", "syscon";
+			reg = <0x8000 0x800>;
+		};
 	};
 
 	dmss: bus@48000000 {
