@@ -35,6 +35,7 @@ struct tidss_oldi {
 
 	struct clk *serial;
 	struct regmap *io_ctrl;
+	unsigned int io_ctrl_offset;
 };
 
 struct oldi_bus_format {
@@ -161,7 +162,8 @@ static void tidss_oldi_tx_power(struct tidss_oldi *oldi, bool enable)
 		}
 	}
 
-	regmap_update_bits(oldi->io_ctrl, OLDI_PD_CTRL, mask, enable ? 0 : mask);
+	regmap_update_bits(oldi->io_ctrl, oldi->io_ctrl_offset + OLDI_PD_CTRL,
+			   mask, enable ? 0 : mask);
 }
 
 static int tidss_oldi_config(struct tidss_oldi *oldi)
@@ -577,13 +579,20 @@ int tidss_oldi_init(struct tidss_device *tidss)
 		 * for secondary OLDI in clone mode (once it is supported).
 		 */
 		if (link_type != OLDI_MODE_SECONDARY_CLONE_SINGLE_LINK) {
-			oldi->io_ctrl = syscon_regmap_lookup_by_phandle(child,
-									"ti,oldi-io-ctrl");
+			oldi->io_ctrl = syscon_regmap_lookup_by_phandle_args(child,
+									      "ti,oldi-io-ctrl",
+									      1, &oldi->io_ctrl_offset);
 			if (IS_ERR(oldi->io_ctrl)) {
-				ret = dev_err_probe(oldi->dev, PTR_ERR(oldi->io_ctrl),
-						    "OLDI%u: syscon_regmap_lookup_by_phandle failed.\n",
-						    oldi_instance);
-				goto err_put_node;
+				/* Try without offset for backward compatibility */
+				oldi->io_ctrl = syscon_regmap_lookup_by_phandle(child,
+									         "ti,oldi-io-ctrl");
+				if (IS_ERR(oldi->io_ctrl)) {
+					ret = dev_err_probe(oldi->dev, PTR_ERR(oldi->io_ctrl),
+							    "OLDI%u: syscon_regmap_lookup failed.\n",
+							    oldi_instance);
+					goto err_put_node;
+				}
+				oldi->io_ctrl_offset = 0;
 			}
 
 			oldi->serial = of_clk_get_by_name(child, "serial");
