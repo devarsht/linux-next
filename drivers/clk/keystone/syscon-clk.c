@@ -16,6 +16,7 @@ struct ti_syscon_gate_clk_priv {
 	struct regmap *regmap;
 	u32 reg;
 	u32 idx;
+	u32 syscon_offset;
 };
 
 struct ti_syscon_gate_clk_data {
@@ -34,7 +35,7 @@ static int ti_syscon_gate_clk_enable(struct clk_hw *hw)
 {
 	struct ti_syscon_gate_clk_priv *priv = to_ti_syscon_gate_clk_priv(hw);
 
-	return regmap_write_bits(priv->regmap, priv->reg, priv->idx,
+	return regmap_write_bits(priv->regmap, priv->syscon_offset + priv->reg, priv->idx,
 				 priv->idx);
 }
 
@@ -42,7 +43,7 @@ static void ti_syscon_gate_clk_disable(struct clk_hw *hw)
 {
 	struct ti_syscon_gate_clk_priv *priv = to_ti_syscon_gate_clk_priv(hw);
 
-	regmap_write_bits(priv->regmap, priv->reg, priv->idx, 0);
+	regmap_write_bits(priv->regmap, priv->syscon_offset + priv->reg, priv->idx, 0);
 }
 
 static int ti_syscon_gate_clk_is_enabled(struct clk_hw *hw)
@@ -50,7 +51,7 @@ static int ti_syscon_gate_clk_is_enabled(struct clk_hw *hw)
 	unsigned int val;
 	struct ti_syscon_gate_clk_priv *priv = to_ti_syscon_gate_clk_priv(hw);
 
-	regmap_read(priv->regmap, priv->reg, &val);
+	regmap_read(priv->regmap, priv->syscon_offset + priv->reg, &val);
 
 	return !!(val & priv->idx);
 }
@@ -64,7 +65,8 @@ static const struct clk_ops ti_syscon_gate_clk_ops = {
 static struct clk_hw
 *ti_syscon_gate_clk_register(struct device *dev, struct regmap *regmap,
 			     const char *parent_name,
-			     const struct ti_syscon_gate_clk_data *data)
+			     const struct ti_syscon_gate_clk_data *data,
+			     u32 syscon_offset)
 {
 	struct ti_syscon_gate_clk_priv *priv;
 	struct clk_init_data init;
@@ -92,6 +94,7 @@ static struct clk_hw
 	priv->regmap = regmap;
 	priv->reg = data->offset;
 	priv->idx = BIT(data->bit_idx);
+	priv->syscon_offset = syscon_offset;
 	priv->hw.init = &init;
 
 	ret = devm_clk_hw_register(dev, &priv->hw);
@@ -120,19 +123,27 @@ static int ti_syscon_gate_clk_probe(struct platform_device *pdev)
 	const char *parent_name;
 	struct regmap *regmap;
 	void __iomem *base;
+	u32 syscon_offset = 0;
 
 	data = device_get_match_data(dev);
 	if (!data)
 		return -EINVAL;
 
-	base = devm_platform_ioremap_resource(pdev, 0);
-	if (IS_ERR(base))
-		return PTR_ERR(base);
+	/* Try syscon lookup from parent first (consolidated approach) */
+	regmap = syscon_regmap_lookup_by_phandle_args(dev->of_node->parent,
+						      "syscon", 1, &syscon_offset);
+	if (IS_ERR(regmap)) {
+		/* Fall back to direct MMIO access for backward compatibility */
+		base = devm_platform_ioremap_resource(pdev, 0);
+		if (IS_ERR(base))
+			return PTR_ERR(base);
 
-	regmap = devm_regmap_init_mmio(dev, base, &ti_syscon_regmap_cfg);
-	if (IS_ERR(regmap))
-		return dev_err_probe(dev, PTR_ERR(regmap),
-				     "failed to get regmap\n");
+		regmap = devm_regmap_init_mmio(dev, base, &ti_syscon_regmap_cfg);
+		if (IS_ERR(regmap))
+			return dev_err_probe(dev, PTR_ERR(regmap),
+					     "failed to get regmap\n");
+		syscon_offset = 0;
+	}
 
 	num_clks = 0;
 	for (p = data; p->name; p++)
@@ -156,7 +167,8 @@ static int ti_syscon_gate_clk_probe(struct platform_device *pdev)
 	for (i = 0; i < num_clks; i++) {
 		hw_data->hws[i] = ti_syscon_gate_clk_register(dev, regmap,
 							      parent_name,
-							      &data[i]);
+							      &data[i],
+							      syscon_offset);
 		if (IS_ERR(hw_data->hws[i]))
 			dev_warn(dev, "failed to register %s\n",
 				 data[i].name);
