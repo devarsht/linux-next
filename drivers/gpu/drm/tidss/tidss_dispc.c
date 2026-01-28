@@ -467,6 +467,7 @@ struct dispc_device {
 
 	struct clk *fclk;
 	struct regmap *clk_ctrl;
+	unsigned int clk_ctrl_offset;
 
 	bool is_enabled;
 
@@ -1203,8 +1204,8 @@ void dispc_vp_prepare(struct dispc_device *dispc, u32 hw_videoport,
 				  mode->crtc_vdisplay - 1));
 
 	if (dispc->clk_ctrl) {
-		regmap_update_bits(dispc->clk_ctrl, 0, 0x100, ipc ? 0x100 : 0x000);
-		regmap_update_bits(dispc->clk_ctrl, 0, 0x200, rf ? 0x200 : 0x000);
+		regmap_update_bits(dispc->clk_ctrl, dispc->clk_ctrl_offset, 0x100, ipc ? 0x100 : 0x000);
+		regmap_update_bits(dispc->clk_ctrl, dispc->clk_ctrl_offset, 0x200, rf ? 0x200 : 0x000);
 	}
 }
 
@@ -2992,12 +2993,19 @@ int dispc_init(struct tidss_device *tidss)
 
 	dispc_init_errata(dispc);
 
-	dispc->clk_ctrl = syscon_regmap_lookup_by_phandle_optional(tidss->dev->of_node,
-								   "ti,clk-ctrl");
+	dispc->clk_ctrl = syscon_regmap_lookup_by_phandle_args(tidss->dev->of_node,
+								"ti,clk-ctrl",
+								1, &dispc->clk_ctrl_offset);
 	if (IS_ERR(dispc->clk_ctrl)) {
-		r = dev_err_probe(dispc->dev, PTR_ERR(dispc->clk_ctrl),
-				  "DISPC: syscon_regmap_lookup_by_phandle failed.\n");
-		return r;
+		/* Try without offset for backward compatibility */
+		dispc->clk_ctrl = syscon_regmap_lookup_by_phandle_optional(tidss->dev->of_node,
+									    "ti,clk-ctrl");
+		if (IS_ERR(dispc->clk_ctrl)) {
+			r = dev_err_probe(dispc->dev, PTR_ERR(dispc->clk_ctrl),
+					  "DISPC: syscon_regmap_lookup failed.\n");
+			return r;
+		}
+		dispc->clk_ctrl_offset = 0;
 	}
 
 	dispc->fourccs = devm_kcalloc(dev, ARRAY_SIZE(dispc_color_formats),
