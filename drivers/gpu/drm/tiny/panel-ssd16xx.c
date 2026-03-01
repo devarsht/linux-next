@@ -434,38 +434,126 @@ static void ssd16xx_clear_display(struct ssd16xx_panel *panel)
 }
 
 /*
- * Convert XRGB8888 framebuffer to 1-bit monochrome for e-paper display.
+ * Convert framebuffer to 1-bit monochrome for e-paper display.
  *
- * Luminance is calculated using ITU-R BT.601 coefficients:
- *   Y = 0.299*R + 0.587*G + 0.114*B
- * Threshold at 127 (scaled: (299*R + 587*G + 114*B) > 127000).
+ * Supported formats:
+ * - R1: native 1-bit (8 pixels/byte, MSB first) — direct copy for landscape
+ * - XRGB8888: ITU-R BT.601 luminance (299*R + 587*G + 114*B), threshold 127
+ * - RGB888: same luminance calculation on 3-byte packed pixels
+ * - RGB565: 5/6-bit components expanded to 8-bit, then luminance
+ * - R8 (GRAY8): direct threshold at 127
+ * - NV12, NV16: Y plane only, threshold at 127
+ * - YUYV: Y at even byte positions, threshold at 127
+ * - UYVY: Y at odd byte positions, threshold at 127
+ *
  * Output: 1 = white, 0 = black.
  *
- * For 90° CW rotation, pixels are read column-by-column (right to left),
- * each column becoming a landscape row in the output.
+ * For 90° CW rotation, pixels are read column-major (right to left),
+ * each source column becoming a row in the output.
  */
 static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 					struct drm_framebuffer *fb,
 					struct drm_rect *rect,
 					unsigned int orientation)
 {
+	u32 format = fb->format->format;
 	unsigned int x, y;
 	u8 byte = 0;
 	unsigned int bit_pos = 0;
 	unsigned int dst_idx = 0;
 
+	/*
+	 * R1: already in target format.  For landscape, copy rows directly.
+	 * For portrait, individual bit extraction is needed (handled below
+	 * in the per-pixel switch).
+	 */
+	if (format == DRM_FORMAT_R1 && orientation != 90) {
+		unsigned int src_pitch = fb->pitches[0];
+		unsigned int width_bytes = drm_rect_width(rect) / 8;
+
+		for (y = rect->y1; y < rect->y2; y++) {
+			u8 *src_line = src->vaddr + y * src_pitch + (rect->x1 / 8);
+
+			memcpy(dst + dst_idx, src_line, width_bytes);
+			dst_idx += width_bytes;
+		}
+		return;
+	}
+
 	if (orientation == 90) {
+		/* 90° CW: read column-major, rightmost column first */
 		int x_signed;
 
 		for (x_signed = rect->x2 - 1; x_signed >= (int)rect->x1; x_signed--) {
 			x = x_signed;
 			for (y = rect->y1; y < rect->y2; y++) {
-				u32 *src_line = (u32 *)(src->vaddr + y * fb->pitches[0]);
-				u32 pixel = src_line[x];
-				u8 r = (pixel >> 16) & 0xFF;
-				u8 g = (pixel >> 8) & 0xFF;
-				u8 b = pixel & 0xFF;
-				bool is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+				bool is_white;
+
+				switch (format) {
+				case DRM_FORMAT_XRGB8888: {
+					u32 *line = (u32 *)(src->vaddr + y * fb->pitches[0]);
+					u32 px = line[x];
+					u8 r = (px >> 16) & 0xFF;
+					u8 g = (px >> 8) & 0xFF;
+					u8 b = px & 0xFF;
+
+					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+					break;
+				}
+				case DRM_FORMAT_RGB888: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+					u8 r = line[x * 3];
+					u8 g = line[x * 3 + 1];
+					u8 b = line[x * 3 + 2];
+
+					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+					break;
+				}
+				case DRM_FORMAT_RGB565: {
+					u16 *line = (u16 *)(src->vaddr + y * fb->pitches[0]);
+					u16 px = line[x];
+					u8 r = ((px >> 11) & 0x1F) << 3;
+					u8 g = ((px >> 5) & 0x3F) << 2;
+					u8 b = (px & 0x1F) << 3;
+
+					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+					break;
+				}
+				case DRM_FORMAT_R8: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+					is_white = line[x] > 127;
+					break;
+				}
+				case DRM_FORMAT_NV12:
+				case DRM_FORMAT_NV16: {
+					u8 *y_plane = (u8 *)(src->vaddr);
+
+					is_white = y_plane[y * fb->pitches[0] + x] > 127;
+					break;
+				}
+				case DRM_FORMAT_YUYV: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+					is_white = line[x * 2] > 127;
+					break;
+				}
+				case DRM_FORMAT_UYVY: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+					is_white = line[x * 2 + 1] > 127;
+					break;
+				}
+				case DRM_FORMAT_R1: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+					is_white = !!(line[x / 8] & (1 << (7 - (x % 8))));
+					break;
+				}
+				default:
+					is_white = false;
+					break;
+				}
 
 				if (is_white)
 					byte |= (1 << (7 - bit_pos));
@@ -484,14 +572,70 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 			}
 		}
 	} else {
+		/* Landscape (0°): read row-major */
 		for (y = rect->y1; y < rect->y2; y++) {
 			for (x = rect->x1; x < rect->x2; x++) {
-				u32 *src_line = (u32 *)(src->vaddr + y * fb->pitches[0]);
-				u32 pixel = src_line[x];
-				u8 r = (pixel >> 16) & 0xFF;
-				u8 g = (pixel >> 8) & 0xFF;
-				u8 b = pixel & 0xFF;
-				bool is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+				bool is_white;
+
+				switch (format) {
+				case DRM_FORMAT_XRGB8888: {
+					u32 *line = (u32 *)(src->vaddr + y * fb->pitches[0]);
+					u32 px = line[x];
+					u8 r = (px >> 16) & 0xFF;
+					u8 g = (px >> 8) & 0xFF;
+					u8 b = px & 0xFF;
+
+					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+					break;
+				}
+				case DRM_FORMAT_RGB888: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+					u8 r = line[x * 3];
+					u8 g = line[x * 3 + 1];
+					u8 b = line[x * 3 + 2];
+
+					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+					break;
+				}
+				case DRM_FORMAT_RGB565: {
+					u16 *line = (u16 *)(src->vaddr + y * fb->pitches[0]);
+					u16 px = line[x];
+					u8 r = ((px >> 11) & 0x1F) << 3;
+					u8 g = ((px >> 5) & 0x3F) << 2;
+					u8 b = (px & 0x1F) << 3;
+
+					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
+					break;
+				}
+				case DRM_FORMAT_R8: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+					is_white = line[x] > 127;
+					break;
+				}
+				case DRM_FORMAT_NV12:
+				case DRM_FORMAT_NV16: {
+					u8 *y_plane = (u8 *)(src->vaddr);
+
+					is_white = y_plane[y * fb->pitches[0] + x] > 127;
+					break;
+				}
+				case DRM_FORMAT_YUYV: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+					is_white = line[x * 2] > 127;
+					break;
+				}
+				case DRM_FORMAT_UYVY: {
+					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+					is_white = line[x * 2 + 1] > 127;
+					break;
+				}
+				default:
+					is_white = false;
+					break;
+				}
 
 				if (is_white)
 					byte |= (1 << (7 - bit_pos));
@@ -835,7 +979,15 @@ static const struct drm_connector_funcs ssd16xx_connector_funcs = {
 };
 
 static const u32 ssd16xx_formats[] = {
-	DRM_FORMAT_XRGB8888,
+	DRM_FORMAT_XRGB8888,  /* 32-bit RGB with padding (preferred) */
+	DRM_FORMAT_RGB888,    /* 24-bit packed RGB */
+	DRM_FORMAT_RGB565,    /* 16-bit RGB (5:6:5) */
+	DRM_FORMAT_R8,        /* 8-bit grayscale */
+	DRM_FORMAT_NV12,      /* YUV 4:2:0 planar */
+	DRM_FORMAT_NV16,      /* YUV 4:2:2 planar */
+	DRM_FORMAT_YUYV,      /* Packed YUV 4:2:2 (Y0 U0 Y1 V0) */
+	DRM_FORMAT_UYVY,      /* Packed YUV 4:2:2 (U0 Y0 V0 Y1) */
+	DRM_FORMAT_R1,        /* 1-bit monochrome (native, 8 pixels/byte) */
 };
 
 /* GDEY042T81: 4.2" 400x300 panel, 84.8x63.6mm active area */
