@@ -18,7 +18,6 @@
 #include <drm/clients/drm_client_setup.h>
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
-#include <drm/drm_blend.h>
 #include <drm/drm_damage_helper.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_fbdev_dma.h>
@@ -46,17 +45,22 @@
 #define SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER		0x4F
 
 /*
- * Data Entry Mode (command 0x11) - from SSD1683 datasheet
- * Bits [2:0] = AM, ID1, ID0
- * - AM: Address direction (0=X direction, 1=Y direction)
- * - ID[1:0]: Address increment/decrement
- *   00 = Y decrement, X decrement
- *   01 = Y decrement, X increment
- *   10 = Y increment, X decrement
- *   11 = Y increment, X increment (POR default)
+ * Data Entry Mode (command 0x11) AM/IDY/IDX bit encoding.
+ *
+ * Bit 2 (AM): Address update direction: 0 = X direction, 1 = Y direction
+ * ID[1:0] when AM=0 (X-direction modes, address counter advances in X):
+ *   00 = X decrement, Y decrement   01 = X increment, Y decrement
+ *   10 = X decrement, Y increment   11 = X increment, Y increment (default)
+ * ID[1:0] when AM=1 (Y-direction modes, address counter advances in Y):
+ *   00 = Y decrement, X decrement   01 = Y increment, X decrement
+ *   10 = Y decrement, X increment   11 = Y increment, X increment
+ *
+ * Rotation to data entry mode mapping:
+ *   0°  → 0x03 (X++, Y++)         Landscape left-to-right, top-to-bottom
+ *   90° → 0x00 (X--, Y--)         Portrait CW, right-to-left rows
  */
-#define SSD16XX_DATA_ENTRY_XDEC_YDEC		0x00  /* X--, Y-- */
-#define SSD16XX_DATA_ENTRY_XINC_YINC		0x03  /* X++, Y++ (default) */
+#define SSD16XX_DATA_ENTRY_XDEC_YDEC		0x00  /* X--, Y-- (X-mode) */
+#define SSD16XX_DATA_ENTRY_XINC_YINC		0x03  /* X++, Y++ (X-mode, default) */
 
 /* POR reset value: GD=0 (G0 first), SM=0 (interlaced), TB=0 (G0->G299) */
 #define SSD16XX_DRIVER_OUTPUT_CTRL_DEFAULT	0x00
@@ -151,7 +155,12 @@ struct ssd16xx_panel {
 	u32 height;
 
 	bool initialized;
-	int orientation;  /* Display orientation in degrees: 0 or 90 */
+	bool reinit_pending;  /* HW re-init required after orientation change */
+
+	int orientation;      /* Display orientation in degrees: 0/90 */
+
+	struct drm_framebuffer *last_fb;   /* Last drawn FB for reinit redraws */
+	struct drm_property *rotation_property; /* Connector rotation property */
 };
 
 static inline struct ssd16xx_panel *to_ssd16xx_panel(struct drm_device *drm)
@@ -348,16 +357,12 @@ static int ssd16xx_hw_init(struct ssd16xx_panel *panel)
 	/* Select data entry mode and cursor start based on orientation */
 	switch (panel->orientation) {
 	case 90:
-		/*
-		 * Portrait (90° CW): X-mode, X--, Y--
-		 * Start at TOP-RIGHT (byte 49, row 0) to write top row first.
-		 */
+		/* Portrait 90° CW: X-mode X-- Y--, start at (max, 0). */
 		data_entry_mode = SSD16XX_DATA_ENTRY_XDEC_YDEC;
 		cursor_x_start = (ram_width / 8) - 1;
 		cursor_y_start = 0;
 		break;
 	default:
-		/* Landscape (0°): X-mode, X++, Y++ */
 		data_entry_mode = SSD16XX_DATA_ENTRY_XINC_YINC;
 		cursor_x_start = 0;
 		cursor_y_start = 0;
@@ -434,22 +439,82 @@ static void ssd16xx_clear_display(struct ssd16xx_panel *panel)
 }
 
 /*
- * Convert framebuffer to 1-bit monochrome for e-paper display.
+ * Read a single pixel from the framebuffer and return true if it should be
+ * rendered as white on the monochrome e-paper panel.
  *
- * Supported formats:
- * - R1: native 1-bit (8 pixels/byte, MSB first) — direct copy for landscape
- * - XRGB8888: ITU-R BT.601 luminance (299*R + 587*G + 114*B), threshold 127
- * - RGB888: same luminance calculation on 3-byte packed pixels
- * - RGB565: 5/6-bit components expanded to 8-bit, then luminance
- * - R8 (GRAY8): direct threshold at 127
- * - NV12, NV16: Y plane only, threshold at 127
- * - YUYV: Y at even byte positions, threshold at 127
- * - UYVY: Y at odd byte positions, threshold at 127
+ * For colour formats, luminance is calculated using ITU-R BT.601 coefficients
+ * scaled by 1000 to avoid floating point: (299*R + 587*G + 114*B) > 127000.
+ */
+static bool ssd16xx_pixel_is_white(struct iosys_map *src,
+				   struct drm_framebuffer *fb,
+				   unsigned int x, unsigned int y)
+{
+	u32 format = fb->format->format;
+
+	switch (format) {
+	case DRM_FORMAT_XRGB8888: {
+		u32 *line = (u32 *)(src->vaddr + y * fb->pitches[0]);
+		u32 px = line[x];
+		u8 r = (px >> 16) & 0xFF, g = (px >> 8) & 0xFF, b = px & 0xFF;
+
+		return (299u * r + 587u * g + 114u * b) > 127000u;
+	}
+	case DRM_FORMAT_RGB888: {
+		u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+		u8 r = line[x * 3], g = line[x * 3 + 1], b = line[x * 3 + 2];
+
+		return (299u * r + 587u * g + 114u * b) > 127000u;
+	}
+	case DRM_FORMAT_RGB565: {
+		u16 *line = (u16 *)(src->vaddr + y * fb->pitches[0]);
+		u16 px = line[x];
+		u8 r = ((px >> 11) & 0x1F) << 3;
+		u8 g = ((px >> 5) & 0x3F) << 2;
+		u8 b = (px & 0x1F) << 3;
+
+		return (299u * r + 587u * g + 114u * b) > 127000u;
+	}
+	case DRM_FORMAT_R8: {
+		u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+		return line[x] > 127;
+	}
+	case DRM_FORMAT_NV12:
+	case DRM_FORMAT_NV16: {
+		u8 *y_plane = (u8 *)(src->vaddr);
+
+		return y_plane[y * fb->pitches[0] + x] > 127;
+	}
+	case DRM_FORMAT_YUYV: {
+		u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+		return line[x * 2] > 127;
+	}
+	case DRM_FORMAT_UYVY: {
+		u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+		return line[x * 2 + 1] > 127;
+	}
+	case DRM_FORMAT_R1: {
+		u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+
+		return !!(line[x / 8] & (1 << (7 - (x % 8))));
+	}
+	default:
+		return false;
+	}
+}
+
+/*
+ * Convert a framebuffer region to 1bpp monochrome for the SSD16xx RAM.
+ * Each output byte holds 8 pixels, MSB-first, 1=white 0=black.
  *
- * Output: 1 = white, 0 = black.
+ * Traversal order varies by orientation to match the hardware data entry mode:
+ *   0°  : row-major, left→right, top→bottom
+ *   90° : column-major, rightmost column first, top→bottom within each column
  *
- * For 90° CW rotation, pixels are read column-major (right to left),
- * each source column becoming a row in the output.
+ * R1 (native 1bpp) has a fast memcpy path for 0° only; all other orientations
+ * go through ssd16xx_pixel_is_white() for proper transposition.
  */
 static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 					struct drm_framebuffer *fb,
@@ -462,12 +527,8 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 	unsigned int bit_pos = 0;
 	unsigned int dst_idx = 0;
 
-	/*
-	 * R1: already in target format.  For landscape, copy rows directly.
-	 * For portrait, individual bit extraction is needed (handled below
-	 * in the per-pixel switch).
-	 */
-	if (format == DRM_FORMAT_R1 && orientation != 90) {
+	/* R1 fast path: 0° landscape only — rows map directly to output bytes */
+	if (format == DRM_FORMAT_R1 && orientation == 0) {
 		unsigned int src_pitch = fb->pitches[0];
 		unsigned int width_bytes = drm_rect_width(rect) / 8;
 
@@ -481,81 +542,16 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 	}
 
 	if (orientation == 90) {
-		/* 90° CW: read column-major, rightmost column first */
+		/*
+		 * 90° CW portrait: column-major, rightmost column first.
+		 * Each portrait source column becomes one physical RAM row.
+		 */
 		int x_signed;
 
 		for (x_signed = rect->x2 - 1; x_signed >= (int)rect->x1; x_signed--) {
 			x = x_signed;
 			for (y = rect->y1; y < rect->y2; y++) {
-				bool is_white;
-
-				switch (format) {
-				case DRM_FORMAT_XRGB8888: {
-					u32 *line = (u32 *)(src->vaddr + y * fb->pitches[0]);
-					u32 px = line[x];
-					u8 r = (px >> 16) & 0xFF;
-					u8 g = (px >> 8) & 0xFF;
-					u8 b = px & 0xFF;
-
-					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
-					break;
-				}
-				case DRM_FORMAT_RGB888: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-					u8 r = line[x * 3];
-					u8 g = line[x * 3 + 1];
-					u8 b = line[x * 3 + 2];
-
-					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
-					break;
-				}
-				case DRM_FORMAT_RGB565: {
-					u16 *line = (u16 *)(src->vaddr + y * fb->pitches[0]);
-					u16 px = line[x];
-					u8 r = ((px >> 11) & 0x1F) << 3;
-					u8 g = ((px >> 5) & 0x3F) << 2;
-					u8 b = (px & 0x1F) << 3;
-
-					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
-					break;
-				}
-				case DRM_FORMAT_R8: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-
-					is_white = line[x] > 127;
-					break;
-				}
-				case DRM_FORMAT_NV12:
-				case DRM_FORMAT_NV16: {
-					u8 *y_plane = (u8 *)(src->vaddr);
-
-					is_white = y_plane[y * fb->pitches[0] + x] > 127;
-					break;
-				}
-				case DRM_FORMAT_YUYV: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-
-					is_white = line[x * 2] > 127;
-					break;
-				}
-				case DRM_FORMAT_UYVY: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-
-					is_white = line[x * 2 + 1] > 127;
-					break;
-				}
-				case DRM_FORMAT_R1: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-
-					is_white = !!(line[x / 8] & (1 << (7 - (x % 8))));
-					break;
-				}
-				default:
-					is_white = false;
-					break;
-				}
-
-				if (is_white)
+				if (ssd16xx_pixel_is_white(src, fb, x, y))
 					byte |= (1 << (7 - bit_pos));
 				if (++bit_pos == 8) {
 					dst[dst_idx++] = byte;
@@ -563,8 +559,6 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 					bit_pos = 0;
 				}
 			}
-
-			/* Flush partial byte at end of column */
 			if (bit_pos > 0) {
 				dst[dst_idx++] = byte;
 				byte = 0;
@@ -572,72 +566,10 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 			}
 		}
 	} else {
-		/* Landscape (0°): read row-major */
+		/* 0° landscape: row-major, left to right, top to bottom */
 		for (y = rect->y1; y < rect->y2; y++) {
 			for (x = rect->x1; x < rect->x2; x++) {
-				bool is_white;
-
-				switch (format) {
-				case DRM_FORMAT_XRGB8888: {
-					u32 *line = (u32 *)(src->vaddr + y * fb->pitches[0]);
-					u32 px = line[x];
-					u8 r = (px >> 16) & 0xFF;
-					u8 g = (px >> 8) & 0xFF;
-					u8 b = px & 0xFF;
-
-					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
-					break;
-				}
-				case DRM_FORMAT_RGB888: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-					u8 r = line[x * 3];
-					u8 g = line[x * 3 + 1];
-					u8 b = line[x * 3 + 2];
-
-					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
-					break;
-				}
-				case DRM_FORMAT_RGB565: {
-					u16 *line = (u16 *)(src->vaddr + y * fb->pitches[0]);
-					u16 px = line[x];
-					u8 r = ((px >> 11) & 0x1F) << 3;
-					u8 g = ((px >> 5) & 0x3F) << 2;
-					u8 b = (px & 0x1F) << 3;
-
-					is_white = (299u * r + 587u * g + 114u * b) > 127000u;
-					break;
-				}
-				case DRM_FORMAT_R8: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-
-					is_white = line[x] > 127;
-					break;
-				}
-				case DRM_FORMAT_NV12:
-				case DRM_FORMAT_NV16: {
-					u8 *y_plane = (u8 *)(src->vaddr);
-
-					is_white = y_plane[y * fb->pitches[0] + x] > 127;
-					break;
-				}
-				case DRM_FORMAT_YUYV: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-
-					is_white = line[x * 2] > 127;
-					break;
-				}
-				case DRM_FORMAT_UYVY: {
-					u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
-
-					is_white = line[x * 2 + 1] > 127;
-					break;
-				}
-				default:
-					is_white = false;
-					break;
-				}
-
-				if (is_white)
+				if (ssd16xx_pixel_is_white(src, fb, x, y))
 					byte |= (1 << (7 - bit_pos));
 				if (++bit_pos == 8) {
 					dst[dst_idx++] = byte;
@@ -645,8 +577,6 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 					bit_pos = 0;
 				}
 			}
-
-			/* Flush partial byte at end of row */
 			if (bit_pos > 0) {
 				dst[dst_idx++] = byte;
 				byte = 0;
@@ -666,14 +596,7 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	u8 *mono_buffer;
 	u16 ram_x_start, ram_x_end, ram_y_start, ram_y_end;
 
-	/*
-	 * For 90° rotation, always use the full physical display area.
-	 * The pixel transposition in ssd16xx_convert_fb_to_1bpp handles
-	 * mapping the portrait framebuffer into landscape physical RAM.
-	 *
-	 * For landscape (0°), use the full area as well for the initial
-	 * baseline establishment path.
-	 */
+	/* Process full display area; convert handles orientation traversal. */
 	rect->x1 = 0;
 	rect->y1 = 0;
 	rect->x2 = panel->width;
@@ -687,17 +610,15 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 
 	ssd16xx_convert_fb_to_1bpp(mono_buffer, &map, fb, rect, panel->orientation);
 
-	/* Configure RAM window */
-	if (panel->orientation == 90) {
-		/*
-		 * 90° CW: data entry mode is X--, Y--.
-		 * Send RAM window end before start (reverse order for decrement).
-		 */
-		ram_x_start = 0;
-		ram_x_end = (panel->controller_cfg->max_width / 8) - 1;
-		ram_y_start = 0;
-		ram_y_end = panel->controller_cfg->max_height - 1;
+	/* Set RAM window and cursor for current orientation. */
+	ram_x_start = 0;
+	ram_x_end = (panel->controller_cfg->max_width / 8) - 1;
+	ram_y_start = 0;
+	ram_y_end = panel->controller_cfg->max_height - 1;
 
+	switch (panel->orientation) {
+	case 90:
+		/* XDEC_YDEC: send end-before-start; cursor at (max, max). */
 		ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_START_END, &err);
 		ssd16xx_send_x_param(panel, ram_x_end, &err);
 		ssd16xx_send_x_param(panel, ram_x_start, &err);
@@ -711,13 +632,10 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 
 		ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
 		ssd16xx_send_y_param(panel, ram_y_end, &err);
-	} else {
-		/* Landscape (0°): normal window from rect */
-		ram_x_start = rect->x1 / 8;
-		ram_x_end = (rect->x2 - 1) / 8;
-		ram_y_start = rect->y1;
-		ram_y_end = rect->y2 - 1;
+		break;
 
+	default: /* 0° landscape */
+		/* XINC_YINC: cursor at (0, 0). */
 		ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_START_END, &err);
 		ssd16xx_send_x_param(panel, ram_x_start, &err);
 		ssd16xx_send_x_param(panel, ram_x_end, &err);
@@ -731,6 +649,7 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 
 		ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
 		ssd16xx_send_y_param(panel, ram_y_start, &err);
+		break;
 	}
 
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_BW, &err);
@@ -765,21 +684,7 @@ static void ssd16xx_plane_destroy(struct drm_plane *plane)
 
 static void ssd16xx_plane_reset(struct drm_plane *plane)
 {
-	struct ssd16xx_panel *panel = plane_to_ssd16xx_panel(plane);
-
 	drm_atomic_helper_plane_reset(plane);
-
-	if (!plane->state)
-		return;
-
-	switch (panel->orientation) {
-	case 90:
-		plane->state->rotation = DRM_MODE_ROTATE_90;
-		break;
-	default:
-		plane->state->rotation = DRM_MODE_ROTATE_0;
-		break;
-	}
 }
 
 static const struct drm_plane_funcs ssd16xx_plane_funcs = {
@@ -819,6 +724,13 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	struct drm_rect rect;
 
 	if (!fb || !panel->initialized)
+		return;
+
+	/*
+	 * If a rotation change is pending, skip the update here — crtc_atomic_flush
+	 * will re-init the hardware for the new orientation and redraw.
+	 */
+	if (panel->reinit_pending)
 		return;
 
 	if (!drm_atomic_helper_damage_merged(old_state, new_state, &rect)) {
@@ -908,6 +820,7 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 			.y2 = plane_state->fb->height,
 		};
 		ssd16xx_fb_dirty(plane_state->fb, &rect, panel);
+		panel->last_fb = plane_state->fb;
 	}
 
 out:
@@ -928,11 +841,54 @@ static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
 	drm_dev_exit(idx);
 }
 
+/*
+ * Re-initialize hardware and redraw the current framebuffer when the
+ * display orientation changes at runtime via the rotation connector property.
+ * Called by the DRM atomic helper after atomic_enable/disable have run.
+ */
+static void ssd16xx_crtc_atomic_flush(struct drm_crtc *crtc,
+				      struct drm_atomic_state *state)
+{
+	struct ssd16xx_panel *panel = crtc_to_ssd16xx_panel(crtc);
+	struct drm_framebuffer *fb;
+	struct drm_rect full;
+	int ret, idx;
+
+	if (!panel->reinit_pending || !panel->initialized)
+		return;
+
+	if (!drm_dev_enter(&panel->drm, &idx))
+		return;
+
+	panel->reinit_pending = false;
+
+	ret = ssd16xx_hw_init(panel);
+	if (ret) {
+		drm_err(&panel->drm, "Orientation re-init failed: %d\n", ret);
+		drm_dev_exit(idx);
+		return;
+	}
+
+	fb = panel->primary_plane.state ? panel->primary_plane.state->fb
+					: panel->last_fb;
+	if (fb) {
+		full.x1 = 0;
+		full.y1 = 0;
+		full.x2 = fb->width;
+		full.y2 = fb->height;
+		ssd16xx_fb_dirty(fb, &full, panel);
+		panel->last_fb = fb;
+	}
+
+	drm_dev_exit(idx);
+}
+
 static const struct drm_crtc_helper_funcs ssd16xx_crtc_helper_funcs = {
 	.mode_valid = ssd16xx_crtc_mode_valid,
 	.atomic_check = ssd16xx_crtc_atomic_check,
 	.atomic_enable = ssd16xx_crtc_atomic_enable,
 	.atomic_disable = ssd16xx_crtc_atomic_disable,
+	.atomic_flush = ssd16xx_crtc_atomic_flush,
 };
 
 /* -----------------------------------------------------------------------------
@@ -970,12 +926,77 @@ static const struct drm_connector_helper_funcs ssd16xx_connector_helper_funcs = 
 	.get_modes = ssd16xx_connector_get_modes,
 };
 
+/* Enum values for the rotation connector property (degrees clockwise) */
+static const struct drm_prop_enum_list ssd16xx_rotation_enum[] = {
+	{ 0,   "0"   },
+	{ 90,  "90"  },
+};
+
+static int ssd16xx_connector_create_properties(struct ssd16xx_panel *panel)
+{
+	struct drm_device *drm = &panel->drm;
+	struct drm_connector *connector = &panel->connector;
+
+	panel->rotation_property =
+		drm_property_create_enum(drm, 0, "rotation",
+					 ssd16xx_rotation_enum,
+					 ARRAY_SIZE(ssd16xx_rotation_enum));
+	if (!panel->rotation_property)
+		return -ENOMEM;
+
+	drm_object_attach_property(&connector->base,
+				   panel->rotation_property,
+				   panel->orientation);
+	return 0;
+}
+
+static int ssd16xx_connector_atomic_get_property(
+		struct drm_connector *connector,
+		const struct drm_connector_state *state,
+		struct drm_property *property,
+		uint64_t *val)
+{
+	struct ssd16xx_panel *panel = to_ssd16xx_panel(connector->dev);
+
+	if (property == panel->rotation_property) {
+		*val = panel->orientation;
+		return 0;
+	}
+
+	return -EINVAL;
+}
+
+static int ssd16xx_connector_atomic_set_property(
+		struct drm_connector *connector,
+		struct drm_connector_state *state,
+		struct drm_property *property,
+		uint64_t val)
+{
+	struct ssd16xx_panel *panel = to_ssd16xx_panel(connector->dev);
+
+	if (property == panel->rotation_property) {
+		if (val != 0 && val != 90)
+			return -EINVAL;
+		panel->orientation = val;
+		/*
+		 * Flag hardware re-init needed. crtc_atomic_flush will call
+		 * ssd16xx_hw_init() with the new orientation and redraw.
+		 */
+		panel->reinit_pending = true;
+		return 0;
+	}
+
+	return -EINVAL;
+}
+
 static const struct drm_connector_funcs ssd16xx_connector_funcs = {
 	.reset = drm_atomic_helper_connector_reset,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.destroy = drm_connector_cleanup,
 	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
+	.atomic_get_property = ssd16xx_connector_atomic_get_property,
+	.atomic_set_property = ssd16xx_connector_atomic_set_property,
 };
 
 static const u32 ssd16xx_formats[] = {
@@ -1148,13 +1169,6 @@ static int ssd16xx_probe(struct spi_device *spi)
 		return ret;
 	drm_plane_helper_add(&panel->primary_plane, &ssd16xx_plane_helper_funcs);
 
-	ret = drm_plane_create_rotation_property(
-		&panel->primary_plane,
-		panel->orientation == 90 ? DRM_MODE_ROTATE_90 : DRM_MODE_ROTATE_0,
-		DRM_MODE_ROTATE_0 | DRM_MODE_ROTATE_90);
-	if (ret)
-		return ret;
-
 	ret = drm_crtc_init_with_planes(drm, &panel->crtc, &panel->primary_plane,
 					NULL, &ssd16xx_crtc_funcs, NULL);
 	if (ret)
@@ -1170,7 +1184,21 @@ static int ssd16xx_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Do NOT set panel_orientation: HW rotation via Data Entry Mode. */
+	/*
+	 * Create the rotation connector property so userspace can change the
+	 * display orientation at runtime. The initial value reflects the
+	 * boot-time DT rotation.
+	 */
+	ret = ssd16xx_connector_create_properties(panel);
+	if (ret)
+		return ret;
+
+	/*
+	 * Hardware rotation is handled via Data Entry Mode and mode dimension
+	 * swapping. Do NOT set panel_orientation here — that would cause double
+	 * rotation (hardware + compositor). See MIPI DBI drivers for reference.
+	 */
+
 	drm_mode_config_reset(drm);
 
 	ret = drm_dev_register(drm, 0);
