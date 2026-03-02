@@ -85,6 +85,7 @@ MODULE_PARM_DESC(rotation,
 /*
  * Display Update Control 1 (0x21) byte 1 definitions - from SSD1683 datasheet
  */
+#define SSD16XX_CTRL1_NORMAL			0x00  /* Both RAMs enabled */
 #define SSD16XX_CTRL1_BYPASS_RED_RAM		0x40  /* Bypass RED RAM (force RED=0) */
 #define SSD16XX_CTRL1_BYTE2_DEFAULT		0x00
 
@@ -93,11 +94,12 @@ MODULE_PARM_DESC(rotation,
 #define SSD16XX_CTRL2_ENABLE_ANALOG		BIT(6)
 #define SSD16XX_CTRL2_LOAD_TEMPERATURE		BIT(5)
 #define SSD16XX_CTRL2_LOAD_LUT			BIT(4)
+#define SSD16XX_CTRL2_MODE2			BIT(3)  /* Display Mode 2 (partial/BW) */
 #define SSD16XX_CTRL2_DISPLAY			BIT(2)
 #define SSD16XX_CTRL2_DISABLE_ANALOG		BIT(1)
 #define SSD16XX_CTRL2_DISABLE_CLK		BIT(0)
 
-/* Full refresh: 3-color mode with temperature and LUT load */
+/* Full refresh: temperature + LUT load, ~1.5-2s */
 #define SSD1683_CTRL2_FULL_REFRESH (SSD16XX_CTRL2_ENABLE_CLK | \
 				    SSD16XX_CTRL2_ENABLE_ANALOG | \
 				    SSD16XX_CTRL2_LOAD_TEMPERATURE | \
@@ -105,6 +107,32 @@ MODULE_PARM_DESC(rotation,
 				    SSD16XX_CTRL2_DISPLAY | \
 				    SSD16XX_CTRL2_DISABLE_ANALOG | \
 				    SSD16XX_CTRL2_DISABLE_CLK)  /* 0xF7 */
+
+/* Fast refresh: skip temperature load, ~1.0-1.5s */
+#define SSD1683_CTRL2_FAST_REFRESH (SSD16XX_CTRL2_ENABLE_CLK | \
+				    SSD16XX_CTRL2_ENABLE_ANALOG | \
+				    SSD16XX_CTRL2_DISPLAY | \
+				    SSD16XX_CTRL2_DISABLE_ANALOG | \
+				    SSD16XX_CTRL2_DISABLE_CLK)  /* 0xC7 */
+
+/* Partial refresh: BW mode, temperature + LUT load, ~300-500ms */
+#define SSD1683_CTRL2_PARTIAL_REFRESH (SSD16XX_CTRL2_ENABLE_CLK | \
+				       SSD16XX_CTRL2_ENABLE_ANALOG | \
+				       SSD16XX_CTRL2_LOAD_TEMPERATURE | \
+				       SSD16XX_CTRL2_LOAD_LUT | \
+				       SSD16XX_CTRL2_MODE2 | \
+				       SSD16XX_CTRL2_DISPLAY | \
+				       SSD16XX_CTRL2_DISABLE_ANALOG | \
+				       SSD16XX_CTRL2_DISABLE_CLK)  /* 0xFF */
+
+/*
+ * 0x91 = ENABLE_CLK | LOAD_LUT | DISABLE_CLK
+ * Used to pre-load LUT during hw_init without triggering a display update.
+ * Required for FAST refresh mode which omits LOAD_LUT from each update cycle.
+ */
+#define SSD16XX_CTRL2_LOAD_TEMP_LUT		(SSD16XX_CTRL2_ENABLE_CLK | \
+						 SSD16XX_CTRL2_LOAD_LUT | \
+						 SSD16XX_CTRL2_DISABLE_CLK)  /* 0x91 */
 
 #define SSD16XX_SPI_BITS_PER_WORD		8
 #define SSD16XX_SPI_SPEED_DEFAULT		1000000
@@ -117,6 +145,12 @@ enum ssd16xx_controller {
 
 enum ssd16xx_model {
 	GDEY042T81 = 1,
+};
+
+enum ssd16xx_refresh_mode {
+	SSD16XX_REFRESH_PARTIAL = 0,  /* Partial refresh (~300-500ms) */
+	SSD16XX_REFRESH_FULL,         /* Full refresh (~1.5-2s) */
+	SSD16XX_REFRESH_FAST,         /* Fast refresh, skip temp load (~1.0-1.5s) */
 };
 
 struct ssd16xx_controller_config {
@@ -132,6 +166,9 @@ struct ssd16xx_panel_config {
 
 	/* Driver Output Control - third byte (scan direction) */
 	u8 driver_output_ctrl_byte3;
+
+	/* Default refresh mode for this panel */
+	enum ssd16xx_refresh_mode default_refresh_mode;
 };
 
 struct ssd16xx_error_ctx {
@@ -160,12 +197,15 @@ struct ssd16xx_panel {
 	u32 height;
 
 	bool initialized;
-	bool reinit_pending;  /* HW re-init required after orientation change */
+	bool reinit_pending;      /* HW re-init required after orientation change */
+	bool init_refresh_pending; /* First frame after refresh_mode_init enable */
 
 	int orientation;      /* Display orientation in degrees: 0/90 */
+	enum ssd16xx_refresh_mode refresh_mode; /* Active refresh mode */
 
-	struct drm_framebuffer *last_fb;   /* Last drawn FB for reinit redraws */
-	struct drm_property *rotation_property; /* Connector rotation property */
+	struct drm_framebuffer *last_fb;        /* Last drawn FB for reinit redraws */
+	struct drm_property *rotation_property;
+	struct drm_property *refresh_mode_property;
 };
 
 static inline struct ssd16xx_panel *to_ssd16xx_panel(struct drm_device *drm)
@@ -196,6 +236,7 @@ static const struct ssd16xx_panel_config ssd16xx_panel_configs[] = {
 	[GDEY042T81] = {
 		.data_entry_mode = SSD16XX_DATA_ENTRY_XINC_YINC,
 		.driver_output_ctrl_byte3 = SSD16XX_DRIVER_OUTPUT_CTRL_DEFAULT,
+		.default_refresh_mode = SSD16XX_REFRESH_PARTIAL,
 	},
 };
 
@@ -358,6 +399,24 @@ static int ssd16xx_hw_init(struct ssd16xx_panel *panel)
 	/* Internal temperature sensor */
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_TEMPERATURE_SENSOR_CONTROL, &err);
 	ssd16xx_send_data(panel, SSD16XX_TEMP_SENSOR_INTERNAL, &err);
+
+	/*
+	 * For FAST refresh mode, pre-load the LUT once here during initialization.
+	 * FAST mode ctrl2 (0xC7) omits LOAD_LUT on every update for speed, so the
+	 * LUT must be loaded upfront. FULL (0xF7) and PARTIAL (0xFF) load LUT on
+	 * every update, so no preload is needed for those modes.
+	 */
+	if (panel->refresh_mode == SSD16XX_REFRESH_FAST) {
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_DISPLAY_UPDATE_CONTROL1, &err);
+		ssd16xx_send_data(panel, SSD16XX_CTRL1_BYPASS_RED_RAM, &err);
+		ssd16xx_send_data(panel, SSD16XX_CTRL1_BYTE2_DEFAULT, &err);
+
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_DISPLAY_UPDATE_CONTROL2, &err);
+		ssd16xx_send_data(panel, SSD16XX_CTRL2_LOAD_TEMP_LUT, &err);
+
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_MASTER_ACTIVATION, &err);
+		ssd16xx_wait_for_panel(panel);
+	}
 
 	/* Select data entry mode and cursor start based on orientation */
 	switch (panel->orientation) {
@@ -660,17 +719,84 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_BW, &err);
 	ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 
-	/*
-	 * Baseline establishment: write the same data to RED RAM so that the
-	 * controller knows the prior frame for partial refresh transitions.
-	 * Always use full refresh with RED RAM bypassed for BW panels.
-	 */
-	ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
-	ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
-
-	ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
-			       SSD16XX_CTRL1_BYTE2_DEFAULT,
-			       SSD1683_CTRL2_FULL_REFRESH, &err);
+	switch (panel->refresh_mode) {
+	case SSD16XX_REFRESH_FULL:
+		/*
+		 * BW full refresh: write RED RAM BEFORE display_update
+		 * to avoid a post-BUSY write timing issue on some
+		 * controller revisions that silently corrupts RED RAM.
+		 * RED RAM is then bypassed (CTRL1_BYPASS_RED_RAM) so
+		 * stale RED RAM content does not affect the output.
+		 */
+		if (panel->orientation == 90) {
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+			ssd16xx_send_x_param(panel, ram_x_end, &err);
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+			ssd16xx_send_y_param(panel, ram_y_end, &err);
+		} else {
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+			ssd16xx_send_x_param(panel, ram_x_start, &err);
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+			ssd16xx_send_y_param(panel, ram_y_start, &err);
+		}
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
+		ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
+		ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
+				       SSD16XX_CTRL1_BYTE2_DEFAULT,
+				       SSD1683_CTRL2_FULL_REFRESH, &err);
+		break;
+	case SSD16XX_REFRESH_FAST:
+		/*
+		 * Fast refresh: LUT pre-loaded during hw_init; BYPASS_RED_RAM
+		 * so RED RAM does not affect the current output.
+		 * Write RED RAM BEFORE display_update (same reasoning as FULL)
+		 * so it holds the just-displayed frame as a valid reference for
+		 * any subsequent PARTIAL refresh.
+		 */
+		if (panel->orientation == 90) {
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+			ssd16xx_send_x_param(panel, ram_x_end, &err);
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+			ssd16xx_send_y_param(panel, ram_y_end, &err);
+		} else {
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+			ssd16xx_send_x_param(panel, ram_x_start, &err);
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+			ssd16xx_send_y_param(panel, ram_y_start, &err);
+		}
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
+		ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
+		ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
+				       SSD16XX_CTRL1_BYTE2_DEFAULT,
+				       SSD1683_CTRL2_FAST_REFRESH, &err);
+		break;
+	case SSD16XX_REFRESH_PARTIAL:
+	default:
+		/*
+		 * Partial refresh: both RAMs used for transition waveforms.
+		 * RED RAM must hold the PREVIOUS frame (= current display
+		 * content) so the controller can compute pixel transitions.
+		 * Write RED RAM AFTER display_update so it captures the
+		 * just-displayed frame as the reference for the next partial.
+		 */
+		ssd16xx_display_update(panel, SSD16XX_CTRL1_NORMAL,
+				       SSD16XX_CTRL1_BYTE2_DEFAULT,
+				       SSD1683_CTRL2_PARTIAL_REFRESH, &err);
+		if (panel->orientation == 90) {
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+			ssd16xx_send_x_param(panel, ram_x_end, &err);
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+			ssd16xx_send_y_param(panel, ram_y_end, &err);
+		} else {
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+			ssd16xx_send_x_param(panel, ram_x_start, &err);
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+			ssd16xx_send_y_param(panel, ram_y_start, &err);
+		}
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
+		ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
+		break;
+	}
 
 	if (err.errno_code)
 		drm_err(&panel->drm, "Display update failed: %d\n", err.errno_code);
@@ -841,6 +967,7 @@ static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
 	if (!drm_dev_enter(&panel->drm, &idx))
 		return;
 
+	panel->init_refresh_pending = false;
 	panel->initialized = false;
 
 	drm_dev_exit(idx);
@@ -937,6 +1064,13 @@ static const struct drm_prop_enum_list ssd16xx_rotation_enum[] = {
 	{ 90,  "90"  },
 };
 
+/* Enum values for the refresh_mode connector property */
+static const struct drm_prop_enum_list ssd16xx_refresh_mode_enum[] = {
+	{ SSD16XX_REFRESH_PARTIAL, "partial" },
+	{ SSD16XX_REFRESH_FULL,    "full"    },
+	{ SSD16XX_REFRESH_FAST,    "fast"    },
+};
+
 static int ssd16xx_connector_create_properties(struct ssd16xx_panel *panel)
 {
 	struct drm_device *drm = &panel->drm;
@@ -952,6 +1086,17 @@ static int ssd16xx_connector_create_properties(struct ssd16xx_panel *panel)
 	drm_object_attach_property(&connector->base,
 				   panel->rotation_property,
 				   panel->orientation);
+
+	panel->refresh_mode_property =
+		drm_property_create_enum(drm, 0, "refresh_mode",
+					 ssd16xx_refresh_mode_enum,
+					 ARRAY_SIZE(ssd16xx_refresh_mode_enum));
+	if (!panel->refresh_mode_property)
+		return -ENOMEM;
+
+	drm_object_attach_property(&connector->base,
+				   panel->refresh_mode_property,
+				   panel->refresh_mode);
 	return 0;
 }
 
@@ -965,6 +1110,11 @@ static int ssd16xx_connector_atomic_get_property(
 
 	if (property == panel->rotation_property) {
 		*val = panel->orientation;
+		return 0;
+	}
+
+	if (property == panel->refresh_mode_property) {
+		*val = panel->refresh_mode;
 		return 0;
 	}
 
@@ -988,6 +1138,13 @@ static int ssd16xx_connector_atomic_set_property(
 		 * ssd16xx_hw_init() with the new orientation and redraw.
 		 */
 		panel->reinit_pending = true;
+		return 0;
+	}
+
+	if (property == panel->refresh_mode_property) {
+		if (val > SSD16XX_REFRESH_FAST)
+			return -EINVAL;
+		panel->refresh_mode = val;
 		return 0;
 	}
 
@@ -1114,6 +1271,7 @@ static int ssd16xx_probe(struct spi_device *spi)
 	if (model >= ARRAY_SIZE(ssd16xx_panel_configs))
 		return -EINVAL;
 	panel->panel_cfg = &ssd16xx_panel_configs[model];
+	panel->refresh_mode = panel->panel_cfg->default_refresh_mode;
 
 	/* Parse "rotation" DT property; swap mode dimensions for portrait. */
 	device_property_read_u32(dev, "rotation", &dt_rotation);
