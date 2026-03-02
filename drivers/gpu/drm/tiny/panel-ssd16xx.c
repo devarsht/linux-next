@@ -39,6 +39,36 @@ module_param(refresh_mode, int, 0644);
 MODULE_PARM_DESC(refresh_mode,
 		 "Refresh mode (-1=panel default, 0=partial ~300-500ms, 1=full ~1.5-2s, 2=fast ~1.0-1.5s)");
 
+static int border_waveform_init_lut = -1;
+module_param(border_waveform_init_lut, int, 0644);
+MODULE_PARM_DESC(border_waveform_init_lut,
+		 "Border waveform index during clear/init (-1=panel default, 0-9=enum index)");
+
+static int border_waveform_lut = -1;
+module_param(border_waveform_lut, int, 0644);
+MODULE_PARM_DESC(border_waveform_lut,
+		 "Border waveform index during display updates (-1=panel default, 0-9=enum index)");
+
+static bool border_refresh_on_every_update;
+module_param(border_refresh_on_every_update, bool, 0644);
+MODULE_PARM_DESC(border_refresh_on_every_update,
+		 "Re-send border waveform command before each display update (default: false)");
+
+static int clear_on_init = -1;
+module_param(clear_on_init, int, 0644);
+MODULE_PARM_DESC(clear_on_init,
+		 "Clear display on first app launch (-1=disabled, 0=partial, 1=full, 2=fast)");
+
+static int clear_on_close = -1;
+module_param(clear_on_close, int, 0644);
+MODULE_PARM_DESC(clear_on_close,
+		 "Clear display on app close/CRTC disable (-1=disabled, 0=partial, 1=full, 2=fast)");
+
+static int refresh_mode_init = -1;
+module_param(refresh_mode_init, int, 0644);
+MODULE_PARM_DESC(refresh_mode_init,
+		 "Skip baseline establishment on first enable (-1=disabled, 0=partial, 1=full, 2=fast)");
+
 #define SSD16XX_CMD_DRIVER_OUTPUT_CONTROL		0x01
 #define SSD16XX_CMD_DATA_ENTRY_MODE			0x11
 #define SSD16XX_CMD_SW_RESET				0x12
@@ -325,7 +355,7 @@ static const struct ssd16xx_panel_config ssd16xx_panel_configs[] = {
 		.default_border_refresh_on_every_update = false,
 		.default_clear_on_init   = -1,
 		.default_clear_on_close  = -1,
-		.default_refresh_mode_init = -1,
+		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
 	},
 };
 
@@ -1619,6 +1649,22 @@ static int ssd16xx_probe(struct spi_device *spi)
 	panel->clear_on_init   = panel->panel_cfg->default_clear_on_init;
 	panel->clear_on_close  = panel->panel_cfg->default_clear_on_close;
 	panel->refresh_mode_init = panel->panel_cfg->default_refresh_mode_init;
+
+	/* Module parameter overrides for border/display control */
+	if (border_waveform_init_lut >= 0 &&
+	    border_waveform_init_lut < (int)ARRAY_SIZE(ssd16xx_border_waveform_values))
+		panel->border_waveform_init_idx = border_waveform_init_lut;
+	if (border_waveform_lut >= 0 &&
+	    border_waveform_lut < (int)ARRAY_SIZE(ssd16xx_border_waveform_values))
+		panel->border_waveform_update_idx = border_waveform_lut;
+	if (border_refresh_on_every_update)
+		panel->border_refresh_on_every_update = true;
+	if (clear_on_init >= 0 && clear_on_init <= 2)
+		panel->clear_on_init = clear_on_init;
+	if (clear_on_close >= 0 && clear_on_close <= 2)
+		panel->clear_on_close = clear_on_close;
+	if (refresh_mode_init >= 0 && refresh_mode_init <= 2)
+		panel->refresh_mode_init = refresh_mode_init;
 
 	/* Module parameter overrides panel default refresh mode when set */
 	if (refresh_mode >= 0) {
