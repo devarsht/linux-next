@@ -29,6 +29,11 @@
 #include <drm/drm_probe_helper.h>
 #include <drm/drm_simple_kms_helper.h>
 
+static int rotation = -1;
+module_param(rotation, int, 0644);
+MODULE_PARM_DESC(rotation,
+		 "Display rotation (-1=use DT, 0=landscape, 90=portrait CW)");
+
 #define SSD16XX_CMD_DRIVER_OUTPUT_CONTROL		0x01
 #define SSD16XX_CMD_DATA_ENTRY_MODE			0x11
 #define SSD16XX_CMD_SW_RESET				0x12
@@ -1117,6 +1122,15 @@ static int ssd16xx_probe(struct spi_device *spi)
 		dt_rotation = 0;
 	}
 	panel->orientation = dt_rotation;
+
+	/* Module parameter overrides DT rotation when set */
+	if (rotation >= 0) {
+		if (rotation != 0 && rotation != 90)
+			drm_warn(drm, "Invalid rotation module param %d, ignored\n",
+				 rotation);
+		else
+			panel->orientation = rotation;
+	}
 
 	/* Swap mode dimensions for portrait so clients see logical size. */
 	if (panel->orientation == 90) {
