@@ -76,10 +76,20 @@ MODULE_PARM_DESC(refresh_mode,
 #define SSD16XX_DRIVER_OUTPUT_CTRL_DEFAULT	0x00
 
 /*
- * Border Waveform Control (command 0x3C) - from SSD1683 datasheet
- * LUT1 = GS Transition waveform for clean white border
+ * Border Waveform Control (command 0x3C) byte values - from SSD1683 datasheet.
+ * LUT0-3: GS transition waveforms. FixLvl: fixed voltage levels.
+ * VCOM: border follows VCOM voltage. HiZ: high-impedance (floating, default).
  */
-#define SSD16XX_BORDER_WAVEFORM_LUT1		0x01
+#define SSD16XX_BORDER_WAVEFORM_LUT0		0x00  /* GS Transition LUT0 (black) */
+#define SSD16XX_BORDER_WAVEFORM_LUT1		0x01  /* GS Transition LUT1 (white) */
+#define SSD16XX_BORDER_WAVEFORM_LUT2		0x02  /* GS Transition LUT2 (black) */
+#define SSD16XX_BORDER_WAVEFORM_LUT3		0x03  /* GS Transition LUT3 (gray) */
+#define SSD16XX_BORDER_WAVEFORM_FIXLVL_VSS	0x40  /* Fix Level VSS (0V, black) */
+#define SSD16XX_BORDER_WAVEFORM_FIXLVL_VSH1	0x50  /* Fix Level VSH1 (+15V, black) */
+#define SSD16XX_BORDER_WAVEFORM_FIXLVL_VSL	0x60  /* Fix Level VSL (-15V, white) */
+#define SSD16XX_BORDER_WAVEFORM_FIXLVL_VSH2	0x70  /* Fix Level VSH2 (+15V alt, black) */
+#define SSD16XX_BORDER_WAVEFORM_VCOM		0x80  /* Follow VCOM (-2V~-3V, preserve) */
+#define SSD16XX_BORDER_WAVEFORM_HIZ		0xC0  /* HiZ (floating, default) */
 
 /*
  * Temperature Sensor Control (command 0x18) - use internal temperature sensor.
@@ -158,6 +168,33 @@ enum ssd16xx_refresh_mode {
 	SSD16XX_REFRESH_FAST,         /* Fast refresh, skip temp load (~1.0-1.5s) */
 };
 
+/* Border waveform enum indices (0-9); map to HW bytes via ssd16xx_border_waveform_values[] */
+enum ssd16xx_border_waveform {
+	SSD16XX_BORDER_LUT0 = 0,  /* GS Transition LUT0 (black) */
+	SSD16XX_BORDER_LUT1,      /* GS Transition LUT1 (white) */
+	SSD16XX_BORDER_LUT2,      /* GS Transition LUT2 (black) */
+	SSD16XX_BORDER_LUT3,      /* GS Transition LUT3 (gray) */
+	SSD16XX_BORDER_VSS,       /* Fix Level VSS (black) */
+	SSD16XX_BORDER_VSH1,      /* Fix Level VSH1 (black) */
+	SSD16XX_BORDER_VSL,       /* Fix Level VSL (white) */
+	SSD16XX_BORDER_VSH2,      /* Fix Level VSH2 (black) */
+	SSD16XX_BORDER_VCOM,      /* Follow VCOM (preserve) */
+	SSD16XX_BORDER_HIZ,       /* HiZ (floating, default) */
+};
+
+static const u8 ssd16xx_border_waveform_values[] = {
+	[SSD16XX_BORDER_LUT0] = SSD16XX_BORDER_WAVEFORM_LUT0,
+	[SSD16XX_BORDER_LUT1] = SSD16XX_BORDER_WAVEFORM_LUT1,
+	[SSD16XX_BORDER_LUT2] = SSD16XX_BORDER_WAVEFORM_LUT2,
+	[SSD16XX_BORDER_LUT3] = SSD16XX_BORDER_WAVEFORM_LUT3,
+	[SSD16XX_BORDER_VSS]  = SSD16XX_BORDER_WAVEFORM_FIXLVL_VSS,
+	[SSD16XX_BORDER_VSH1] = SSD16XX_BORDER_WAVEFORM_FIXLVL_VSH1,
+	[SSD16XX_BORDER_VSL]  = SSD16XX_BORDER_WAVEFORM_FIXLVL_VSL,
+	[SSD16XX_BORDER_VSH2] = SSD16XX_BORDER_WAVEFORM_FIXLVL_VSH2,
+	[SSD16XX_BORDER_VCOM] = SSD16XX_BORDER_WAVEFORM_VCOM,
+	[SSD16XX_BORDER_HIZ]  = SSD16XX_BORDER_WAVEFORM_HIZ,
+};
+
 struct ssd16xx_controller_config {
 	u16 max_width;
 	u16 max_height;
@@ -174,6 +211,30 @@ struct ssd16xx_panel_config {
 
 	/* Default refresh mode for this panel */
 	enum ssd16xx_refresh_mode default_refresh_mode;
+
+	/* Default border waveform during clear/init (enum index 0-9) */
+	enum ssd16xx_border_waveform default_border_waveform_init;
+
+	/* Default border waveform during display updates (enum index 0-9) */
+	enum ssd16xx_border_waveform default_border_waveform_update;
+
+	/* Whether to re-send border waveform command before each display update */
+	bool default_border_refresh_on_every_update;
+
+	/*
+	 * Default clear-on-init behaviour.
+	 * -1=disabled, 0=partial, 1=full, 2=fast (matches enum ssd16xx_refresh_mode)
+	 */
+	int default_clear_on_init;
+
+	/* Default clear-on-close behaviour (-1=disabled, 0=partial, 1=full, 2=fast) */
+	int default_clear_on_close;
+
+	/*
+	 * Default refresh-mode-init: -1=disabled, else skip baseline establishment
+	 * and start directly in this refresh mode.
+	 */
+	int default_refresh_mode_init;
 };
 
 struct ssd16xx_error_ctx {
@@ -204,13 +265,30 @@ struct ssd16xx_panel {
 	bool initialized;
 	bool reinit_pending;      /* HW re-init required after orientation change */
 	bool init_refresh_pending; /* First frame after refresh_mode_init enable */
+	bool first_clear_done;    /* clear_on_init has already fired once */
 
 	int orientation;      /* Display orientation in degrees: 0/90 */
 	enum ssd16xx_refresh_mode refresh_mode; /* Active refresh mode */
 
+	/* Border waveform (as enum indices) */
+	int border_waveform_init_idx;   /* Border waveform during clear/init */
+	int border_waveform_update_idx; /* Border waveform during display updates */
+	bool border_refresh_on_every_update; /* Re-send border cmd each display update */
+
+	/* Display control */
+	int clear_on_init;   /* -1=disabled, 0=partial, 1=full, 2=fast */
+	int clear_on_close;  /* -1=disabled, 0=partial, 1=full, 2=fast */
+	int refresh_mode_init; /* -1=disabled, else use this mode for the first frame */
+
 	struct drm_framebuffer *last_fb;        /* Last drawn FB for reinit redraws */
 	struct drm_property *rotation_property;
 	struct drm_property *refresh_mode_property;
+	struct drm_property *border_waveform_init_property;
+	struct drm_property *border_waveform_update_property;
+	struct drm_property *border_refresh_on_every_update_property;
+	struct drm_property *clear_on_init_property;
+	struct drm_property *clear_on_close_property;
+	struct drm_property *refresh_mode_init_property;
 };
 
 static inline struct ssd16xx_panel *to_ssd16xx_panel(struct drm_device *drm)
@@ -242,6 +320,12 @@ static const struct ssd16xx_panel_config ssd16xx_panel_configs[] = {
 		.data_entry_mode = SSD16XX_DATA_ENTRY_XINC_YINC,
 		.driver_output_ctrl_byte3 = SSD16XX_DRIVER_OUTPUT_CTRL_DEFAULT,
 		.default_refresh_mode = SSD16XX_REFRESH_PARTIAL,
+		.default_border_waveform_init   = SSD16XX_BORDER_LUT1,  /* white, clean clear */
+		.default_border_waveform_update = SSD16XX_BORDER_HIZ,   /* floating, preserve */
+		.default_border_refresh_on_every_update = false,
+		.default_clear_on_init   = -1,
+		.default_clear_on_close  = -1,
+		.default_refresh_mode_init = -1,
 	},
 };
 
@@ -466,8 +550,13 @@ static int ssd16xx_hw_init(struct ssd16xx_panel *panel)
 	return err.errno_code;
 }
 
-/* Clear display by writing all-white to both BW and RED RAM */
-static void ssd16xx_clear_display(struct ssd16xx_panel *panel)
+/*
+ * Clear display by writing all-white to both BW and RED RAM.
+ * The ctrl2 argument selects the waveform (full/partial/fast refresh).
+ * Border waveform is set to init value before clearing, then restored
+ * to the update value to preserve the border during subsequent updates.
+ */
+static void ssd16xx_clear_display(struct ssd16xx_panel *panel, u8 ctrl2)
 {
 	struct ssd16xx_error_ctx err = { .errno_code = 0 };
 	unsigned int data_size = (panel->width * panel->height) / 8;
@@ -490,21 +579,61 @@ static void ssd16xx_clear_display(struct ssd16xx_panel *panel)
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
 	ssd16xx_send_data_bulk(panel, white_buffer, data_size, &err);
 
-	/*
-	 * Set border waveform for display clear.
-	 * LUT1 provides a clean white waveform with temperature compensation.
-	 */
+	/* Set border waveform for the clear operation */
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
-	ssd16xx_send_data(panel, SSD16XX_BORDER_WAVEFORM_LUT1, &err);
+	ssd16xx_send_data(panel,
+			  ssd16xx_border_waveform_values[panel->border_waveform_init_idx],
+			  &err);
 
 	ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
-			       SSD16XX_CTRL1_BYTE2_DEFAULT,
-			       SSD1683_CTRL2_FULL_REFRESH, &err);
+			       SSD16XX_CTRL1_BYTE2_DEFAULT, ctrl2, &err);
+
+	/* Restore border waveform to update/preservation value */
+	ssd16xx_send_cmd(panel, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
+	ssd16xx_send_data(panel,
+			  ssd16xx_border_waveform_values[panel->border_waveform_update_idx],
+			  &err);
 
 	if (err.errno_code)
 		drm_err(&panel->drm, "Clear display failed: %d\n", err.errno_code);
 
 	kfree(white_buffer);
+}
+
+static u8 ssd16xx_refresh_mode_to_ctrl2(int mode)
+{
+	switch (mode) {
+	case 0: return SSD1683_CTRL2_PARTIAL_REFRESH;
+	case 2: return SSD1683_CTRL2_FAST_REFRESH;
+	default: return SSD1683_CTRL2_FULL_REFRESH;
+	}
+}
+
+/*
+ * Clear display on first DRM app launch (if clear_on_init >= 0).
+ * Guarded by panel->first_clear_done so it fires only once per module load.
+ */
+static void ssd16xx_clear_display_on_init(struct ssd16xx_panel *panel)
+{
+	if (panel->clear_on_init < 0 || panel->first_clear_done)
+		return;
+
+	ssd16xx_clear_display(panel,
+			      ssd16xx_refresh_mode_to_ctrl2(panel->clear_on_init));
+	panel->first_clear_done = true;
+}
+
+/*
+ * Clear display on CRTC disable (if clear_on_close >= 0).
+ * Called at the start of ssd16xx_crtc_atomic_disable() before deep sleep.
+ */
+static void ssd16xx_clear_display_on_exit(struct ssd16xx_panel *panel)
+{
+	if (panel->clear_on_close < 0)
+		return;
+
+	ssd16xx_clear_display(panel,
+			      ssd16xx_refresh_mode_to_ctrl2(panel->clear_on_close));
 }
 
 /*
@@ -724,6 +853,17 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_BW, &err);
 	ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 
+	/* Optionally re-send border waveform before each display update */
+	if (panel->border_refresh_on_every_update || panel->init_refresh_pending) {
+		u8 idx = panel->border_waveform_update_idx;
+		u8 border = ssd16xx_border_waveform_values[idx];
+
+		drm_dbg(&panel->drm, "fb_dirty: Refreshing border waveform: 0x%02x\n",
+			border);
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
+		ssd16xx_send_data(panel, border, &err);
+	}
+
 	switch (panel->refresh_mode) {
 	case SSD16XX_REFRESH_FULL:
 		/*
@@ -856,6 +996,9 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	struct drm_plane_state *old_state = drm_atomic_get_old_plane_state(state, plane);
 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state, plane);
 	struct ssd16xx_panel *panel = plane_to_ssd16xx_panel(plane);
+	enum ssd16xx_refresh_mode saved_mode;
+	u8 saved_border_waveform_idx;
+	struct ssd16xx_error_ctx err = { .errno_code = 0 };
 	struct drm_framebuffer *fb = new_state->fb;
 	struct drm_rect rect;
 
@@ -876,8 +1019,43 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 		rect.y2 = fb->height;
 	}
 
+	/*
+	 * When refresh_mode_init was set, use the specified mode for this first
+	 * frame only, then restore the user-configured refresh_mode so
+	 * subsequent updates continue with the configured mode.
+	 */
+	saved_mode = panel->refresh_mode;
+	saved_border_waveform_idx = panel->border_waveform_update_idx;
+	if (panel->init_refresh_pending) {
+		panel->refresh_mode = panel->refresh_mode_init;
+		panel->border_waveform_update_idx = panel->border_waveform_init_idx;
+	}
+
 	ssd16xx_fb_dirty(fb, &rect, panel);
+	panel->last_fb = fb;
+	panel->refresh_mode = saved_mode;
+	panel->border_waveform_update_idx = saved_border_waveform_idx;
+
+	/*
+	 * If this was the init frame (which used border_waveform_init_idx
+	 * inside fb_dirty), restore the border waveform to the normal
+	 * (non-init) value now that the init refresh is complete.
+	 */
+	if (panel->init_refresh_pending) {
+		drm_dbg(&panel->drm,
+			"plane_atomic_update: restoring border waveform to 0x%02x\n",
+			ssd16xx_border_waveform_values[saved_border_waveform_idx]);
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
+		ssd16xx_send_data(panel,
+				  ssd16xx_border_waveform_values[saved_border_waveform_idx],
+				  &err);
+		if (err.errno_code)
+			drm_err(&panel->drm, "Border waveform restore failed: %d\n",
+				err.errno_code);
+		panel->init_refresh_pending = false;
+	}
 }
+
 
 static const struct drm_plane_helper_funcs ssd16xx_plane_helper_funcs = {
 	.atomic_check = ssd16xx_plane_atomic_check,
@@ -944,7 +1122,21 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 	}
 
 	panel->initialized = true;
-	ssd16xx_clear_display(panel);
+
+	/* Clear display on first app launch if configured */
+	ssd16xx_clear_display_on_init(panel);
+
+	/*
+	 * If refresh_mode_init is set, skip baseline establishment and use the
+	 * configured refresh mode directly (e.g. to avoid a full refresh flash
+	 * when resuming with preserved RAM content).
+	 */
+	if (panel->refresh_mode_init >= 0) {
+		drm_dbg(&panel->drm,
+			       "atomic_enable: refresh_mode_init=%d, using for first frame\n",
+			       panel->refresh_mode_init);
+		panel->init_refresh_pending = true;
+	}
 
 	/* Draw FB if already attached (plane_atomic_update may have run first). */
 	plane_state = drm_atomic_get_new_plane_state(state, crtc->primary);
@@ -974,6 +1166,9 @@ static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	panel->init_refresh_pending = false;
 	panel->initialized = false;
+
+	/* Clear display on close if configured (before entering deep sleep) */
+	ssd16xx_clear_display_on_exit(panel);
 
 	drm_dev_exit(idx);
 }
@@ -1076,6 +1271,33 @@ static const struct drm_prop_enum_list ssd16xx_refresh_mode_enum[] = {
 	{ SSD16XX_REFRESH_FAST,    "fast"    },
 };
 
+/*
+ * Enum for clear_on_init, clear_on_close, refresh_mode_init properties.
+ * Value 0 = disabled; values 1-3 = partial/full/fast (refresh mode + 1).
+ * The +1 offset allows a single enum to represent both "disabled" and the
+ * three refresh modes without sign-extending the DRM property value.
+ */
+static const struct drm_prop_enum_list ssd16xx_init_refresh_enum[] = {
+	{ 0, "disabled" },
+	{ 1, "partial"  },
+	{ 2, "full"     },
+	{ 3, "fast"     },
+};
+
+/* Enum values for border_waveform connector properties (one per HW mode) */
+static const struct drm_prop_enum_list ssd16xx_border_waveform_enum[] = {
+	{ SSD16XX_BORDER_LUT0, "lut0_black"    },
+	{ SSD16XX_BORDER_LUT1, "lut1_white"    },
+	{ SSD16XX_BORDER_LUT2, "lut2_black"    },
+	{ SSD16XX_BORDER_LUT3, "lut3_gray"     },
+	{ SSD16XX_BORDER_VSS,  "vss_black"     },
+	{ SSD16XX_BORDER_VSH1, "vsh1_black"    },
+	{ SSD16XX_BORDER_VSL,  "vsl_white"     },
+	{ SSD16XX_BORDER_VSH2, "vsh2_black"    },
+	{ SSD16XX_BORDER_VCOM, "vcom_preserve" },
+	{ SSD16XX_BORDER_HIZ,  "hiz_float"     },
+};
+
 static int ssd16xx_connector_create_properties(struct ssd16xx_panel *panel)
 {
 	struct drm_device *drm = &panel->drm;
@@ -1087,10 +1309,8 @@ static int ssd16xx_connector_create_properties(struct ssd16xx_panel *panel)
 					 ARRAY_SIZE(ssd16xx_rotation_enum));
 	if (!panel->rotation_property)
 		return -ENOMEM;
-
 	drm_object_attach_property(&connector->base,
-				   panel->rotation_property,
-				   panel->orientation);
+				   panel->rotation_property, panel->orientation);
 
 	panel->refresh_mode_property =
 		drm_property_create_enum(drm, 0, "refresh_mode",
@@ -1098,10 +1318,68 @@ static int ssd16xx_connector_create_properties(struct ssd16xx_panel *panel)
 					 ARRAY_SIZE(ssd16xx_refresh_mode_enum));
 	if (!panel->refresh_mode_property)
 		return -ENOMEM;
-
 	drm_object_attach_property(&connector->base,
-				   panel->refresh_mode_property,
-				   panel->refresh_mode);
+				   panel->refresh_mode_property, panel->refresh_mode);
+
+	panel->border_waveform_init_property =
+		drm_property_create_enum(drm, 0, "border_waveform_init",
+					 ssd16xx_border_waveform_enum,
+					 ARRAY_SIZE(ssd16xx_border_waveform_enum));
+	if (!panel->border_waveform_init_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   panel->border_waveform_init_property,
+				   panel->border_waveform_init_idx);
+
+	panel->border_waveform_update_property =
+		drm_property_create_enum(drm, 0, "border_waveform_update",
+					 ssd16xx_border_waveform_enum,
+					 ARRAY_SIZE(ssd16xx_border_waveform_enum));
+	if (!panel->border_waveform_update_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   panel->border_waveform_update_property,
+				   panel->border_waveform_update_idx);
+
+	panel->border_refresh_on_every_update_property =
+		drm_property_create_bool(drm, 0, "border_refresh_on_every_update");
+	if (!panel->border_refresh_on_every_update_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   panel->border_refresh_on_every_update_property,
+				   panel->border_refresh_on_every_update);
+
+	panel->clear_on_init_property =
+		drm_property_create_enum(drm, 0, "clear_on_init",
+					 ssd16xx_init_refresh_enum,
+					 ARRAY_SIZE(ssd16xx_init_refresh_enum));
+	if (!panel->clear_on_init_property)
+		return -ENOMEM;
+	/* Property value 0=disabled, 1-3=mode; field is -1/0/1/2 → val = field+1 */
+	drm_object_attach_property(&connector->base,
+				   panel->clear_on_init_property,
+				   panel->clear_on_init + 1);
+
+	panel->clear_on_close_property =
+		drm_property_create_enum(drm, 0, "clear_on_close",
+					 ssd16xx_init_refresh_enum,
+					 ARRAY_SIZE(ssd16xx_init_refresh_enum));
+	if (!panel->clear_on_close_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   panel->clear_on_close_property,
+				   panel->clear_on_close + 1);
+
+	panel->refresh_mode_init_property =
+		drm_property_create_enum(drm, 0, "refresh_mode_init",
+					 ssd16xx_init_refresh_enum,
+					 ARRAY_SIZE(ssd16xx_init_refresh_enum));
+	if (!panel->refresh_mode_init_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   panel->refresh_mode_init_property,
+				   panel->refresh_mode_init + 1);
+
 	return 0;
 }
 
@@ -1117,9 +1395,32 @@ static int ssd16xx_connector_atomic_get_property(
 		*val = panel->orientation;
 		return 0;
 	}
-
 	if (property == panel->refresh_mode_property) {
 		*val = panel->refresh_mode;
+		return 0;
+	}
+	if (property == panel->border_waveform_init_property) {
+		*val = panel->border_waveform_init_idx;
+		return 0;
+	}
+	if (property == panel->border_waveform_update_property) {
+		*val = panel->border_waveform_update_idx;
+		return 0;
+	}
+	if (property == panel->border_refresh_on_every_update_property) {
+		*val = panel->border_refresh_on_every_update;
+		return 0;
+	}
+	if (property == panel->clear_on_init_property) {
+		*val = panel->clear_on_init + 1;  /* field -1/0/1/2 → val 0/1/2/3 */
+		return 0;
+	}
+	if (property == panel->clear_on_close_property) {
+		*val = panel->clear_on_close + 1;
+		return 0;
+	}
+	if (property == panel->refresh_mode_init_property) {
+		*val = panel->refresh_mode_init + 1;
 		return 0;
 	}
 
@@ -1145,11 +1446,45 @@ static int ssd16xx_connector_atomic_set_property(
 		panel->reinit_pending = true;
 		return 0;
 	}
-
 	if (property == panel->refresh_mode_property) {
 		if (val > SSD16XX_REFRESH_FAST)
 			return -EINVAL;
 		panel->refresh_mode = val;
+		return 0;
+	}
+	if (property == panel->border_waveform_init_property) {
+		if (val >= ARRAY_SIZE(ssd16xx_border_waveform_values))
+			return -EINVAL;
+		panel->border_waveform_init_idx = val;
+		return 0;
+	}
+	if (property == panel->border_waveform_update_property) {
+		if (val >= ARRAY_SIZE(ssd16xx_border_waveform_values))
+			return -EINVAL;
+		panel->border_waveform_update_idx = val;
+		return 0;
+	}
+	if (property == panel->border_refresh_on_every_update_property) {
+		panel->border_refresh_on_every_update = !!val;
+		return 0;
+	}
+	if (property == panel->clear_on_init_property) {
+		if (val > 3)
+			return -EINVAL;
+		panel->clear_on_init = (int)val - 1;  /* val 0/1/2/3 → field -1/0/1/2 */
+		panel->first_clear_done = false;  /* allow re-fire on next enable */
+		return 0;
+	}
+	if (property == panel->clear_on_close_property) {
+		if (val > 3)
+			return -EINVAL;
+		panel->clear_on_close = (int)val - 1;
+		return 0;
+	}
+	if (property == panel->refresh_mode_init_property) {
+		if (val > 3)
+			return -EINVAL;
+		panel->refresh_mode_init = (int)val - 1;
 		return 0;
 	}
 
@@ -1277,6 +1612,13 @@ static int ssd16xx_probe(struct spi_device *spi)
 		return -EINVAL;
 	panel->panel_cfg = &ssd16xx_panel_configs[model];
 	panel->refresh_mode = panel->panel_cfg->default_refresh_mode;
+	panel->border_waveform_init_idx   = panel->panel_cfg->default_border_waveform_init;
+	panel->border_waveform_update_idx = panel->panel_cfg->default_border_waveform_update;
+	panel->border_refresh_on_every_update =
+		panel->panel_cfg->default_border_refresh_on_every_update;
+	panel->clear_on_init   = panel->panel_cfg->default_clear_on_init;
+	panel->clear_on_close  = panel->panel_cfg->default_clear_on_close;
+	panel->refresh_mode_init = panel->panel_cfg->default_refresh_mode_init;
 
 	/* Module parameter overrides panel default refresh mode when set */
 	if (refresh_mode >= 0) {
