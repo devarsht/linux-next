@@ -34,6 +34,11 @@ module_param(rotation, int, 0644);
 MODULE_PARM_DESC(rotation,
 		 "Display rotation (-1=use DT, 0=landscape, 90=portrait CW)");
 
+static int refresh_mode = -1;
+module_param(refresh_mode, int, 0644);
+MODULE_PARM_DESC(refresh_mode,
+		 "Refresh mode (-1=panel default, 0=partial ~300-500ms, 1=full ~1.5-2s, 2=fast ~1.0-1.5s)");
+
 #define SSD16XX_CMD_DRIVER_OUTPUT_CONTROL		0x01
 #define SSD16XX_CMD_DATA_ENTRY_MODE			0x11
 #define SSD16XX_CMD_SW_RESET				0x12
@@ -1272,6 +1277,15 @@ static int ssd16xx_probe(struct spi_device *spi)
 		return -EINVAL;
 	panel->panel_cfg = &ssd16xx_panel_configs[model];
 	panel->refresh_mode = panel->panel_cfg->default_refresh_mode;
+
+	/* Module parameter overrides panel default refresh mode when set */
+	if (refresh_mode >= 0) {
+		if (refresh_mode > SSD16XX_REFRESH_FAST)
+			drm_warn(drm, "Invalid refresh_mode module param %d, ignored\n",
+				 refresh_mode);
+		else
+			panel->refresh_mode = refresh_mode;
+	}
 
 	/* Parse "rotation" DT property; swap mode dimensions for portrait. */
 	device_property_read_u32(dev, "rotation", &dt_rotation);
