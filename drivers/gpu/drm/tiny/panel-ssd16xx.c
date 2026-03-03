@@ -265,6 +265,14 @@ struct ssd16xx_panel_config {
 	 * and start directly in this refresh mode.
 	 */
 	int default_refresh_mode_init;
+
+	/*
+	 * Whether this panel has a physical red colour plane (3-colour BWR).
+	 * false: 2-colour black/white only; the RED RAM is always bypassed.
+	 * true:  3-colour panel; full-refresh writes to the RED RAM so that
+	 *        red pixels are driven through the red waveform.
+	 */
+	bool red_supported;
 };
 
 struct ssd16xx_error_ctx {
@@ -356,6 +364,7 @@ static const struct ssd16xx_panel_config ssd16xx_panel_configs[] = {
 		.default_clear_on_init   = -1,
 		.default_clear_on_close  = -1,
 		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
+		.red_supported = false,  /* 2-colour black/white panel */
 	},
 };
 
@@ -615,7 +624,11 @@ static void ssd16xx_clear_display(struct ssd16xx_panel *panel, u8 ctrl2)
 			  ssd16xx_border_waveform_values[panel->border_waveform_init_idx],
 			  &err);
 
-	ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
+	/* 3-colour: CTRL1_NORMAL (read both RAMs); BW: bypass RED. */
+	ssd16xx_display_update(panel,
+			       panel->panel_cfg->red_supported
+					? SSD16XX_CTRL1_NORMAL
+					: SSD16XX_CTRL1_BYPASS_RED_RAM,
 			       SSD16XX_CTRL1_BYTE2_DEFAULT, ctrl2, &err);
 
 	/* Restore border waveform to update/preservation value */
@@ -734,6 +747,133 @@ static bool ssd16xx_pixel_is_white(struct iosys_map *src,
 }
 
 /*
+ * ssd16xx_pixel_is_red() - test whether a pixel is dominated by the red channel.
+ *
+ * Only meaningful for formats that carry RGB information (XRGB8888, RGB888,
+ * RGB565).  For luma-only and monochrome formats there is no red channel, so
+ * the function always returns false; callers should use ssd16xx_pixel_is_white()
+ * to obtain the BW value for those formats.
+ *
+ * Returns true when the red component exceeds 50% intensity AND is strictly
+ * greater than both green and blue (dominant red hue).
+ */
+static bool ssd16xx_pixel_is_red(struct iosys_map *src,
+				 struct drm_framebuffer *fb,
+				 unsigned int x, unsigned int y)
+{
+	u32 format = fb->format->format;
+
+	switch (format) {
+	case DRM_FORMAT_XRGB8888: {
+		u32 *line = (u32 *)(src->vaddr + y * fb->pitches[0]);
+		u32 px = line[x];
+		u8 r = (px >> 16) & 0xFF;
+		u8 g = (px >> 8) & 0xFF;
+		u8 b = px & 0xFF;
+
+		return r > 127 && r > g && r > b;
+	}
+	case DRM_FORMAT_RGB888: {
+		u8 *line = (u8 *)(src->vaddr + y * fb->pitches[0]);
+		u8 r = line[x * 3];
+		u8 g = line[x * 3 + 1];
+		u8 b = line[x * 3 + 2];
+
+		return r > 127 && r > g && r > b;
+	}
+	case DRM_FORMAT_RGB565: {
+		u16 *line = (u16 *)(src->vaddr + y * fb->pitches[0]);
+		u16 px = line[x];
+		u8 r = ((px >> 11) & 0x1F) << 3;
+		u8 g = ((px >> 5) & 0x3F) << 2;
+		u8 b = (px & 0x1F) << 3;
+
+		return r > 127 && r > g && r > b;
+	}
+	default:
+		return false; /* No colour channel information */
+	}
+}
+
+/*
+ * ssd16xx_convert_fb_to_3color() - split a framebuffer into BW and RED planes.
+ * @bw_dst:  output buffer for the black/white RAM plane (1=white, 0=black)
+ * @red_dst: output buffer for the red RAM plane        (1=red,   0=not red)
+ * @src:     mapped framebuffer memory
+ * @fb:      DRM framebuffer descriptor
+ * @rect:    region to convert (must be aligned to 8-pixel boundaries)
+ *
+ * Each output buffer must be at least rect_width/8 * rect_height bytes.
+ * Pixels are classified as:
+ *   - red:   written to red_dst as 1, bw_dst as 0 (black)
+ *   - white: written to bw_dst as 1, red_dst as 0
+ *   - black: written to both as 0
+ *
+ * For monochrome formats (R1) where no colour information is available the
+ * source data is copied verbatim to bw_dst and red_dst is cleared to 0xFF
+ * (all-white = no red pixels).
+ */
+static void ssd16xx_convert_fb_to_3color(u8 *bw_dst, u8 *red_dst,
+					 struct iosys_map *src,
+					 struct drm_framebuffer *fb,
+					 struct drm_rect *rect)
+{
+	unsigned int x, y;
+	u8 bw_byte = 0, red_byte = 0;
+	unsigned int bit_pos = 0;
+	unsigned int dst_idx = 0;
+
+	/*
+	 * R1 is already monochrome — no colour channel exists.
+	 * Copy BW data directly and leave the red plane all-white (transparent).
+	 */
+	if (fb->format->format == DRM_FORMAT_R1) {
+		unsigned int src_pitch = fb->pitches[0];
+		unsigned int width_bytes = drm_rect_width(rect) / 8;
+		unsigned int data_size = width_bytes * drm_rect_height(rect);
+
+		for (y = rect->y1; y < rect->y2; y++) {
+			u8 *line = src->vaddr + y * src_pitch + (rect->x1 / 8);
+
+			memcpy(bw_dst + dst_idx, line, width_bytes);
+			dst_idx += width_bytes;
+		}
+		memset(red_dst, 0xFF, data_size); /* 0xFF = all white: no red pixels */
+		return;
+	}
+
+	for (y = rect->y1; y < rect->y2; y++) {
+		for (x = rect->x1; x < rect->x2; x++) {
+			bool is_red = ssd16xx_pixel_is_red(src, fb, x, y);
+
+			if (is_red)
+				red_byte |= (1 << (7 - bit_pos));
+			else if (ssd16xx_pixel_is_white(src, fb, x, y))
+				bw_byte |= (1 << (7 - bit_pos));
+			/* else: black pixel — both bits remain 0 */
+			if (++bit_pos == 8) {
+				bw_dst[dst_idx] = bw_byte;
+				red_dst[dst_idx] = red_byte;
+				dst_idx++;
+				bw_byte = 0;
+				red_byte = 0;
+				bit_pos = 0;
+			}
+		}
+
+		/* Flush any partial byte at the end of each row */
+		if (bit_pos > 0) {
+			bw_dst[dst_idx] = bw_byte;
+			red_dst[dst_idx] = red_byte;
+			dst_idx++;
+			bw_byte = 0;
+			red_byte = 0;
+			bit_pos = 0;
+		}
+	}
+}
+
+/*
  * Convert a framebuffer region to 1bpp monochrome for the SSD16xx RAM.
  * Each output byte holds 8 pixels, MSB-first, 1=white 0=black.
  *
@@ -822,6 +962,7 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	struct ssd16xx_error_ctx err = { .errno_code = 0 };
 	unsigned int data_size = (panel->width * panel->height) / 8;
 	u8 *mono_buffer;
+	u8 *red_buffer = NULL;
 	u16 ram_x_start, ram_x_end, ram_y_start, ram_y_end;
 
 	/* Process full display area; convert handles orientation traversal. */
@@ -834,9 +975,22 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	if (!mono_buffer)
 		return;
 
+	/* 3-colour + FULL: allocate RED buffer (not needed during baseline). */
+	if (panel->panel_cfg->red_supported &&
+	    panel->refresh_mode == SSD16XX_REFRESH_FULL) {
+		red_buffer = kzalloc(data_size, GFP_KERNEL);
+		if (!red_buffer) {
+			kfree(mono_buffer);
+			return;
+		}
+	}
+
 	iosys_map_set_vaddr(&map, dma_obj->vaddr);
 
-	ssd16xx_convert_fb_to_1bpp(mono_buffer, &map, fb, rect, panel->orientation);
+	if (red_buffer)
+		ssd16xx_convert_fb_to_3color(mono_buffer, red_buffer, &map, fb, rect);
+	else
+		ssd16xx_convert_fb_to_1bpp(mono_buffer, &map, fb, rect, panel->orientation);
 
 	/* Set RAM window and cursor for current orientation. */
 	ram_x_start = 0;
@@ -903,22 +1057,31 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 		 * RED RAM is then bypassed (CTRL1_BYPASS_RED_RAM) so
 		 * stale RED RAM content does not affect the output.
 		 */
-		if (panel->orientation == 90) {
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-			ssd16xx_send_x_param(panel, ram_x_end, &err);
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-			ssd16xx_send_y_param(panel, ram_y_end, &err);
+		if (red_buffer) {
+			/* 3-colour: write red channel before activating */
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
+			ssd16xx_send_data_bulk(panel, red_buffer, data_size, &err);
+			ssd16xx_display_update(panel, SSD16XX_CTRL1_NORMAL,
+					       SSD16XX_CTRL1_BYTE2_DEFAULT,
+					       SSD1683_CTRL2_FULL_REFRESH, &err);
 		} else {
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-			ssd16xx_send_x_param(panel, ram_x_start, &err);
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-			ssd16xx_send_y_param(panel, ram_y_start, &err);
+			if (panel->orientation == 90) {
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+				ssd16xx_send_x_param(panel, ram_x_end, &err);
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+				ssd16xx_send_y_param(panel, ram_y_end, &err);
+			} else {
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+				ssd16xx_send_x_param(panel, ram_x_start, &err);
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+				ssd16xx_send_y_param(panel, ram_y_start, &err);
+			}
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
+			ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
+			ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
+					       SSD16XX_CTRL1_BYTE2_DEFAULT,
+					       SSD1683_CTRL2_FULL_REFRESH, &err);
 		}
-		ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
-		ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
-		ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
-				       SSD16XX_CTRL1_BYTE2_DEFAULT,
-				       SSD1683_CTRL2_FULL_REFRESH, &err);
 		break;
 	case SSD16XX_REFRESH_FAST:
 		/*
@@ -928,19 +1091,21 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 		 * so it holds the just-displayed frame as a valid reference for
 		 * any subsequent PARTIAL refresh.
 		 */
-		if (panel->orientation == 90) {
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-			ssd16xx_send_x_param(panel, ram_x_end, &err);
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-			ssd16xx_send_y_param(panel, ram_y_end, &err);
-		} else {
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-			ssd16xx_send_x_param(panel, ram_x_start, &err);
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-			ssd16xx_send_y_param(panel, ram_y_start, &err);
+		if (!red_buffer) {
+			if (panel->orientation == 90) {
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+				ssd16xx_send_x_param(panel, ram_x_end, &err);
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+				ssd16xx_send_y_param(panel, ram_y_end, &err);
+			} else {
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+				ssd16xx_send_x_param(panel, ram_x_start, &err);
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+				ssd16xx_send_y_param(panel, ram_y_start, &err);
+			}
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
+			ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 		}
-		ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
-		ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 		ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
 				       SSD16XX_CTRL1_BYTE2_DEFAULT,
 				       SSD1683_CTRL2_FAST_REFRESH, &err);
@@ -957,25 +1122,28 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 		ssd16xx_display_update(panel, SSD16XX_CTRL1_NORMAL,
 				       SSD16XX_CTRL1_BYTE2_DEFAULT,
 				       SSD1683_CTRL2_PARTIAL_REFRESH, &err);
-		if (panel->orientation == 90) {
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-			ssd16xx_send_x_param(panel, ram_x_end, &err);
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-			ssd16xx_send_y_param(panel, ram_y_end, &err);
-		} else {
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-			ssd16xx_send_x_param(panel, ram_x_start, &err);
-			ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-			ssd16xx_send_y_param(panel, ram_y_start, &err);
+		if (!red_buffer) {
+			if (panel->orientation == 90) {
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+				ssd16xx_send_x_param(panel, ram_x_end, &err);
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+				ssd16xx_send_y_param(panel, ram_y_end, &err);
+			} else {
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+				ssd16xx_send_x_param(panel, ram_x_start, &err);
+				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+				ssd16xx_send_y_param(panel, ram_y_start, &err);
+			}
+			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
+			ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 		}
-		ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
-		ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 		break;
 	}
 
 	if (err.errno_code)
 		drm_err(&panel->drm, "Display update failed: %d\n", err.errno_code);
 
+	kfree(red_buffer);
 	kfree(mono_buffer);
 }
 
