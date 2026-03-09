@@ -12,6 +12,7 @@
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/of.h>
+#include <linux/pm_runtime.h>
 #include <linux/property.h>
 #include <linux/spi/spi.h>
 
@@ -20,6 +21,7 @@
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_damage_helper.h>
 #include <drm/drm_drv.h>
+#include <drm/drm_fb_helper.h>
 #include <drm/drm_fbdev_dma.h>
 #include <drm/drm_fb_dma_helper.h>
 #include <drm/drm_framebuffer.h>
@@ -70,6 +72,16 @@ MODULE_PARM_DESC(refresh_mode_init,
 		 "Skip baseline establishment on first enable (-1=disabled, 0=partial, 1=full, 2=fast)");
 
 #define SSD16XX_CMD_DRIVER_OUTPUT_CONTROL		0x01
+#define SSD16XX_CMD_DEEP_SLEEP_MODE			0x10
+
+/*
+ * Deep Sleep Mode values (command 0x10) - from SSD1683 datasheet:
+ * Mode 1: RAM content retained. Exit requires hardware reset.
+ * Mode 2: RAM content lost.   Exit requires hardware reset.
+ */
+#define SSD16XX_DEEP_SLEEP_MODE_1			0x01
+#define SSD16XX_DEEP_SLEEP_MODE_2			0x03
+
 #define SSD16XX_CMD_DATA_ENTRY_MODE			0x11
 #define SSD16XX_CMD_SW_RESET				0x12
 #define SSD16XX_CMD_TEMPERATURE_SENSOR_CONTROL		0x18
@@ -309,6 +321,7 @@ struct ssd16xx_panel {
 	bool first_clear_done;    /* clear_on_init has already fired once */
 
 	int orientation;      /* Display orientation in degrees: 0/90 */
+	u8 deep_sleep_mode;   /* Deep sleep mode to use on next disable */
 	enum ssd16xx_refresh_mode refresh_mode; /* Active refresh mode */
 
 	/* Border waveform (as enum indices) */
@@ -1033,7 +1046,7 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	if (!mono_buffer)
 		return;
 
-	/* 3-colour + FULL: allocate RED buffer (not needed during baseline). */
+	/* 3-colour + FULL: allocate RED buffer for the red channel pixels. */
 	if (panel->panel_cfg->red_supported &&
 	    panel->refresh_mode == SSD16XX_REFRESH_FULL) {
 		red_buffer = kzalloc(data_size, GFP_KERNEL);
@@ -1095,6 +1108,11 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_BW, &err);
 	ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 
+	dev_info(panel->drm.dev,
+		 "FB_DIRTY: mode=%d bw[0..3]=%02x %02x %02x %02x\n",
+		 panel->refresh_mode,
+		 mono_buffer[0], mono_buffer[1], mono_buffer[2], mono_buffer[3]);
+
 
 	/* Optionally re-send border waveform before each display update */
 	if (panel->border_refresh_on_every_update || panel->init_refresh_pending) {
@@ -1109,13 +1127,6 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 
 	switch (panel->refresh_mode) {
 	case SSD16XX_REFRESH_FULL:
-		/*
-		 * BW full refresh: write RED RAM BEFORE display_update
-		 * to avoid a post-BUSY write timing issue on some
-		 * controller revisions that silently corrupts RED RAM.
-		 * RED RAM is then bypassed (CTRL1_BYPASS_RED_RAM) so
-		 * stale RED RAM content does not affect the output.
-		 */
 		if (red_buffer) {
 			/* 3-colour: write red channel before activating */
 			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
@@ -1124,6 +1135,13 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 					       SSD16XX_CTRL1_BYTE2_DEFAULT,
 					       SSD1683_CTRL2_FULL_REFRESH, &err);
 		} else {
+			/*
+			 * BW full refresh: write RED RAM BEFORE display_update
+			 * to avoid a post-BUSY write timing issue on some
+			 * controller revisions that silently corrupts RED RAM.
+			 * RED RAM is then bypassed (CTRL1_BYPASS_RED_RAM) so
+			 * stale RED RAM content does not affect the output.
+			 */
 			if (panel->orientation == 90) {
 				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
 				ssd16xx_send_x_param(panel, ram_x_end, &err);
@@ -1135,6 +1153,11 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
 				ssd16xx_send_y_param(panel, ram_y_start, &err);
 			}
+			dev_info(panel->drm.dev,
+				 "RED_RAM_SYNC: orient=%d ram_x=%u..%u ram_y=%u..%u red[0]=%02x\n",
+				 panel->orientation,
+				 ram_x_start, ram_x_end, ram_y_start, ram_y_end,
+				 mono_buffer[0]);
 			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
 			ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 			ssd16xx_display_update(panel, SSD16XX_CTRL1_BYPASS_RED_RAM,
@@ -1162,6 +1185,11 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
 				ssd16xx_send_y_param(panel, ram_y_start, &err);
 			}
+			dev_info(panel->drm.dev,
+				 "RED_RAM_SYNC: orient=%d ram_x=%u..%u ram_y=%u..%u red[0]=%02x\n",
+				 panel->orientation,
+				 ram_x_start, ram_x_end, ram_y_start, ram_y_end,
+				 mono_buffer[0]);
 			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
 			ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 		}
@@ -1193,6 +1221,11 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 				ssd16xx_send_cmd(panel, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
 				ssd16xx_send_y_param(panel, ram_y_start, &err);
 			}
+			dev_info(panel->drm.dev,
+				 "RED_RAM_SYNC: orient=%d ram_x=%u..%u ram_y=%u..%u red[0]=%02x\n",
+				 panel->orientation,
+				 ram_x_start, ram_x_end, ram_y_start, ram_y_end,
+				 mono_buffer[0]);
 			ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_RED, &err);
 			ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
 		}
@@ -1258,12 +1291,27 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	struct ssd16xx_error_ctx err = { .errno_code = 0 };
 	struct drm_framebuffer *fb = new_state->fb;
 	struct drm_rect rect;
+	int ret;
 
-	drm_dbg(&panel->drm, "plane_atomic_update: fb=%p, initialized=%d\n",
-		fb, panel->initialized);
+	drm_dbg(&panel->drm, "plane_atomic_update: fb=%p\n", fb);
 
-	if (!fb || !panel->initialized)
+	if (!fb)
 		return;
+
+	{
+		struct drm_framebuffer *fbdev_fb = panel->drm.fb_helper ?
+						  panel->drm.fb_helper->fb : NULL;
+		bool same_ptr = fbdev_fb && fbdev_fb == fb;
+		bool same_gem = fbdev_fb && fbdev_fb->obj[0] == fb->obj[0];
+		const char *tag = same_ptr ? "[FBDEV-PTR]" :
+				  same_gem ? "[FBDEV-GEM]" : "[user]";
+
+		dev_info(panel->drm.dev,
+			 "PLANE_UPDATE: fb=%p gem=%p fbdev_fb=%p %s comm=%s/%d init=%d\n",
+			 fb, fb->obj[0], fbdev_fb, tag,
+			 current->comm, current->pid,
+			 panel->init_refresh_pending);
+	}
 
 	/*
 	 * If a rotation change is pending, skip the update here — crtc_atomic_flush
@@ -1271,6 +1319,12 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	 */
 	if (panel->reinit_pending) {
 		drm_dbg(&panel->drm, "plane_atomic_update: skipping (reinit pending)\n");
+		return;
+	}
+
+	ret = pm_runtime_resume_and_get(panel->drm.dev);
+	if (ret < 0) {
+		drm_err(&panel->drm, "plane_atomic_update: failed to resume: %d\n", ret);
 		return;
 	}
 
@@ -1284,6 +1338,7 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 
 	drm_dbg(&panel->drm, "plane_atomic_update: calling fb_dirty rect=(%d,%d)-(%d,%d)\n",
 		rect.x1, rect.y1, rect.x2, rect.y2);
+
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
 	 * frame only, then restore the user-configured refresh_mode so
@@ -1319,8 +1374,10 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 				err.errno_code);
 		panel->init_refresh_pending = false;
 	}
-}
 
+	pm_runtime_mark_last_busy(panel->drm.dev);
+	pm_runtime_put_autosuspend(panel->drm.dev);
+}
 
 static const struct drm_plane_helper_funcs ssd16xx_plane_helper_funcs = {
 	.atomic_check = ssd16xx_plane_atomic_check,
@@ -1371,55 +1428,59 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 {
 	struct ssd16xx_panel *panel = crtc_to_ssd16xx_panel(crtc);
 	struct drm_crtc_state *crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
-	struct drm_plane_state *plane_state;
 	int ret, idx;
 
 	if (!drm_dev_enter(&panel->drm, &idx))
 		return;
 
+	ret = pm_runtime_resume_and_get(panel->drm.dev);
+	if (ret < 0) {
+		drm_err(&panel->drm, "crtc_atomic_enable: failed to resume: %d\n", ret);
+		drm_dev_exit(idx);
+		return;
+	}
+
 	drm_dbg(&panel->drm, "atomic_enable: %dx%d\n",
 		       crtc_state->mode.hdisplay, crtc_state->mode.vdisplay);
+
+	dev_info(panel->drm.dev, "CRTC_ENABLE: comm=%s/%d\n",
+		 current->comm, current->pid);
 
 	panel->width = crtc_state->mode.hdisplay;
 	panel->height = crtc_state->mode.vdisplay;
 
-	ret = ssd16xx_hw_init(panel);
-	if (ret) {
-		drm_err(&panel->drm, "crtc_atomic_enable: HW init failed: %d\n", ret);
-		goto out;
+	/*
+	 * pm_runtime_resume_and_get() triggers pm_runtime_resume which runs
+	 * hw_init and sets initialized. If runtime PM is disabled the callback
+	 * never fires, so fall back to running hw_init directly here.
+	 */
+	if (!panel->initialized) {
+		ret = ssd16xx_hw_init(panel);
+		if (ret) {
+			drm_err(&panel->drm, "crtc_atomic_enable: HW init failed: %d\n", ret);
+			goto out;
+		}
+		panel->initialized = true;
 	}
-
-	panel->initialized = true;
 
 	/* Clear display on first app launch if configured */
 	ssd16xx_clear_display_on_init(panel);
 
 	/*
-	 * If refresh_mode_init is set, skip baseline establishment and use the
-	 * configured refresh mode directly (e.g. to avoid a full refresh flash
-	 * when resuming with preserved RAM content).
+	 * If refresh_mode_init is set, arm init_refresh_pending so
+	 * plane_atomic_update uses the specified mode for the first frame
+	 * then restores the user-configured refresh_mode.
 	 */
 	if (panel->refresh_mode_init >= 0) {
 		drm_dbg(&panel->drm,
-			       "atomic_enable: refresh_mode_init=%d, skipping baseline\n",
+			       "atomic_enable: refresh_mode_init=%d, using for first frame\n",
 			       panel->refresh_mode_init);
 		panel->init_refresh_pending = true;
 	}
 
-	/* Draw FB if already attached (plane_atomic_update may have run first). */
-	plane_state = drm_atomic_get_new_plane_state(state, crtc->primary);
-	if (plane_state && plane_state->fb) {
-		struct drm_rect rect = {
-			.x1 = 0,
-			.y1 = 0,
-			.x2 = plane_state->fb->width,
-			.y2 = plane_state->fb->height,
-		};
-		ssd16xx_fb_dirty(plane_state->fb, &rect, panel);
-		panel->last_fb = plane_state->fb;
-	}
-
 out:
+	pm_runtime_mark_last_busy(panel->drm.dev);
+	pm_runtime_put_autosuspend(panel->drm.dev);
 	drm_dev_exit(idx);
 }
 
@@ -1427,16 +1488,30 @@ static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
 					struct drm_atomic_state *state)
 {
 	struct ssd16xx_panel *panel = crtc_to_ssd16xx_panel(crtc);
-	int idx;
+	int ret, idx;
 
 	if (!drm_dev_enter(&panel->drm, &idx))
 		return;
 
 	panel->init_refresh_pending = false;
-	panel->initialized = false;
 
-	/* Clear display on close if configured (before entering deep sleep) */
-	ssd16xx_clear_display_on_exit(panel);
+	dev_info(panel->drm.dev, "CRTC_DISABLE: comm=%s/%d\n",
+		 current->comm, current->pid);
+
+	/*
+	 * Clear the display if configured.  The panel may already be in deep
+	 * sleep (autosuspend fired while the user was reading), so wake it
+	 * first.  Use sync suspend after clear to bypass autosuspend and send
+	 * the deep sleep command immediately after the clear completes.
+	 */
+	if (panel->clear_on_close >= 0) {
+		ret = pm_runtime_resume_and_get(panel->drm.dev);
+		if (ret >= 0) {
+			ssd16xx_clear_display_on_exit(panel);
+			/* sync suspend — bypass autosuspend after app close */
+			pm_runtime_put_sync_suspend(panel->drm.dev);
+		}
+	}
 
 	drm_dev_exit(idx);
 }
@@ -1454,14 +1529,20 @@ static void ssd16xx_crtc_atomic_flush(struct drm_crtc *crtc,
 	struct drm_rect full;
 	int ret, idx;
 
-	if (!panel->reinit_pending || !panel->initialized)
+	if (!panel->reinit_pending)
 		return;
 
 	if (!drm_dev_enter(&panel->drm, &idx))
 		return;
 
+	ret = pm_runtime_resume_and_get(panel->drm.dev);
+	if (ret < 0) {
+		drm_err(&panel->drm, "atomic_flush: failed to resume: %d\n", ret);
+		drm_dev_exit(idx);
+		return;
+	}
+
 	panel->reinit_pending = false;
-	panel->init_refresh_pending = false;
 
 	drm_dbg(&panel->drm, "atomic_flush: reinit, orientation=%u°\n",
 		panel->orientation);
@@ -1469,6 +1550,8 @@ static void ssd16xx_crtc_atomic_flush(struct drm_crtc *crtc,
 	ret = ssd16xx_hw_init(panel);
 	if (ret) {
 		drm_err(&panel->drm, "Orientation re-init failed: %d\n", ret);
+		pm_runtime_mark_last_busy(panel->drm.dev);
+		pm_runtime_put_autosuspend(panel->drm.dev);
 		drm_dev_exit(idx);
 		return;
 	}
@@ -1484,6 +1567,8 @@ static void ssd16xx_crtc_atomic_flush(struct drm_crtc *crtc,
 		panel->last_fb = fb;
 	}
 
+	pm_runtime_mark_last_busy(panel->drm.dev);
+	pm_runtime_put_autosuspend(panel->drm.dev);
 	drm_dev_exit(idx);
 }
 
@@ -1811,6 +1896,17 @@ static const struct drm_mode_config_funcs ssd16xx_mode_config_funcs = {
 	.atomic_commit = drm_atomic_helper_commit,
 };
 
+/*
+ * Use the RPM commit-tail variant so that drm_atomic_helper_commit_modeset_enables
+ * (which calls crtc_atomic_enable) runs before drm_atomic_helper_commit_planes.
+ * This guarantees init_refresh_pending is armed before plane_atomic_update fires,
+ * so the first frame after CRTC enable always uses the configured init refresh mode
+ * rather than the default partial mode.
+ */
+static const struct drm_mode_config_helper_funcs ssd16xx_mode_config_helper_funcs = {
+	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
+};
+
 static int ssd16xx_probe(struct spi_device *spi)
 {
 	struct device *dev = &spi->dev;
@@ -1983,6 +2079,7 @@ static int ssd16xx_probe(struct spi_device *spi)
 		return ret;
 
 	drm->mode_config.funcs = &ssd16xx_mode_config_funcs;
+	drm->mode_config.helper_private = &ssd16xx_mode_config_helper_funcs;
 	drm->mode_config.min_width = min(panel->width, panel->height);
 	drm->mode_config.max_width = max(panel->width, panel->height);
 	drm->mode_config.min_height = min(panel->width, panel->height);
@@ -2038,6 +2135,12 @@ static int ssd16xx_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
+	/* Default to Mode 1 (RAM retained) for runtime PM / app-close cycles */
+	panel->deep_sleep_mode = SSD16XX_DEEP_SLEEP_MODE_1;
+	pm_runtime_enable(dev);
+	pm_runtime_set_autosuspend_delay(dev, 30000);
+	pm_runtime_use_autosuspend(dev);
+
 	drm_dbg(drm, "SSD16xx e-paper display initialized (%dx%d, %d° rotation)\n",
 		panel->width, panel->height, panel->orientation);
 
@@ -2050,6 +2153,8 @@ static void ssd16xx_remove(struct spi_device *spi)
 {
 	struct ssd16xx_panel *panel = spi_get_drvdata(spi);
 
+	pm_runtime_dont_use_autosuspend(&spi->dev);
+	pm_runtime_disable(&spi->dev);
 	drm_dev_unplug(&panel->drm);
 	drm_atomic_helper_shutdown(&panel->drm);
 }
@@ -2058,8 +2163,111 @@ static void ssd16xx_shutdown(struct spi_device *spi)
 {
 	struct ssd16xx_panel *panel = spi_get_drvdata(spi);
 
+	pm_runtime_dont_use_autosuspend(&spi->dev);
+	pm_runtime_disable(&spi->dev);
 	drm_atomic_helper_shutdown(&panel->drm);
 }
+
+static int ssd16xx_pm_suspend(struct device *dev)
+{
+	struct drm_device *drm = dev_get_drvdata(dev);
+	struct ssd16xx_panel *panel = to_ssd16xx_panel(drm);
+	int ret;
+
+	/* System suspend: Mode 2 (max savings, RAM lost, full re-init on resume). */
+	panel->deep_sleep_mode = SSD16XX_DEEP_SLEEP_MODE_2;
+	dev_dbg(dev, "system suspend: entering deep sleep mode 2\n");
+
+	ret = drm_mode_config_helper_suspend(drm);
+	if (ret)
+		return ret;
+
+	/*
+	 * With per-update PM gating the panel may already be in MODE_1 deep
+	 * sleep (autosuspend fired while the user was reading).
+	 * pm_runtime_force_suspend() skips its callback when the device is
+	 * already RPM_SUSPENDED, so MODE_2 would never reach the hardware.
+	 *
+	 * Per the datasheet, HWRESET is the only way to exit deep sleep (SPI
+	 * is unresponsive in both modes).  After the reset, MODE_2 can be
+	 * sent immediately — no full hw_init is required.  The RPM state
+	 * remains RPM_SUSPENDED; pm_runtime_force_suspend() is skipped since
+	 * the device is already in the right state.
+	 */
+	if (pm_runtime_status_suspended(dev)) {
+		struct ssd16xx_error_ctx err = { .errno_code = 0 };
+
+		dev_dbg(dev, "system suspend: upgrading MODE_1 -> MODE_2 via HWRESET\n");
+		ssd16xx_hw_reset(panel);
+		ssd16xx_send_cmd(panel, SSD16XX_CMD_DEEP_SLEEP_MODE, &err);
+		ssd16xx_send_data(panel, SSD16XX_DEEP_SLEEP_MODE_2, &err);
+		return err.errno_code;   /* already RPM_SUSPENDED; skip force_suspend */
+	}
+
+	/* Force runtime-suspended state for clean resume. */
+	pm_runtime_force_suspend(dev);
+
+	return 0;
+}
+
+static int ssd16xx_pm_resume(struct device *dev)
+{
+	struct drm_device *drm = dev_get_drvdata(dev);
+	struct ssd16xx_panel *panel = to_ssd16xx_panel(drm);
+
+	dev_dbg(dev, "system resume: restoring state\n");
+
+	/* Restore from force-suspended to active. */
+	pm_runtime_force_resume(dev);
+
+	/* Restore Mode 1 (RAM retained) for subsequent runtime PM cycles. */
+	panel->deep_sleep_mode = SSD16XX_DEEP_SLEEP_MODE_1;
+
+	return drm_mode_config_helper_resume(drm);
+}
+
+static int ssd16xx_pm_runtime_suspend(struct device *dev)
+{
+	struct ssd16xx_panel *panel = to_ssd16xx_panel(dev_get_drvdata(dev));
+	struct ssd16xx_error_ctx err = { .errno_code = 0 };
+
+	dev_dbg(dev, "runtime suspend: entering deep sleep mode 0x%02x\n",
+		panel->deep_sleep_mode);
+
+	ssd16xx_send_cmd(panel, SSD16XX_CMD_DEEP_SLEEP_MODE, &err);
+	ssd16xx_send_data(panel, panel->deep_sleep_mode, &err);
+	panel->initialized = false;
+
+	return err.errno_code;
+}
+
+static int ssd16xx_pm_runtime_resume(struct device *dev)
+{
+	struct ssd16xx_panel *panel = to_ssd16xx_panel(dev_get_drvdata(dev));
+	int ret;
+
+	dev_dbg(dev, "runtime resume\n");
+
+	/*
+	 * pm_runtime_suspend clears initialized after sending the deep sleep
+	 * command.  If a new app opens before the suspend fires (the put was
+	 * cancelled), initialized is still true and hw_init is unnecessary.
+	 */
+	if (!panel->initialized) {
+		ret = ssd16xx_hw_init(panel);
+		if (ret)
+			return ret;
+
+		panel->initialized = true;
+	}
+
+	return 0;
+}
+
+static const struct dev_pm_ops ssd16xx_pm_ops = {
+	SYSTEM_SLEEP_PM_OPS(ssd16xx_pm_suspend, ssd16xx_pm_resume)
+	RUNTIME_PM_OPS(ssd16xx_pm_runtime_suspend, ssd16xx_pm_runtime_resume, NULL)
+};
 
 static const struct of_device_id ssd16xx_of_match[] = {
 	{ .compatible = "gooddisplay,gdey042t81", .data = (void *)GDEY042T81 },
@@ -2077,6 +2285,7 @@ static struct spi_driver ssd16xx_spi_driver = {
 	.driver = {
 		.name = "ssd16xx",
 		.of_match_table = ssd16xx_of_match,
+		.pm = pm_ptr(&ssd16xx_pm_ops),
 	},
 	.probe = ssd16xx_probe,
 	.remove = ssd16xx_remove,
