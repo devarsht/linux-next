@@ -273,6 +273,9 @@ struct ssd16xx_panel_config {
 	 *        red pixels are driven through the red waveform.
 	 */
 	bool red_supported;
+
+	/* Panel-specific display mode (resolution and physical dimensions) */
+	const struct drm_display_mode *mode;
 };
 
 struct ssd16xx_error_ctx {
@@ -353,6 +356,11 @@ static const struct ssd16xx_controller_config ssd16xx_controller_configs[] = {
 	},
 };
 
+/* GDEY042T81: 4.2" 400x300 panel, 84.8x63.6mm active area */
+static const struct drm_display_mode gdey042t81_mode = {
+	DRM_SIMPLE_MODE(400, 300, 85, 64),
+};
+
 static const struct ssd16xx_panel_config ssd16xx_panel_configs[] = {
 	[GDEY042T81] = {
 		.data_entry_mode = SSD16XX_DATA_ENTRY_XINC_YINC,
@@ -365,6 +373,7 @@ static const struct ssd16xx_panel_config ssd16xx_panel_configs[] = {
 		.default_clear_on_close  = -1,
 		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
 		.red_supported = false,  /* 2-colour black/white panel */
+		.mode = &gdey042t81_mode,
 	},
 };
 
@@ -1711,11 +1720,6 @@ static const u32 ssd16xx_formats[] = {
 	DRM_FORMAT_R1,        /* 1-bit monochrome (native, 8 pixels/byte) */
 };
 
-/* GDEY042T81: 4.2" 400x300 panel, 84.8x63.6mm active area */
-static const struct drm_display_mode gdey042t81_mode = {
-	DRM_SIMPLE_MODE(400, 300, 85, 64),
-};
-
 DEFINE_DRM_GEM_FOPS(ssd16xx_fops);
 
 static struct drm_driver ssd16xx_drm_driver = {
@@ -1788,10 +1792,6 @@ static int ssd16xx_probe(struct spi_device *spi)
 		return ret;
 	}
 
-	mode = devm_kmemdup(dev, &gdey042t81_mode, sizeof(gdey042t81_mode), GFP_KERNEL);
-	if (!mode)
-		return -ENOMEM;
-
 	switch (model) {
 	case GDEY042T81:
 		panel->controller = SSD1683;
@@ -1809,6 +1809,12 @@ static int ssd16xx_probe(struct spi_device *spi)
 	if (model >= ARRAY_SIZE(ssd16xx_panel_configs))
 		return -EINVAL;
 	panel->panel_cfg = &ssd16xx_panel_configs[model];
+
+	mode = devm_kmemdup(dev, panel->panel_cfg->mode,
+			    sizeof(*panel->panel_cfg->mode), GFP_KERNEL);
+	if (!mode)
+		return -ENOMEM;
+
 	panel->refresh_mode = panel->panel_cfg->default_refresh_mode;
 	panel->border_waveform_init_idx   = panel->panel_cfg->default_border_waveform_init;
 	panel->border_waveform_update_idx = panel->panel_cfg->default_border_waveform_update;
