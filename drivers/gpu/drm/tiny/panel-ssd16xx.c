@@ -382,6 +382,10 @@ static void ssd16xx_wait_for_panel(struct ssd16xx_panel *panel)
 	unsigned int timeout_ms = 10000;
 	unsigned long timeout_jiffies = jiffies + msecs_to_jiffies(timeout_ms);
 	unsigned long start_ms = jiffies_to_msecs(jiffies);
+	int busy_val;
+
+	busy_val = gpiod_get_value_cansleep(panel->busy);
+	drm_dbg(&panel->drm, "BUSY initial value: %d\n", busy_val);
 
 	while (gpiod_get_value_cansleep(panel->busy) == 1) {
 		if (time_after(jiffies, timeout_jiffies)) {
@@ -391,6 +395,9 @@ static void ssd16xx_wait_for_panel(struct ssd16xx_panel *panel)
 		}
 		usleep_range(100, 200);
 	}
+
+	drm_dbg(&panel->drm, "BUSY became ready after %lums\n",
+		jiffies_to_msecs(jiffies) - start_ms);
 }
 
 static void ssd16xx_spi_sync(struct spi_device *spi, struct spi_message *msg,
@@ -493,6 +500,13 @@ static void ssd16xx_display_update(struct ssd16xx_panel *panel,
 				   u8 ctrl1_byte1, u8 ctrl1_byte2, u8 ctrl2_mode,
 				   struct ssd16xx_error_ctx *err)
 {
+	int busy_before;
+
+	busy_before = gpiod_get_value_cansleep(panel->busy);
+	drm_dbg(&panel->drm,
+		"display_update: Setting ctrl1=0x%02x,0x%02x mode=0x%02x (BUSY=%d)\n",
+		ctrl1_byte1, ctrl1_byte2, ctrl2_mode, busy_before);
+
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_DISPLAY_UPDATE_CONTROL1, err);
 	ssd16xx_send_data(panel, ctrl1_byte1, err);
 	ssd16xx_send_data(panel, ctrl1_byte2, err);
@@ -500,6 +514,11 @@ static void ssd16xx_display_update(struct ssd16xx_panel *panel,
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_DISPLAY_UPDATE_CONTROL2, err);
 	ssd16xx_send_data(panel, ctrl2_mode, err);
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_MASTER_ACTIVATION, err);
+
+	busy_before = gpiod_get_value_cansleep(panel->busy);
+	drm_dbg(&panel->drm,
+		"display_update: Master activation sent (BUSY now=%d), waiting...\n",
+		busy_before);
 
 	if (!err->errno_code)
 		ssd16xx_wait_for_panel(panel);
@@ -562,11 +581,15 @@ static int ssd16xx_hw_init(struct ssd16xx_panel *panel)
 		data_entry_mode = SSD16XX_DATA_ENTRY_XDEC_YDEC;
 		cursor_x_start = (ram_width / 8) - 1;
 		cursor_y_start = 0;
+		drm_dbg(&panel->drm, "HW_INIT: 90° portrait CW, data_entry=0x%02x, cursor=(%u,%u)\n",
+			data_entry_mode, cursor_x_start, cursor_y_start);
 		break;
 	default:
 		data_entry_mode = SSD16XX_DATA_ENTRY_XINC_YINC;
 		cursor_x_start = 0;
 		cursor_y_start = 0;
+		drm_dbg(&panel->drm, "HW_INIT: 0° landscape, data_entry=0x%02x, cursor=(%u,%u)\n",
+			data_entry_mode, cursor_x_start, cursor_y_start);
 		break;
 	}
 
@@ -628,6 +651,8 @@ static void ssd16xx_clear_display(struct ssd16xx_panel *panel, u8 ctrl2)
 	ssd16xx_send_data_bulk(panel, white_buffer, data_size, &err);
 
 	/* Set border waveform for the clear operation */
+	drm_dbg(&panel->drm, "clear_display: Set border init waveform: 0x%02x\n",
+		ssd16xx_border_waveform_values[panel->border_waveform_init_idx]);
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
 	ssd16xx_send_data(panel,
 			  ssd16xx_border_waveform_values[panel->border_waveform_init_idx],
@@ -641,6 +666,8 @@ static void ssd16xx_clear_display(struct ssd16xx_panel *panel, u8 ctrl2)
 			       SSD16XX_CTRL1_BYTE2_DEFAULT, ctrl2, &err);
 
 	/* Restore border waveform to update/preservation value */
+	drm_dbg(&panel->drm, "clear_display: Restored border update waveform: 0x%02x\n",
+		ssd16xx_border_waveform_values[panel->border_waveform_update_idx]);
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
 	ssd16xx_send_data(panel,
 			  ssd16xx_border_waveform_values[panel->border_waveform_update_idx],
@@ -670,6 +697,8 @@ static void ssd16xx_clear_display_on_init(struct ssd16xx_panel *panel)
 	if (panel->clear_on_init < 0 || panel->first_clear_done)
 		return;
 
+	drm_dbg(&panel->drm, "clear_on_init: running, mode=%d\n",
+		       panel->clear_on_init);
 	ssd16xx_clear_display(panel,
 			      ssd16xx_refresh_mode_to_ctrl2(panel->clear_on_init));
 	panel->first_clear_done = true;
@@ -684,6 +713,8 @@ static void ssd16xx_clear_display_on_exit(struct ssd16xx_panel *panel)
 	if (panel->clear_on_close < 0)
 		return;
 
+	drm_dbg(&panel->drm, "clear_on_close: running, mode=%d\n",
+		       panel->clear_on_close);
 	ssd16xx_clear_display(panel,
 			      ssd16xx_refresh_mode_to_ctrl2(panel->clear_on_close));
 }
@@ -832,6 +863,12 @@ static void ssd16xx_convert_fb_to_3color(u8 *bw_dst, u8 *red_dst,
 	unsigned int bit_pos = 0;
 	unsigned int dst_idx = 0;
 
+	drm_dbg(fb->dev,
+		       "convert_3color: fmt=%p4cc rect=(%d,%d)-(%d,%d) path=%s\n",
+		       &fb->format->format,
+		       rect->x1, rect->y1, rect->x2, rect->y2,
+		       fb->format->format == DRM_FORMAT_R1 ? "R1-direct" : "color-pixel");
+
 	/*
 	 * R1 is already monochrome — no colour channel exists.
 	 * Copy BW data directly and leave the red plane all-white (transparent).
@@ -903,6 +940,14 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 	u8 byte = 0;
 	unsigned int bit_pos = 0;
 	unsigned int dst_idx = 0;
+
+	drm_dbg(fb->dev,
+		       "convert_1bpp: fmt=%p4cc rect=(%d,%d)-(%d,%d) orient=%u° path=%s\n",
+		       &fb->format->format,
+		       rect->x1, rect->y1, rect->x2, rect->y2,
+		       orientation,
+		       (format == DRM_FORMAT_R1 && orientation == 0) ? "R1-fast" :
+		       orientation == 90 ? "90deg" : "0deg");
 
 	/* R1 fast path: 0° landscape only — rows map directly to output bytes */
 	if (format == DRM_FORMAT_R1 && orientation == 0) {
@@ -980,6 +1025,10 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	rect->x2 = panel->width;
 	rect->y2 = panel->height;
 
+	drm_dbg(&panel->drm,
+		"fb_dirty: fb=%dx%d, refresh_mode=%d, orientation=%d\n",
+		fb->width, fb->height, panel->refresh_mode, panel->orientation);
+
 	mono_buffer = kzalloc(data_size, GFP_KERNEL);
 	if (!mono_buffer)
 		return;
@@ -1045,6 +1094,7 @@ static void ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 
 	ssd16xx_send_cmd(panel, SSD16XX_CMD_WRITE_RAM_BW, &err);
 	ssd16xx_send_data_bulk(panel, mono_buffer, data_size, &err);
+
 
 	/* Optionally re-send border waveform before each display update */
 	if (panel->border_refresh_on_every_update || panel->init_refresh_pending) {
@@ -1209,6 +1259,9 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	struct drm_framebuffer *fb = new_state->fb;
 	struct drm_rect rect;
 
+	drm_dbg(&panel->drm, "plane_atomic_update: fb=%p, initialized=%d\n",
+		fb, panel->initialized);
+
 	if (!fb || !panel->initialized)
 		return;
 
@@ -1216,16 +1269,21 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	 * If a rotation change is pending, skip the update here — crtc_atomic_flush
 	 * will re-init the hardware for the new orientation and redraw.
 	 */
-	if (panel->reinit_pending)
+	if (panel->reinit_pending) {
+		drm_dbg(&panel->drm, "plane_atomic_update: skipping (reinit pending)\n");
 		return;
+	}
 
 	if (!drm_atomic_helper_damage_merged(old_state, new_state, &rect)) {
 		rect.x1 = 0;
 		rect.y1 = 0;
 		rect.x2 = fb->width;
 		rect.y2 = fb->height;
+		drm_dbg(&panel->drm, "plane_atomic_update: no damage, using full screen\n");
 	}
 
+	drm_dbg(&panel->drm, "plane_atomic_update: calling fb_dirty rect=(%d,%d)-(%d,%d)\n",
+		rect.x1, rect.y1, rect.x2, rect.y2);
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
 	 * frame only, then restore the user-configured refresh_mode so
@@ -1319,6 +1377,9 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 	if (!drm_dev_enter(&panel->drm, &idx))
 		return;
 
+	drm_dbg(&panel->drm, "atomic_enable: %dx%d\n",
+		       crtc_state->mode.hdisplay, crtc_state->mode.vdisplay);
+
 	panel->width = crtc_state->mode.hdisplay;
 	panel->height = crtc_state->mode.vdisplay;
 
@@ -1340,7 +1401,7 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 	 */
 	if (panel->refresh_mode_init >= 0) {
 		drm_dbg(&panel->drm,
-			       "atomic_enable: refresh_mode_init=%d, using for first frame\n",
+			       "atomic_enable: refresh_mode_init=%d, skipping baseline\n",
 			       panel->refresh_mode_init);
 		panel->init_refresh_pending = true;
 	}
@@ -1400,6 +1461,10 @@ static void ssd16xx_crtc_atomic_flush(struct drm_crtc *crtc,
 		return;
 
 	panel->reinit_pending = false;
+	panel->init_refresh_pending = false;
+
+	drm_dbg(&panel->drm, "atomic_flush: reinit, orientation=%u°\n",
+		panel->orientation);
 
 	ret = ssd16xx_hw_init(panel);
 	if (ret) {
@@ -1439,6 +1504,9 @@ static int ssd16xx_connector_get_modes(struct drm_connector *connector)
 	struct ssd16xx_panel *panel = to_ssd16xx_panel(connector->dev);
 	bool mode_is_portrait = (panel->mode->hdisplay < panel->mode->vdisplay);
 	bool orient_is_portrait = (panel->orientation == 90);
+
+	drm_dbg(&panel->drm, "connector_get_modes: orientation=%u°\n",
+		panel->orientation);
 
 	/* For portrait, swap dimensions so clients see logical size. */
 	if (mode_is_portrait != orient_is_portrait) {
@@ -1598,6 +1666,8 @@ static int ssd16xx_connector_atomic_get_property(
 {
 	struct ssd16xx_panel *panel = to_ssd16xx_panel(connector->dev);
 
+	drm_dbg(&panel->drm, "get_property: %s\n", property->name);
+
 	if (property == panel->rotation_property) {
 		*val = panel->orientation;
 		return 0;
@@ -1641,6 +1711,8 @@ static int ssd16xx_connector_atomic_set_property(
 		uint64_t val)
 {
 	struct ssd16xx_panel *panel = to_ssd16xx_panel(connector->dev);
+
+	drm_dbg(&panel->drm, "set_property: %s = %llu\n", property->name, val);
 
 	if (property == panel->rotation_property) {
 		if (val != 0 && val != 90)
@@ -1849,6 +1921,10 @@ static int ssd16xx_probe(struct spi_device *spi)
 			panel->refresh_mode = refresh_mode;
 	}
 
+	drm_dbg(drm, "Refresh mode: %s\n",
+		panel->refresh_mode == SSD16XX_REFRESH_FULL  ? "full" :
+		panel->refresh_mode == SSD16XX_REFRESH_FAST  ? "fast" : "partial");
+
 	/* Parse "rotation" DT property; swap mode dimensions for portrait. */
 	device_property_read_u32(dev, "rotation", &dt_rotation);
 	if (dt_rotation != 0 && dt_rotation != 90) {
@@ -1866,6 +1942,10 @@ static int ssd16xx_probe(struct spi_device *spi)
 			panel->orientation = rotation;
 	}
 
+	drm_dbg(drm, "Using %s orientation (%u°, %ux%u logical)\n",
+		panel->orientation == 90 ? "portrait" : "landscape",
+		panel->orientation, mode->hdisplay, mode->vdisplay);
+
 	/* Swap mode dimensions for portrait so clients see logical size. */
 	if (panel->orientation == 90) {
 		swap(mode->hdisplay, mode->vdisplay);
@@ -1873,6 +1953,11 @@ static int ssd16xx_probe(struct spi_device *spi)
 		swap(mode->hsync_end, mode->vsync_end);
 		swap(mode->htotal, mode->vtotal);
 		swap(mode->width_mm, mode->height_mm);
+		drm_dbg(drm, "Mode dimensions swapped for portrait: %ux%u\n",
+			mode->hdisplay, mode->vdisplay);
+	} else {
+		drm_dbg(drm, "Mode dimensions unchanged: %ux%u\n",
+			mode->hdisplay, mode->vdisplay);
 	}
 	panel->mode = mode;
 	panel->width = mode->hdisplay;
@@ -1953,8 +2038,10 @@ static int ssd16xx_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	drm_dbg(drm, "SSD16xx e-ink display initialized (%dx%d, %d° rotation)\n",
+	drm_dbg(drm, "SSD16xx e-paper display initialized (%dx%d, %d° rotation)\n",
 		panel->width, panel->height, panel->orientation);
+
+	drm_client_setup(drm, NULL);
 
 	return 0;
 }
