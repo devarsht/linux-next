@@ -30,3 +30,17 @@ config DRM_SSD130X_SPI
 	  Say Y here if the SSD13xx OLED display is connected via SPI bus.
 
 	  If M is selected the module will be called ssd130x-spi.
+
+config DRM_SSD16XX
+	tristate "DRM support for Solomon SSD16xx e-ink display controllers"
+	depends on DRM && SPI && MMU
+	select DRM_CLIENT_SELECTION
+	select DRM_KMS_HELPER
+	select DRM_GEM_SHMEM_HELPER
+	help
+	  DRM driver for Solomon SSD16xx family e-ink display controllers
+	  (SSD1673, SSD1680, SSD1681, SSD1683, SSD1677). Supports panels
+	  such as the GDEY042T81 4.2" 400x300.
+
+	  If M is selected the module will be called ssd16xx.
+
