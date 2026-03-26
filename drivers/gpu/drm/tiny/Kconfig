@@ -215,3 +215,16 @@ config TINYDRM_SHARP_MEMORY
 	  * 4.40" Sharp Memory LCD (LS044Q7DH01)
 
 	  If M is selected the module will be called sharp_memory.
+
+config DRM_PANEL_SSD16XX
+	tristate "DRM support for Solomon SSD16xx e-ink display controllers"
+	depends on DRM && SPI
+	select DRM_CLIENT_SELECTION
+	select DRM_KMS_HELPER
+	select DRM_GEM_DMA_HELPER
+	help
+	  DRM driver for Solomon SSD16xx family e-ink display controllers
+	  (SSD1680, SSD1681, SSD1683). Supports the GDEY042T81 4.2" 400x300
+	  monochrome e-ink panel.
+
+	  If M is selected the module will be called panel-ssd16xx.
