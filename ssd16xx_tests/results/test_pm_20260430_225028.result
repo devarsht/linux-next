@@ -1,0 +1,55 @@
+=== test_pm  20250529_225028 ===
+
+--- 5.0 Basic smoke (PM01-PM06) ---
+PASS  PM01: no driver errors
+PASS  PM01: device suspended after app close  (status: suspended)
+PASS  PM01: suspend event in dmesg
+PASS  PM02: no driver errors
+PASS  PM02: device active while app running  (status: active)
+PASS  PM02: resume event in dmesg
+PASS  PM03: no driver errors
+PASS  PM03: MODE_1 deep sleep + resume
+SKIP  PM04: system suspend test (--no-system-suspend)
+SKIP  PM05: system resume test (--no-system-suspend)
+SKIP  PM06: MODE_2 path test (--no-system-suspend)
+
+--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---
+PASS  RS01: driver default autosuspend = 35000ms
+PASS  RS02: autosuspend re-applied to 3000ms
+PASS  RS03: no driver errors
+PASS  RS03: device suspended after autosuspend  (status: suspended)
+PASS  RS03: MODE_1 deep sleep command sent
+PASS  RS04: no driver errors
+PASS  RS04: hw_init on resume from MODE_1
+PASS  RS04: device active after resume  (status: active)
+PASS  RS05 cycle1: active  (status: active)
+PASS  RS05 cycle1: suspended (MODE_1)  (status: suspended)
+PASS  RS05 cycle2: active again  (status: active)
+PASS  RS05 cycle2: suspended again  (status: suspended)
+PASS  RS05: no driver errors during lifecycle
+PASS  RS05: ≥2 runtime resume events (got 2)
+PASS  RS05: ≥2 runtime suspend events (got 2)
+
+--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---
+PASS  RS06: runtime suspend fired (clear_on_close sync suspend)
+PASS  RS06: suspend within 6018ms (expected <20s, not ~30s timer)
+PASS  RS07: clear_display appears before runtime suspend
+
+--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---
+SKIP  SS01-SS03: system suspend (--no-system-suspend)
+
+--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---
+SKIP  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)
+
+--- 5.5 System suspend — edge cases (SS07-SS10) ---
+SKIP  SS07-SS10: system suspend edge cases (--no-system-suspend)
+
+--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---
+SKIP  TEST4: system suspend (--no-system-suspend)
+
+--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---
+SKIP  TEST5: system suspend (--no-system-suspend)
+
+================================================
+  PASS: 26    FAIL: 0     SKIP: 8   
+================================================

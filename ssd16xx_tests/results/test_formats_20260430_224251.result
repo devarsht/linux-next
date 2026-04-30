@@ -1,0 +1,18 @@
+=== test_formats  20250529_224251 ===
+
+--- F01-F08: Direct framebuffer formats ---
+PASS  F01: no driver errors
+PASS  F02: no driver errors
+PASS  F03: no driver errors
+PASS  F04: no driver errors
+PASS  F05: no driver errors
+PASS  F06: no driver errors
+PASS  F07: no driver errors
+PASS  F08: no driver errors
+
+--- F09: R1 native 1bpp (direct passthrough) ---
+PASS  F09: no driver errors
+
+================================================
+  PASS: 9     FAIL: 0     SKIP: 0   
+================================================

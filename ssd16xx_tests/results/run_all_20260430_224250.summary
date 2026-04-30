@@ -1,0 +1,213 @@
+=== SSD16xx Full Test Suite Run ===
+Date      : Thu May 29 22:42:50 UTC 2025
+Board     : am62lxx-evm
+Kernel    : 7.0.0-rc7-01927-gbd90a68f8d3a-dirty
+
+--- test_formats ---
+=== test_formats  20250529_224251 ===
+
+--- F01-F08: Direct framebuffer formats ---
+PASS  F01: no driver errors
+PASS  F02: no driver errors
+PASS  F03: no driver errors
+PASS  F04: no driver errors
+PASS  F05: no driver errors
+PASS  F06: no driver errors
+PASS  F07: no driver errors
+PASS  F08: no driver errors
+
+--- F09: R1 native 1bpp (direct passthrough) ---
+PASS  F09: no driver errors
+
+================================================
+  PASS: 9     FAIL: 0     SKIP: 0   
+================================================
+
+--- test_properties ---
+=== test_properties  20250529_224329 ===
+
+--- refresh_mode (P01-P03) ---
+PASS  P01: no driver errors
+PASS  P01: partial mode set (dmesg)
+PASS  P02: no driver errors
+PASS  P02: full mode set (dmesg)
+PASS  P03: no driver errors
+PASS  P03: fast mode set (dmesg)
+
+--- rotation (P04-P09) ---
+PASS  P04: no driver errors
+PASS  P04: landscape orientation confirmed
+PASS  P04: connector reports 400x300 mode
+PASS  P05: no driver errors
+PASS  P05: portrait orientation confirmed
+PASS  P05: connector reports 300x400 mode
+PASS  P06: no driver errors
+PASS  P06: 180° orientation confirmed
+PASS  P06: connector reports 400x300 mode
+PASS  P07: no driver errors
+PASS  P07: 270° orientation confirmed
+PASS  P07: connector reports 300x400 mode
+PASS  P08: no driver errors
+PASS  P08: reinit triggered on rotation change
+PASS  P09: no driver errors during cycle
+PASS  P09: rotation cycle completed without errors
+
+--- border_waveform_init (P10-P13) ---
+PASS  P10: no driver errors
+PASS  P10: HiZ border waveform applied (visual: no flash)
+PASS  P11: no driver errors
+PASS  P11: LUT1 border waveform applied (visual: white border flash)
+PASS  P12: no driver errors
+PASS  P12: VSL border waveform applied (visual: white border forced)
+PASS  P13: no driver errors
+PASS  P13: VSH1 border waveform applied (visual: black border forced)
+
+--- border_refresh_on_every_update (P14-P16) ---
+PASS  P14: no driver errors
+PASS  P14: border refresh enabled with VCOM waveform (visual: clean border)
+PASS  P15: no driver errors
+PASS  P15: HiZ waveform on border update (visual: minimal flash)
+PASS  P16: no driver errors
+PASS  P16: border refresh disabled (visual: faster updates, possible border ghost)
+
+--- clear_on_disable property (P17-P19) ---
+PASS  P17: full clear on CRTC disable (property=full)
+PASS  P17: no driver errors
+PASS  P18: partial clear on CRTC disable (property=partial)
+PASS  P18: no driver errors
+PASS  P19: no clear on CRTC disable (property=disabled)
+PASS  P19: no driver errors
+
+================================================
+  PASS: 42    FAIL: 0     SKIP: 0   
+================================================
+
+--- test_module_params ---
+=== test_module_params  20250529_224700 ===
+
+--- rotation (M01-M04) ---
+PASS  M01: rotation=0 (landscape)
+PASS  M02: rotation=90 (portrait CW)
+PASS  M03: rotation=180 (landscape 180°)
+PASS  M04: rotation=270 (portrait CCW)
+
+--- refresh_mode (M05-M06) ---
+PASS  M05: refresh_mode=1 (full)
+PASS  M06: refresh_mode=2 (fast)
+
+--- clear_on_init (M07-M08) ---
+PASS  M07: clear on init fired
+PASS  M08: partial clear on init
+
+--- clear_on_close (M09-M10) ---
+PASS  M09: clear on close fired after rmmod
+PASS  M10: partial clear on close fired
+
+--- refresh_mode_init (M11-M12) ---
+PASS  M11: refresh_mode_init=0 applied
+PASS  M12: refresh_mode_init=2 applied
+
+--- border_waveform_init_lut (M13) ---
+PASS  M13: border_waveform_init_lut applied
+
+--- border_refresh_on_every_update + border_waveform_lut (M14) ---
+PASS  M14: border_refresh_on_every_update=1 + border_waveform_lut=8 (visual: clean border)
+
+--- clear_on_disable (M15-M17) ---
+PASS  M15: full clear on CRTC disable
+PASS  M15: no driver errors
+PASS  M16: partial clear on CRTC disable
+PASS  M16: no driver errors
+PASS  M17: no clear on CRTC disable (disabled by default)
+PASS  M17: no driver errors
+
+--- Restore: default module load ---
+
+================================================
+  PASS: 20    FAIL: 0     SKIP: 0   
+================================================
+
+--- test_pm ---
+=== test_pm  20250529_225028 ===
+
+--- 5.0 Basic smoke (PM01-PM06) ---
+PASS  PM01: no driver errors
+PASS  PM01: device suspended after app close  (status: suspended)
+PASS  PM01: suspend event in dmesg
+PASS  PM02: no driver errors
+PASS  PM02: device active while app running  (status: active)
+PASS  PM02: resume event in dmesg
+PASS  PM03: no driver errors
+PASS  PM03: MODE_1 deep sleep + resume
+SKIP  PM04: system suspend test (--no-system-suspend)
+SKIP  PM05: system resume test (--no-system-suspend)
+SKIP  PM06: MODE_2 path test (--no-system-suspend)
+
+--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---
+PASS  RS01: driver default autosuspend = 35000ms
+PASS  RS02: autosuspend re-applied to 3000ms
+PASS  RS03: no driver errors
+PASS  RS03: device suspended after autosuspend  (status: suspended)
+PASS  RS03: MODE_1 deep sleep command sent
+PASS  RS04: no driver errors
+PASS  RS04: hw_init on resume from MODE_1
+PASS  RS04: device active after resume  (status: active)
+PASS  RS05 cycle1: active  (status: active)
+PASS  RS05 cycle1: suspended (MODE_1)  (status: suspended)
+PASS  RS05 cycle2: active again  (status: active)
+PASS  RS05 cycle2: suspended again  (status: suspended)
+PASS  RS05: no driver errors during lifecycle
+PASS  RS05: ≥2 runtime resume events (got 2)
+PASS  RS05: ≥2 runtime suspend events (got 2)
+
+--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---
+PASS  RS06: runtime suspend fired (clear_on_close sync suspend)
+PASS  RS06: suspend within 6018ms (expected <20s, not ~30s timer)
+PASS  RS07: clear_display appears before runtime suspend
+
+--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---
+SKIP  SS01-SS03: system suspend (--no-system-suspend)
+
+--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---
+SKIP  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)
+
+--- 5.5 System suspend — edge cases (SS07-SS10) ---
+SKIP  SS07-SS10: system suspend edge cases (--no-system-suspend)
+
+--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---
+SKIP  TEST4: system suspend (--no-system-suspend)
+
+--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---
+SKIP  TEST5: system suspend (--no-system-suspend)
+
+================================================
+  PASS: 26    FAIL: 0     SKIP: 8   
+================================================
+
+--- test_integration ---
+=== test_integration  20250529_225207 ===
+
+--- 6: Integration tests (I01-I04) ---
+PASS  I01: no driver errors
+PASS  I01: clear_display fired on init+close path
+PASS  I02: partial mode active without baseline
+PASS  I03: portrait mode preserved across suspend/resume (rotation=90)
+PASS  I04: no driver errors
+PASS  I04: full refresh issued after fast (visual: ghosting should be gone)
+
+--- 7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---
+PASS  OR01: first update used full refresh (mode=0xf7)
+PASS  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial
+PASS  OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)
+PASS  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared
+PASS  OR05: ≥2 full-refresh frames — init_refresh_pending re-armed on each enable
+
+================================================
+  PASS: 11    FAIL: 0     SKIP: 0   
+================================================
+
+
+=== GRAND TOTAL ===
+================================================
+  PASS: 108   FAIL: 0     SKIP: 0   
+================================================

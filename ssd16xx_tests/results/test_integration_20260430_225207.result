@@ -1,0 +1,20 @@
+=== test_integration  20250529_225207 ===
+
+--- 6: Integration tests (I01-I04) ---
+PASS  I01: no driver errors
+PASS  I01: clear_display fired on init+close path
+PASS  I02: partial mode active without baseline
+PASS  I03: portrait mode preserved across suspend/resume (rotation=90)
+PASS  I04: no driver errors
+PASS  I04: full refresh issued after fast (visual: ghosting should be gone)
+
+--- 7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---
+PASS  OR01: first update used full refresh (mode=0xf7)
+PASS  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial
+PASS  OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)
+PASS  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared
+PASS  OR05: ≥2 full-refresh frames — init_refresh_pending re-armed on each enable
+
+================================================
+  PASS: 11    FAIL: 0     SKIP: 0   
+================================================

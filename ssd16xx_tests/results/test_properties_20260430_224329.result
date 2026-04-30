@@ -1,0 +1,57 @@
+=== test_properties  20250529_224329 ===
+
+--- refresh_mode (P01-P03) ---
+PASS  P01: no driver errors
+PASS  P01: partial mode set (dmesg)
+PASS  P02: no driver errors
+PASS  P02: full mode set (dmesg)
+PASS  P03: no driver errors
+PASS  P03: fast mode set (dmesg)
+
+--- rotation (P04-P09) ---
+PASS  P04: no driver errors
+PASS  P04: landscape orientation confirmed
+PASS  P04: connector reports 400x300 mode
+PASS  P05: no driver errors
+PASS  P05: portrait orientation confirmed
+PASS  P05: connector reports 300x400 mode
+PASS  P06: no driver errors
+PASS  P06: 180° orientation confirmed
+PASS  P06: connector reports 400x300 mode
+PASS  P07: no driver errors
+PASS  P07: 270° orientation confirmed
+PASS  P07: connector reports 300x400 mode
+PASS  P08: no driver errors
+PASS  P08: reinit triggered on rotation change
+PASS  P09: no driver errors during cycle
+PASS  P09: rotation cycle completed without errors
+
+--- border_waveform_init (P10-P13) ---
+PASS  P10: no driver errors
+PASS  P10: HiZ border waveform applied (visual: no flash)
+PASS  P11: no driver errors
+PASS  P11: LUT1 border waveform applied (visual: white border flash)
+PASS  P12: no driver errors
+PASS  P12: VSL border waveform applied (visual: white border forced)
+PASS  P13: no driver errors
+PASS  P13: VSH1 border waveform applied (visual: black border forced)
+
+--- border_refresh_on_every_update (P14-P16) ---
+PASS  P14: no driver errors
+PASS  P14: border refresh enabled with VCOM waveform (visual: clean border)
+PASS  P15: no driver errors
+PASS  P15: HiZ waveform on border update (visual: minimal flash)
+PASS  P16: no driver errors
+PASS  P16: border refresh disabled (visual: faster updates, possible border ghost)
+
+--- clear_on_disable property (P17-P19) ---
+PASS  P17: full clear on CRTC disable (property=full)
+PASS  P17: no driver errors
+PASS  P18: partial clear on CRTC disable (property=partial)
+PASS  P18: no driver errors
+PASS  P19: no clear on CRTC disable (property=disabled)
+PASS  P19: no driver errors
+
+================================================
+  PASS: 42    FAIL: 0     SKIP: 0   
+================================================

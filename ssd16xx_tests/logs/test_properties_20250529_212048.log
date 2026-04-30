@@ -1,0 +1,1659 @@
+=== Log: /root/tests_new2/logs/test_properties_20250529_212048.log ===
+=== Result: /root/tests_new2/results/test_properties_20250529_212048.result ===
++ [L56] lsmod
++ [L56] grep -q panel_ssd16xx
++ [L62] '[' -z /root/tests_new2 ']'
++ [L67] source /root/tests_new2/init.sh
+++ [L11] echo 0xff
+++ [L12] echo module panel_ssd16xx +p
+++ [L15] echo '2 4 1 8'
+++ [L18] export LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:
+++ [L18] LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:
+++ [L21] command -v kmstest
+++ [L26] command -v modetest
+++++ [L32] dirname /root/tests_new2/init.sh
++++ [L32] cd /root/tests_new2
++++ [L32] pwd
+++ [L32] SCRIPT_DIR=/root/tests_new2
+++ [L33] source /root/tests_new2/discover.sh
+++++ [L11] ./modetest -M ssd16xx
++++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
++++ [L13] C=35
+++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
++++ [L14] MODE=
+++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L15] CRTC=38
+++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L16] P=36
++++ [L19] MODE=400x300
++++ [L22] export C CRTC P MODE
++++ [L36] head -1
+++++ [L36] uname -r
++++ [L36] find /lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty -name panel-ssd16xx.ko
+++ [L36] BASE=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko
+++ [L39] DEV=
+++ [L40] for d in /sys/bus/spi/devices/*/
+++++ [L41] readlink /sys/bus/spi/devices/spi0.0/driver
++++ [L41] basename ../../../../../../../bus/spi/drivers/ssd16xx
+++ [L41] drv=ssd16xx
+++ [L42] echo ssd16xx
+++ [L42] grep -q ssd16xx
+++ [L43] DEV=/sys/bus/spi/devices/spi0.0
+++ [L44] break
+++ [L48] '[' -z /sys/bus/spi/devices/spi0.0 ']'
+++ [L51] echo 'Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0'
+++ [L54] export C CRTC P MODE BASE DEV
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
++ [L70] '[' -z 35 ']'
++ [L70] '[' -z 38 ']'
++ [L70] '[' -z 36 ']'
++ [L74] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L78] echo ''
+
++ [L19] hdr 'refresh_mode (P01-P03)'
++ [L16] echo ''
+
++ [L16] echo '--- refresh_mode (P01-P03) ---'
+--- refresh_mode (P01-P03) ---
++ [L16] _result ''
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ''
++ [L16] _result '--- refresh_mode (P01-P03) ---'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo '--- refresh_mode (P01-P03) ---'
++ [L21] echo '  [P01] refresh_mode=0 (partial, ~300-500ms)'
+  [P01] refresh_mode=0 (partial, ~300-500ms)
++ [L22] ./modetest -M ssd16xx -w 35:refresh_mode:1
++ [L23] dmesg -C
++ [L24] ./modetest -M ssd16xx -w 35:refresh_mode:0
++ [L25] kmstest_hold 5
++ [L109] local secs=5
++ [L110] ./kmstest
++ [L111] local kpid=4721
++ [L112] sleep 5
++ [L113] kill 4721
++ [L114] wait 4721
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L26] check_no_driver_errors 'P01: no driver errors'
++ [L169] local 'desc=P01: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P01: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P01: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P01: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P01: no driver errors'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P01: no driver errors
++ [L12] _result 'PASS  P01: no driver errors'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P01: no driver errors'
++ [L153] return 0
++ [L27] check_dmesg refresh_mode=0 'P01: partial mode set (dmesg)'
++ [L123] local pattern=refresh_mode=0 'desc=P01: partial mode set (dmesg)'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE refresh_mode=0 /tmp/dmesg_capture.log
++ [L126] pass 'P01: partial mode set (dmesg)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P01: partial mode set (dmesg)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P01: partial mode set (dmesg)'
+  [0;32mPASS[0m  P01: partial mode set (dmesg)
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P01: partial mode set (dmesg)'
++ [L127] return 0
++ [L29] echo ''
++ [L30] echo '  [P02] refresh_mode=1 (full, ~1.5-2s)'
+
+  [P02] refresh_mode=1 (full, ~1.5-2s)
++ [L31] dmesg -C
++ [L32] ./modetest -M ssd16xx -w 35:refresh_mode:1
++ [L33] kmstest_hold 8
++ [L109] local secs=8
++ [L110] ./kmstest
++ [L111] local kpid=4731
++ [L112] sleep 8
++ [L113] kill 4731
++ [L114] wait 4731
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L34] check_no_driver_errors 'P02: no driver errors'
++ [L169] local 'desc=P02: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P02: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P02: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P02: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P02: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P02: no driver errors'
+  [0;32mPASS[0m  P02: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P02: no driver errors'
++ [L153] return 0
++ [L35] check_dmesg refresh_mode=1 'P02: full mode set (dmesg)'
++ [L123] local pattern=refresh_mode=1 'desc=P02: full mode set (dmesg)'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE refresh_mode=1 /tmp/dmesg_capture.log
++ [L126] pass 'P02: full mode set (dmesg)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P02: full mode set (dmesg)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P02: full mode set (dmesg)'
+  [0;32mPASS[0m  P02: full mode set (dmesg)
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P02: full mode set (dmesg)'
++ [L127] return 0
++ [L37] echo ''
++ [L38] echo '  [P03] refresh_mode=2 (fast, ~1.0-1.5s)'
+
+  [P03] refresh_mode=2 (fast, ~1.0-1.5s)
++ [L39] dmesg -C
++ [L40] ./modetest -M ssd16xx -w 35:refresh_mode:2
++ [L41] kmstest_hold 6
++ [L109] local secs=6
++ [L111] local kpid=4741
++ [L110] ./kmstest
++ [L112] sleep 6
++ [L113] kill 4741
++ [L114] wait 4741
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L42] check_no_driver_errors 'P03: no driver errors'
++ [L169] local 'desc=P03: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P03: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P03: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P03: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P03: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P03: no driver errors'
+  [0;32mPASS[0m  P03: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P03: no driver errors'
++ [L153] return 0
++ [L43] check_dmesg refresh_mode=2 'P03: fast mode set (dmesg)'
++ [L123] local pattern=refresh_mode=2 'desc=P03: fast mode set (dmesg)'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE refresh_mode=2 /tmp/dmesg_capture.log
++ [L126] pass 'P03: fast mode set (dmesg)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P03: fast mode set (dmesg)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P03: fast mode set (dmesg)'
+  [0;32mPASS[0m  P03: fast mode set (dmesg)
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P03: fast mode set (dmesg)'
++ [L127] return 0
++ [L46] ./modetest -M ssd16xx -w 35:refresh_mode:0
++ [L49] hdr 'rotation (P04-P09)'
++ [L16] echo ''
++ [L16] echo '--- rotation (P04-P09) ---'
++ [L16] _result ''
+
+--- rotation (P04-P09) ---
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ''
++ [L16] _result '--- rotation (P04-P09) ---'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo '--- rotation (P04-P09) ---'
++ [L51] echo '  [P04] rotation=0 (landscape)'
+  [P04] rotation=0 (landscape)
++ [L52] ./modetest -M ssd16xx -w 35:rotation:90
++ [L53] dmesg -C
++ [L54] ./modetest -M ssd16xx -w 35:rotation:0
++ [L55] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4753
++ [L112] sleep 4
++ [L110] ./kmstest
++ [L113] kill 4753
++ [L114] wait 4753
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L56] check_no_driver_errors 'P04: no driver errors'
++ [L169] local 'desc=P04: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P04: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P04: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P04: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P04: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P04: no driver errors'
+  [0;32mPASS[0m  P04: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P04: no driver errors'
++ [L153] return 0
++ [L57] check_dmesg orientation=0 'P04: landscape orientation confirmed'
++ [L123] local pattern=orientation=0 'desc=P04: landscape orientation confirmed'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE orientation=0 /tmp/dmesg_capture.log
++ [L126] pass 'P04: landscape orientation confirmed'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P04: landscape orientation confirmed'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P04: landscape orientation confirmed'
+  [0;32mPASS[0m  P04: landscape orientation confirmed
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P04: landscape orientation confirmed'
++ [L127] return 0
++ [L58] ./modetest -M ssd16xx -c
++ [L58] grep -q 400x300
++ [L59] pass 'P04: connector reports 400x300 mode'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P04: connector reports 400x300 mode'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P04: connector reports 400x300 mode'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P04: connector reports 400x300 mode'
++ [L64] echo ''
+  [0;32mPASS[0m  P04: connector reports 400x300 mode
++ [L65] echo '  [P05] rotation=90 (portrait CW)'
++ [L66] ./modetest -M ssd16xx -w 35:rotation:0
+
+  [P05] rotation=90 (portrait CW)
++ [L67] dmesg -C
++ [L68] ./modetest -M ssd16xx -w 35:rotation:90
++ [L69] kmstest_hold 4
++ [L109] local secs=4
++ [L110] ./kmstest
++ [L111] local kpid=4766
++ [L112] sleep 4
++ [L113] kill 4766
++ [L114] wait 4766
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L70] check_no_driver_errors 'P05: no driver errors'
++ [L169] local 'desc=P05: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P05: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P05: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P05: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P05: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P05: no driver errors'
+  [0;32mPASS[0m  P05: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P05: no driver errors'
++ [L153] return 0
++ [L71] check_dmesg orientation=90 'P05: portrait orientation confirmed'
++ [L123] local pattern=orientation=90 'desc=P05: portrait orientation confirmed'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE orientation=90 /tmp/dmesg_capture.log
++ [L126] pass 'P05: portrait orientation confirmed'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P05: portrait orientation confirmed'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P05: portrait orientation confirmed'
+  [0;32mPASS[0m  P05: portrait orientation confirmed
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P05: portrait orientation confirmed'
++ [L127] return 0
++ [L72] grep -q 300x400
++ [L72] ./modetest -M ssd16xx -c
++ [L73] pass 'P05: connector reports 300x400 mode'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P05: connector reports 300x400 mode'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P05: connector reports 300x400 mode
++ [L12] _result 'PASS  P05: connector reports 300x400 mode'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P05: connector reports 300x400 mode'
++ [L78] echo ''
+
++ [L79] echo '  [P06] rotation=180 (landscape 180°)'
+  [P06] rotation=180 (landscape 180°)
++ [L80] ./modetest -M ssd16xx -w 35:rotation:0
++ [L81] dmesg -C
++ [L82] ./modetest -M ssd16xx -w 35:rotation:180
++ [L83] kmstest_hold 4
++ [L109] local secs=4
++ [L110] ./kmstest
++ [L111] local kpid=4779
++ [L112] sleep 4
++ [L113] kill 4779
++ [L114] wait 4779
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L84] check_no_driver_errors 'P06: no driver errors'
++ [L169] local 'desc=P06: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P06: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P06: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P06: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P06: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P06: no driver errors'
+  [0;32mPASS[0m  P06: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P06: no driver errors'
++ [L153] return 0
++ [L85] check_dmesg orientation=180 'P06: 180° orientation confirmed'
++ [L123] local pattern=orientation=180 'desc=P06: 180° orientation confirmed'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE orientation=180 /tmp/dmesg_capture.log
++ [L126] pass 'P06: 180° orientation confirmed'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P06: 180° orientation confirmed'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P06: 180° orientation confirmed
++ [L12] _result 'PASS  P06: 180° orientation confirmed'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P06: 180° orientation confirmed'
++ [L127] return 0
++ [L86] ./modetest -M ssd16xx -c
++ [L86] grep -q 400x300
++ [L87] pass 'P06: connector reports 400x300 mode'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P06: connector reports 400x300 mode'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P06: connector reports 400x300 mode'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P06: connector reports 400x300 mode'
++ [L92] echo ''
++ [L93] echo '  [P07] rotation=270 (portrait CCW)'
++ [L94] ./modetest -M ssd16xx -w 35:rotation:0
+  [0;32mPASS[0m  P06: connector reports 400x300 mode
+
+  [P07] rotation=270 (portrait CCW)
++ [L95] dmesg -C
++ [L96] ./modetest -M ssd16xx -w 35:rotation:270
++ [L97] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4792
++ [L112] sleep 4
++ [L110] ./kmstest
++ [L113] kill 4792
++ [L114] wait 4792
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L98] check_no_driver_errors 'P07: no driver errors'
++ [L169] local 'desc=P07: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P07: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P07: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P07: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P07: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P07: no driver errors'
+  [0;32mPASS[0m  P07: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P07: no driver errors'
++ [L153] return 0
++ [L99] check_dmesg orientation=270 'P07: 270° orientation confirmed'
++ [L123] local pattern=orientation=270 'desc=P07: 270° orientation confirmed'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE orientation=270 /tmp/dmesg_capture.log
++ [L126] pass 'P07: 270° orientation confirmed'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P07: 270° orientation confirmed'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P07: 270° orientation confirmed'
+  [0;32mPASS[0m  P07: 270° orientation confirmed
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P07: 270° orientation confirmed'
++ [L127] return 0
++ [L100] ./modetest -M ssd16xx -c
++ [L100] grep -q 300x400
++ [L101] pass 'P07: connector reports 300x400 mode'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P07: connector reports 300x400 mode'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P07: connector reports 300x400 mode'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P07: connector reports 300x400 mode'
++ [L106] echo ''
+  [0;32mPASS[0m  P07: connector reports 300x400 mode
+
++ [L107] echo '  [P08] runtime rotation change 0°→90° (triggers hw reinit)'
++ [L108] dmesg -C
+  [P08] runtime rotation change 0°→90° (triggers hw reinit)
++ [L109] ./modetest -M ssd16xx -w 35:rotation:0
++ [L110] kmstest_hold 3
++ [L109] local secs=3
++ [L111] local kpid=4805
++ [L112] sleep 3
++ [L110] ./kmstest
++ [L113] kill 4805
++ [L114] wait 4805
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L111] ./modetest -M ssd16xx -w 35:rotation:90
++ [L112] kmstest_hold 3
++ [L109] local secs=3
++ [L110] ./kmstest
++ [L111] local kpid=4812
++ [L112] sleep 3
++ [L113] kill 4812
++ [L114] wait 4812
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L113] check_no_driver_errors 'P08: no driver errors'
++ [L169] local 'desc=P08: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P08: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P08: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P08: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P08: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P08: no driver errors'
+  [0;32mPASS[0m  P08: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P08: no driver errors'
++ [L153] return 0
++ [L114] check_dmesg 'atomic_flush.*reinit.*orientation' 'P08: reinit triggered on rotation change'
++ [L123] local 'pattern=atomic_flush.*reinit.*orientation' 'desc=P08: reinit triggered on rotation change'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE 'atomic_flush.*reinit.*orientation' /tmp/dmesg_capture.log
++ [L126] pass 'P08: reinit triggered on rotation change'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P08: reinit triggered on rotation change'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P08: reinit triggered on rotation change'
+  [0;32mPASS[0m  P08: reinit triggered on rotation change
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P08: reinit triggered on rotation change'
++ [L127] return 0
++ [L116] echo ''
+
++ [L117] echo '  [P09] runtime rotation cycle 0°→90°→180°→270°→0°'
+  [P09] runtime rotation cycle 0°→90°→180°→270°→0°
++ [L118] dmesg -C
++ [L119] ./modetest -M ssd16xx -w 35:rotation:0
++ [L120] kmstest_hold 2
++ [L109] local secs=2
++ [L110] ./kmstest
++ [L111] local kpid=4822
++ [L112] sleep 2
++ [L113] kill 4822
++ [L114] wait 4822
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L121] ./modetest -M ssd16xx -w 35:rotation:90
++ [L122] kmstest_hold 2
++ [L109] local secs=2
++ [L110] ./kmstest
++ [L111] local kpid=4829
++ [L112] sleep 2
++ [L113] kill 4829
++ [L114] wait 4829
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L123] ./modetest -M ssd16xx -w 35:rotation:180
++ [L124] kmstest_hold 2
++ [L109] local secs=2
++ [L110] ./kmstest
++ [L111] local kpid=4836
++ [L112] sleep 2
++ [L113] kill 4836
++ [L114] wait 4836
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L125] ./modetest -M ssd16xx -w 35:rotation:270
++ [L126] kmstest_hold 2
++ [L109] local secs=2
++ [L111] local kpid=4843
++ [L112] sleep 2
++ [L110] ./kmstest
++ [L113] kill 4843
++ [L114] wait 4843
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L127] ./modetest -M ssd16xx -w 35:rotation:0
++ [L128] kmstest_hold 2
++ [L109] local secs=2
++ [L111] local kpid=4850
++ [L112] sleep 2
++ [L110] ./kmstest
++ [L113] kill 4850
++ [L114] wait 4850
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L129] check_no_driver_errors 'P09: no driver errors during cycle'
++ [L169] local 'desc=P09: no driver errors during cycle'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P09: no driver errors during cycle'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P09: no driver errors during cycle'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P09: no driver errors during cycle'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P09: no driver errors during cycle'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P09: no driver errors during cycle'
+  [0;32mPASS[0m  P09: no driver errors during cycle
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P09: no driver errors during cycle'
++ [L153] return 0
++ [L130] pass 'P09: rotation cycle completed without errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P09: rotation cycle completed without errors'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P09: rotation cycle completed without errors
++ [L12] _result 'PASS  P09: rotation cycle completed without errors'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P09: rotation cycle completed without errors'
++ [L133] ./modetest -M ssd16xx -w 35:rotation:0
++ [L137] hdr 'border_waveform_init (P10-P13)'
++ [L16] echo ''
++ [L16] echo '--- border_waveform_init (P10-P13) ---'
++ [L16] _result ''
+
+--- border_waveform_init (P10-P13) ---
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ''
++ [L16] _result '--- border_waveform_init (P10-P13) ---'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo '--- border_waveform_init (P10-P13) ---'
++ [L144] echo '  [P10] border_waveform_init=9 (HiZ float, default)'
+  [P10] border_waveform_init=9 (HiZ float, default)
++ [L145] ./modetest -M ssd16xx -w 35:border_waveform_init:9
++ [L146] dmesg -C
++ [L146] reinit_toggle
++ [L140] ./modetest -M ssd16xx -w 35:rotation:90
++ [L140] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4861
++ [L112] sleep 4
++ [L110] ./kmstest
++ [L113] kill 4861
++ [L114] wait 4861
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L141] ./modetest -M ssd16xx -w 35:rotation:0
++ [L141] kmstest_hold 4
++ [L109] local secs=4
++ [L110] ./kmstest
++ [L111] local kpid=4868
++ [L112] sleep 4
++ [L113] kill 4868
++ [L114] wait 4868
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L147] check_no_driver_errors 'P10: no driver errors'
++ [L169] local 'desc=P10: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P10: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P10: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P10: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P10: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P10: no driver errors'
+  [0;32mPASS[0m  P10: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P10: no driver errors'
++ [L153] return 0
++ [L148] pass 'P10: HiZ border waveform applied (visual: no flash)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P10: HiZ border waveform applied (visual: no flash)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P10: HiZ border waveform applied (visual: no flash)
++ [L12] _result 'PASS  P10: HiZ border waveform applied (visual: no flash)'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P10: HiZ border waveform applied (visual: no flash)'
++ [L150] echo ''
+
++ [L151] echo '  [P11] border_waveform_init=1 (LUT1 white flash on init)'
+  [P11] border_waveform_init=1 (LUT1 white flash on init)
++ [L152] ./modetest -M ssd16xx -w 35:border_waveform_init:1
++ [L153] dmesg -C
++ [L153] reinit_toggle
++ [L140] ./modetest -M ssd16xx -w 35:rotation:90
++ [L140] kmstest_hold 4
++ [L109] local secs=4
++ [L110] ./kmstest
++ [L111] local kpid=4879
++ [L112] sleep 4
++ [L113] kill 4879
++ [L114] wait 4879
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L141] ./modetest -M ssd16xx -w 35:rotation:0
++ [L141] kmstest_hold 4
++ [L109] local secs=4
++ [L110] ./kmstest
++ [L111] local kpid=4888
++ [L112] sleep 4
++ [L113] kill 4888
++ [L114] wait 4888
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L154] check_no_driver_errors 'P11: no driver errors'
++ [L169] local 'desc=P11: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P11: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P11: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P11: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P11: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P11: no driver errors'
+  [0;32mPASS[0m  P11: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P11: no driver errors'
++ [L153] return 0
++ [L155] pass 'P11: LUT1 border waveform applied (visual: white border flash)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P11: LUT1 border waveform applied (visual: white border flash)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P11: LUT1 border waveform applied (visual: white border flash)
++ [L12] _result 'PASS  P11: LUT1 border waveform applied (visual: white border flash)'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P11: LUT1 border waveform applied (visual: white border flash)'
++ [L157] echo ''
+
++ [L158] echo '  [P12] border_waveform_init=6 (VSL force white border)'
+  [P12] border_waveform_init=6 (VSL force white border)
++ [L159] ./modetest -M ssd16xx -w 35:border_waveform_init:6
++ [L160] dmesg -C
++ [L160] reinit_toggle
++ [L140] ./modetest -M ssd16xx -w 35:rotation:90
++ [L140] kmstest_hold 4
++ [L109] local secs=4
++ [L110] ./kmstest
++ [L111] local kpid=4899
++ [L112] sleep 4
++ [L113] kill 4899
++ [L114] wait 4899
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L141] ./modetest -M ssd16xx -w 35:rotation:0
++ [L141] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4906
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4906
++ [L114] wait 4906
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L161] check_no_driver_errors 'P12: no driver errors'
++ [L169] local 'desc=P12: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P12: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P12: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P12: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P12: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P12: no driver errors'
+  [0;32mPASS[0m  P12: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P12: no driver errors'
++ [L153] return 0
++ [L162] pass 'P12: VSL border waveform applied (visual: white border forced)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P12: VSL border waveform applied (visual: white border forced)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P12: VSL border waveform applied (visual: white border forced)
++ [L12] _result 'PASS  P12: VSL border waveform applied (visual: white border forced)'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P12: VSL border waveform applied (visual: white border forced)'
++ [L164] echo ''
+
++ [L165] echo '  [P13] border_waveform_init=5 (VSH1 force black border)'
+  [P13] border_waveform_init=5 (VSH1 force black border)
++ [L166] ./modetest -M ssd16xx -w 35:border_waveform_init:5
++ [L167] dmesg -C
++ [L167] reinit_toggle
++ [L140] ./modetest -M ssd16xx -w 35:rotation:90
++ [L140] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4916
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4916
++ [L114] wait 4916
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L141] ./modetest -M ssd16xx -w 35:rotation:0
++ [L141] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4923
++ [L112] sleep 4
++ [L110] ./kmstest
++ [L113] kill 4923
++ [L114] wait 4923
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L168] check_no_driver_errors 'P13: no driver errors'
++ [L169] local 'desc=P13: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P13: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P13: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P13: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P13: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P13: no driver errors'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
+  [0;32mPASS[0m  P13: no driver errors
++ [L10] echo 'PASS  P13: no driver errors'
++ [L153] return 0
++ [L169] pass 'P13: VSH1 border waveform applied (visual: black border forced)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P13: VSH1 border waveform applied (visual: black border forced)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P13: VSH1 border waveform applied (visual: black border forced)
++ [L12] _result 'PASS  P13: VSH1 border waveform applied (visual: black border forced)'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P13: VSH1 border waveform applied (visual: black border forced)'
++ [L172] ./modetest -M ssd16xx -w 35:border_waveform_init:9
++ [L175] hdr 'border_refresh_on_every_update (P14-P16)'
++ [L16] echo ''
++ [L16] echo '--- border_refresh_on_every_update (P14-P16) ---'
++ [L16] _result ''
+
+--- border_refresh_on_every_update (P14-P16) ---
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ''
++ [L16] _result '--- border_refresh_on_every_update (P14-P16) ---'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo '--- border_refresh_on_every_update (P14-P16) ---'
++ [L177] echo '  [P14] border_refresh=1 + border_waveform_refresh=8 (VCOM, no flash)'
+  [P14] border_refresh=1 + border_waveform_refresh=8 (VCOM, no flash)
++ [L178] dmesg -C
++ [L179] ./modetest -M ssd16xx -w 35:border_refresh_every_update:1
++ [L180] ./modetest -M ssd16xx -w 35:border_waveform_refresh:8
++ [L181] kmstest_hold 4
++ [L109] local secs=4
++ [L110] ./kmstest
++ [L111] local kpid=4934
++ [L112] sleep 4
++ [L113] kill 4934
++ [L114] wait 4934
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L181] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4940
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4940
++ [L114] wait 4940
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L181] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4946
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4946
++ [L114] wait 4946
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L182] check_no_driver_errors 'P14: no driver errors'
++ [L169] local 'desc=P14: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P14: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P14: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P14: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P14: no driver errors'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P14: no driver errors
++ [L12] _result 'PASS  P14: no driver errors'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P14: no driver errors'
++ [L153] return 0
++ [L183] pass 'P14: border refresh enabled with VCOM waveform (visual: clean border)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P14: border refresh enabled with VCOM waveform (visual: clean border)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P14: border refresh enabled with VCOM waveform (visual: clean border)
++ [L12] _result 'PASS  P14: border refresh enabled with VCOM waveform (visual: clean border)'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P14: border refresh enabled with VCOM waveform (visual: clean border)'
++ [L185] echo ''
+
++ [L186] echo '  [P15] border_waveform_refresh=9 (HiZ)'
+  [P15] border_waveform_refresh=9 (HiZ)
++ [L187] ./modetest -M ssd16xx -w 35:border_waveform_refresh:9
++ [L188] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4955
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4955
++ [L114] wait 4955
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L189] check_no_driver_errors 'P15: no driver errors'
++ [L169] local 'desc=P15: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P15: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P15: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P15: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P15: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P15: no driver errors'
+  [0;32mPASS[0m  P15: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P15: no driver errors'
++ [L153] return 0
++ [L190] pass 'P15: HiZ waveform on border update (visual: minimal flash)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P15: HiZ waveform on border update (visual: minimal flash)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P15: HiZ waveform on border update (visual: minimal flash)
++ [L12] _result 'PASS  P15: HiZ waveform on border update (visual: minimal flash)'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P15: HiZ waveform on border update (visual: minimal flash)'
++ [L192] echo ''
++ [L193] echo '  [P16] border_refresh=0 (disabled, default)'
+
+  [P16] border_refresh=0 (disabled, default)
++ [L194] dmesg -C
++ [L195] ./modetest -M ssd16xx -w 35:border_refresh_every_update:0
++ [L196] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4964
++ [L112] sleep 4
++ [L110] ./kmstest
++ [L113] kill 4964
++ [L114] wait 4964
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L196] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4970
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4970
++ [L114] wait 4970
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L196] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4976
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4976
++ [L114] wait 4976
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L197] check_no_driver_errors 'P16: no driver errors'
++ [L169] local 'desc=P16: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P16: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P16: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P16: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P16: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P16: no driver errors'
+  [0;32mPASS[0m  P16: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P16: no driver errors'
++ [L153] return 0
++ [L198] pass 'P16: border refresh disabled (visual: faster updates, possible border ghost)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P16: border refresh disabled (visual: faster updates, possible border ghost)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  P16: border refresh disabled (visual: faster updates, possible border ghost)
++ [L12] _result 'PASS  P16: border refresh disabled (visual: faster updates, possible border ghost)'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P16: border refresh disabled (visual: faster updates, possible border ghost)'
++ [L201] hdr 'clear_on_disable property (P17-P19)'
++ [L16] echo ''
++ [L16] echo '--- clear_on_disable property (P17-P19) ---'
+
++ [L16] _result ''
+--- clear_on_disable property (P17-P19) ---
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ''
++ [L16] _result '--- clear_on_disable property (P17-P19) ---'
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo '--- clear_on_disable property (P17-P19) ---'
++ [L205] echo 'module panel_ssd16xx +p'
++ [L207] echo '  [P17] clear_on_disable=2 (full) via property — fires on CRTC disable'
++ [L208] dmesg -C
+  [P17] clear_on_disable=2 (full) via property — fires on CRTC disable
++ [L209] ./modetest -M ssd16xx -w 35:clear_on_disable:2
++ [L210] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4985
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4985
++ [L114] wait 4985
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L211] check_dmesg 'clear_on_disable: running' 'P17: full clear on CRTC disable (property=full)'
++ [L123] local 'pattern=clear_on_disable: running' 'desc=P17: full clear on CRTC disable (property=full)'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE 'clear_on_disable: running' /tmp/dmesg_capture.log
++ [L126] pass 'P17: full clear on CRTC disable (property=full)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P17: full clear on CRTC disable (property=full)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P17: full clear on CRTC disable (property=full)'
+  [0;32mPASS[0m  P17: full clear on CRTC disable (property=full)
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P17: full clear on CRTC disable (property=full)'
++ [L127] return 0
++ [L212] check_no_driver_errors 'P17: no driver errors'
++ [L169] local 'desc=P17: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P17: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P17: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P17: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P17: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P17: no driver errors'
+  [0;32mPASS[0m  P17: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P17: no driver errors'
++ [L153] return 0
++ [L214] echo ''
+
++ [L215] echo '  [P18] clear_on_disable=1 (partial) via property — fires on CRTC disable'
+  [P18] clear_on_disable=1 (partial) via property — fires on CRTC disable
++ [L216] dmesg -C
++ [L217] ./modetest -M ssd16xx -w 35:clear_on_disable:1
++ [L218] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=4995
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 4995
++ [L114] wait 4995
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L219] check_dmesg 'clear_on_disable: running' 'P18: partial clear on CRTC disable (property=partial)'
++ [L123] local 'pattern=clear_on_disable: running' 'desc=P18: partial clear on CRTC disable (property=partial)'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE 'clear_on_disable: running' /tmp/dmesg_capture.log
++ [L126] pass 'P18: partial clear on CRTC disable (property=partial)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P18: partial clear on CRTC disable (property=partial)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P18: partial clear on CRTC disable (property=partial)'
+  [0;32mPASS[0m  P18: partial clear on CRTC disable (property=partial)
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P18: partial clear on CRTC disable (property=partial)'
++ [L127] return 0
++ [L220] check_no_driver_errors 'P18: no driver errors'
++ [L169] local 'desc=P18: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P18: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P18: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P18: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P18: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P18: no driver errors'
+  [0;32mPASS[0m  P18: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P18: no driver errors'
++ [L153] return 0
++ [L222] echo ''
+
++ [L223] echo '  [P19] clear_on_disable=0 (disabled) via property — no clear on CRTC disable'
+  [P19] clear_on_disable=0 (disabled) via property — no clear on CRTC disable
++ [L224] dmesg -C
++ [L225] ./modetest -M ssd16xx -w 35:clear_on_disable:0
++ [L226] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=5006
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 5006
++ [L114] wait 5006
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L227] check_dmesg_absent 'clear_on_disable: running' 'P19: no clear on CRTC disable (property=disabled)'
++ [L146] local 'pattern=clear_on_disable: running' 'desc=P19: no clear on CRTC disable (property=disabled)'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'clear_on_disable: running' /tmp/dmesg_capture.log
++ [L152] pass 'P19: no clear on CRTC disable (property=disabled)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P19: no clear on CRTC disable (property=disabled)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P19: no clear on CRTC disable (property=disabled)'
+  [0;32mPASS[0m  P19: no clear on CRTC disable (property=disabled)
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P19: no clear on CRTC disable (property=disabled)'
++ [L153] return 0
++ [L228] check_no_driver_errors 'P19: no driver errors'
++ [L169] local 'desc=P19: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'P19: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=P19: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'P19: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  P19: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  P19: no driver errors'
+  [0;32mPASS[0m  P19: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo 'PASS  P19: no driver errors'
++ [L153] return 0
++ [L231] ./modetest -M ssd16xx -w 35:refresh_mode:0
++ [L232] ./modetest -M ssd16xx -w 35:rotation:0
++ [L233] ./modetest -M ssd16xx -w 35:border_waveform_init:9
++ [L234] ./modetest -M ssd16xx -w 35:border_refresh_every_update:0
++ [L235] ./modetest -M ssd16xx -w 35:clear_on_disable:0
++ [L237] summary
++ [L19] local totals
+++ [L20] printf '  PASS: %-4d  FAIL: %-4d  SKIP: %-4d' 42 0 0
++ [L20] totals='  PASS: 42    FAIL: 0     SKIP: 0   '
++ [L21] echo ''
++ [L22] echo ================================================
++ [L23] echo '  PASS: 42    FAIL: 0     SKIP: 0   '
++ [L24] echo ================================================
++ [L25] _result ''
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ''
++ [L25] _result ================================================
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ================================================
++ [L26] _result '  PASS: 42    FAIL: 0     SKIP: 0   '
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo '  PASS: 42    FAIL: 0     SKIP: 0   '
++ [L26] _result ================================================
++ [L10] '[' -n /root/tests_new2/results/test_properties_20250529_212048.result ']'
++ [L10] echo ================================================
++ [L27] '[' 0 -eq 0 ']'
++ [L1] cleanup
++ [L196] exec
+
+================================================
+  PASS: 42    FAIL: 0     SKIP: 0   
+================================================
+++ [L196] jobs -p
++ [L196] kill ''
++ [L196] wait

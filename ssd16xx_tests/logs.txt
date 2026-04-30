@@ -1,0 +1,842 @@
++++ dirname ./run_all_tests.sh
+++ cd .
+++ pwd
++ SCRIPT_DIR=/root/tests_new2
+++ date +%Y%m%d_%H%M%S
++ TIMESTAMP=20250529_224250
++ SUMMARY_FILE=/root/tests_new2/results/run_all_20250529_224250.summary
++ PASS_TOTAL=0
++ FAIL_TOTAL=0
++ SKIP_TOTAL=0
++ RED='\033[0;31m'
++ GREEN='\033[0;32m'
++ YELLOW='\033[1;33m'
++ CYAN='\033[0;36m'
++ BOLD='\033[1m'
++ NC='\033[0m'
++ mkdir -p /root/tests_new2/results /root/tests_new2/logs
++ echo -e '\033[1m=== SSD16xx Full Test Suite ===\033[0m'
+[1m=== SSD16xx Full Test Suite ===[0m
++ echo 'Timestamp : 20250529_224250'
+Timestamp : 20250529_224250
++ echo 'Summary   : /root/tests_new2/results/run_all_20250529_224250.summary'
+Summary   : /root/tests_new2/results/run_all_20250529_224250.summary
++ echo ''
+
++ echo '=== SSD16xx Full Test Suite Run ==='
+++ date
++ echo 'Date      : Thu May 29 22:42:50 UTC 2025'
+++ uname -n
++ echo 'Board     : am62lxx-evm'
+++ uname -r
++ echo 'Kernel    : 7.0.0-rc7-01927-gbd90a68f8d3a-dirty'
++ echo ''
++ echo 'module panel_ssd16xx +p'
++ run_suite test_formats
++ local name=test_formats
++ local script=test_formats.sh
++ local extra_args=
++ echo ''
+
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo -e '\033[0;36m--- Running: test_formats ---\033[0m'
+[0;36m--- Running: test_formats ---[0m
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo '--- test_formats ---'
++ cd /home/weston
++ bash /root/tests_new2/test_formats.sh
+=== SSD16xx Pixel Format Tests ===
+    Display hold per format: 3s
+=== Log: /root/tests_new2/logs/test_formats_20250529_224251.log ===
+=== Result: /root/tests_new2/results/test_formats_20250529_224251.result ===
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
+
+
+--- F01-F08: Direct framebuffer formats ---
+
+  [F01] XRGB8888 32bpp  (fourcc=XR24)
+  [0;32mPASS[0m  F01: no driver errors
+  [0;36mINFO[0m  F01: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+  [F02] RGB888 24bpp  (fourcc=RG24)
+  [0;32mPASS[0m  F02: no driver errors
+  [0;36mINFO[0m  F02: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+  [F03] RGB565 16bpp  (fourcc=RG16)
+  [0;32mPASS[0m  F03: no driver errors
+  [0;36mINFO[0m  F03: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+  [F04] Grayscale 8bpp  (fourcc=R8)
+  [0;32mPASS[0m  F04: no driver errors
+  [0;36mINFO[0m  F04: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+  [F05] YUV 4:2:0 semi-planar  (fourcc=NV12)
+  [0;32mPASS[0m  F05: no driver errors
+  [0;36mINFO[0m  F05: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+  [F06] YUV 4:2:2 semi-planar  (fourcc=NV16)
+  [0;32mPASS[0m  F06: no driver errors
+  [0;36mINFO[0m  F06: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+  [F07] Packed YUV 4:2:2 YUYV  (fourcc=YUYV)
+  [0;32mPASS[0m  F07: no driver errors
+  [0;36mINFO[0m  F07: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+  [F08] Packed YUV 4:2:2 UYVY  (fourcc=UYVY)
+  [0;32mPASS[0m  F08: no driver errors
+  [0;36mINFO[0m  F08: fb_dirty not in dmesg (may need drm.debug=0xff)
+
+--- F09: R1 native 1bpp (direct passthrough) ---
+  [F09] R1 1bpp — ./kmstest -f R1
+  [0;32mPASS[0m  F09: no driver errors
+  [0;36mINFO[0m  F09: R1 success indicators not in dmesg (may need drm.debug=0xff)
+
+================================================
+  PASS: 9     FAIL: 0     SKIP: 0   
+================================================
++ local rc=0
++ echo 'module panel_ssd16xx +p'
++ local result_file
+++ ls -t /root/tests_new2/results/test_formats_20250529_212010.result /root/tests_new2/results/test_formats_20250529_224251.result
+++ head -1
++ result_file=/root/tests_new2/results/test_formats_20250529_224251.result
++ '[' -f /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ cat /root/tests_new2/results/test_formats_20250529_224251.result
++ echo ''
++ local p f s
+++ grep -c '^PASS' /root/tests_new2/results/test_formats_20250529_224251.result
++ p=9
+++ grep -c '^FAIL' /root/tests_new2/results/test_formats_20250529_224251.result
+++ echo 0
++ f='0
+0'
+++ grep -c '^SKIP' /root/tests_new2/results/test_formats_20250529_224251.result
+++ echo 0
++ s='0
+0'
++ PASS_TOTAL=9
+./run_all_tests.sh: line 68: 0
+0: syntax error in expression (error token is "0")
++ run_suite test_properties
++ local name=test_properties
++ local script=test_properties.sh
++ local extra_args=
++ echo ''
+
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo -e '\033[0;36m--- Running: test_properties ---\033[0m'
+[0;36m--- Running: test_properties ---[0m
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo '--- test_properties ---'
++ cd /home/weston
++ bash /root/tests_new2/test_properties.sh
+=== SSD16xx Connector Property Tests ===
+=== Log: /root/tests_new2/logs/test_properties_20250529_224329.log ===
+=== Result: /root/tests_new2/results/test_properties_20250529_224329.result ===
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
+
+
+--- refresh_mode (P01-P03) ---
+  [P01] refresh_mode=0 (partial, ~300-500ms)
+  [0;32mPASS[0m  P01: no driver errors
+[14113.228430] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14115.846491] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14116.504170] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+  [0;32mPASS[0m  P01: partial mode set (dmesg)
+
+  [P02] refresh_mode=1 (full, ~1.5-2s)
+  [0;32mPASS[0m  P02: no driver errors
+[14119.483012] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14121.449064] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14123.240096] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14125.032152] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+  [0;32mPASS[0m  P02: full mode set (dmesg)
+
+  [P03] refresh_mode=2 (fast, ~1.0-1.5s)
+  [0;32mPASS[0m  P03: no driver errors
+[14129.877343] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+[14133.624140] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+[14135.412461] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+  [0;32mPASS[0m  P03: fast mode set (dmesg)
+
+--- rotation (P04-P09) ---
+  [P04] rotation=0 (landscape)
+  [0;32mPASS[0m  P04: no driver errors
+[14140.310634] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_flush [panel_ssd16xx]] atomic_flush: reinit, orientation=0\xc2\xb0
+[14140.337977] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=0\xc2\xb0 data_entry=0x03
+[14140.338032] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14140.993722] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14141.667153] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=0\xc2\xb0
+[14141.830207] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14143.621810] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14144.278962] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+  [0;32mPASS[0m  P04: landscape orientation confirmed
+  [0;32mPASS[0m  P04: connector reports 400x300 mode
+
+  [P05] rotation=90 (portrait CW)
+  [0;32mPASS[0m  P05: no driver errors
+[14148.289933] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_flush [panel_ssd16xx]] atomic_flush: reinit, orientation=90\xc2\xb0
+[14148.317322] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=90\xc2\xb0 data_entry=0x00
+[14148.317377] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=90
+[14148.974579] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=90
+[14149.651253] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=90\xc2\xb0
+[14149.801262] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=1, orientation=90
+[14151.596739] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=90
+[14153.392807] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=90
+  [0;32mPASS[0m  P05: portrait orientation confirmed
+  [0;32mPASS[0m  P05: connector reports 300x400 mode
+
+  [P06] rotation=180 (landscape 180°)
+  [0;32mPASS[0m  P06: no driver errors
+[14156.682560] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_flush [panel_ssd16xx]] atomic_flush: reinit, orientation=180\xc2\xb0
+[14156.709981] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=180\xc2\xb0 data_entry=0x00
+[14156.710038] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+[14157.365220] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+[14158.038108] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=180\xc2\xb0
+[14158.189873] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=180
+[14159.982912] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+[14160.640413] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+  [0;32mPASS[0m  P06: 180° orientation confirmed
+  [0;32mPASS[0m  P06: connector reports 400x300 mode
+
+  [P07] rotation=270 (portrait CCW)
+  [0;32mPASS[0m  P07: no driver errors
+[14164.663903] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_flush [panel_ssd16xx]] atomic_flush: reinit, orientation=270\xc2\xb0
+[14164.690980] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=270\xc2\xb0 data_entry=0x03
+[14164.691033] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=270
+[14165.349598] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=270
+[14166.026473] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=270\xc2\xb0
+[14166.177611] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=1, orientation=270
+[14167.972654] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=270
+[14169.768352] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=270
+  [0;32mPASS[0m  P07: 270° orientation confirmed
+  [0;32mPASS[0m  P07: connector reports 300x400 mode
+
+  [P08] runtime rotation change 0°→90° (triggers hw reinit)
+  [0;32mPASS[0m  P08: no driver errors
+[14176.883780] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_flush [panel_ssd16xx]] atomic_flush: reinit, orientation=90\xc2\xb0
+  [0;32mPASS[0m  P08: reinit triggered on rotation change
+
+  [P09] runtime rotation cycle 0°→90°→180°→270°→0°
+  [0;32mPASS[0m  P09: no driver errors during cycle
+  [0;32mPASS[0m  P09: rotation cycle completed without errors
+
+--- border_waveform_init (P10-P13) ---
+  [P10] border_waveform_init=9 (HiZ float, default)
+  [0;32mPASS[0m  P10: no driver errors
+  [0;32mPASS[0m  P10: HiZ border waveform applied (visual: no flash)
+
+  [P11] border_waveform_init=1 (LUT1 white flash on init)
+  [0;32mPASS[0m  P11: no driver errors
+  [0;32mPASS[0m  P11: LUT1 border waveform applied (visual: white border flash)
+
+  [P12] border_waveform_init=6 (VSL force white border)
+  [0;32mPASS[0m  P12: no driver errors
+  [0;32mPASS[0m  P12: VSL border waveform applied (visual: white border forced)
+
+  [P13] border_waveform_init=5 (VSH1 force black border)
+  [0;32mPASS[0m  P13: no driver errors
+  [0;32mPASS[0m  P13: VSH1 border waveform applied (visual: black border forced)
+
+--- border_refresh_on_every_update (P14-P16) ---
+  [P14] border_refresh=1 + border_waveform_refresh=8 (VCOM, no flash)
+  [0;32mPASS[0m  P14: no driver errors
+  [0;32mPASS[0m  P14: border refresh enabled with VCOM waveform (visual: clean border)
+
+  [P15] border_waveform_refresh=9 (HiZ)
+  [0;32mPASS[0m  P15: no driver errors
+  [0;32mPASS[0m  P15: HiZ waveform on border update (visual: minimal flash)
+
+  [P16] border_refresh=0 (disabled, default)
+  [0;32mPASS[0m  P16: no driver errors
+  [0;32mPASS[0m  P16: border refresh disabled (visual: faster updates, possible border ghost)
+
+--- clear_on_disable property (P17-P19) ---
+  [P17] clear_on_disable=2 (full) via property — fires on CRTC disable
+[14300.954088] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_disable [panel_ssd16xx]] clear_on_disable: running, mode=1
+  [0;32mPASS[0m  P17: full clear on CRTC disable (property=full)
+  [0;32mPASS[0m  P17: no driver errors
+
+  [P18] clear_on_disable=1 (partial) via property — fires on CRTC disable
+[14307.314878] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_disable [panel_ssd16xx]] clear_on_disable: running, mode=0
+  [0;32mPASS[0m  P18: partial clear on CRTC disable (property=partial)
+  [0;32mPASS[0m  P18: no driver errors
+
+  [P19] clear_on_disable=0 (disabled) via property — no clear on CRTC disable
+  [0;32mPASS[0m  P19: no clear on CRTC disable (property=disabled)
+  [0;32mPASS[0m  P19: no driver errors
+
+================================================
+  PASS: 42    FAIL: 0     SKIP: 0   
+================================================
++ local rc=0
++ echo 'module panel_ssd16xx +p'
++ local result_file
+++ ls -t /root/tests_new2/results/test_properties_20250529_212048.result /root/tests_new2/results/test_properties_20250529_224329.result
+++ head -1
++ result_file=/root/tests_new2/results/test_properties_20250529_224329.result
++ '[' -f /root/tests_new2/results/test_properties_20250529_224329.result ']'
++ cat /root/tests_new2/results/test_properties_20250529_224329.result
++ echo ''
++ local p f s
+++ grep -c '^PASS' /root/tests_new2/results/test_properties_20250529_224329.result
++ p=42
+++ grep -c '^FAIL' /root/tests_new2/results/test_properties_20250529_224329.result
+++ echo 0
++ f='0
+0'
+++ grep -c '^SKIP' /root/tests_new2/results/test_properties_20250529_224329.result
+++ echo 0
++ s='0
+0'
++ PASS_TOTAL=51
+./run_all_tests.sh: line 68: 0
+0: syntax error in expression (error token is "0")
++ run_suite test_module_params
++ local name=test_module_params
++ local script=test_module_params.sh
++ local extra_args=
++ echo ''
+
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo -e '\033[0;36m--- Running: test_module_params ---\033[0m'
+[0;36m--- Running: test_module_params ---[0m
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo '--- test_module_params ---'
++ cd /home/weston
++ bash /root/tests_new2/test_module_params.sh
+=== SSD16xx Module Parameter Tests ===
+=== Log: /root/tests_new2/logs/test_module_params_20250529_224700.log ===
+=== Result: /root/tests_new2/results/test_module_params_20250529_224700.result ===
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
+
+
+--- rotation (M01-M04) ---
+
+  [M01] rotation=0 (landscape)
+        insmod args: rotation=0
+[14323.111754] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=0\xc2\xb0
+[14323.167086] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=0\xc2\xb0 data_entry=0x03
+[14323.167431] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14324.991483] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14325.648284] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14326.684524] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=0\xc2\xb0
+[14326.708245] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14327.437447] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=0\xc2\xb0
+[14327.591679] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14329.382941] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+[14330.040471] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=0
+  [0;32mPASS[0m  M01: rotation=0 (landscape)
+
+  [M02] rotation=90 (portrait CW)
+        insmod args: rotation=90
+[14333.107946] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=90\xc2\xb0
+[14333.155220] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=90\xc2\xb0 data_entry=0x00
+[14333.155555] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=1, orientation=90
+[14334.976947] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=90
+[14335.631323] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=90
+[14336.310395] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=90
+[14336.961505] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=90\xc2\xb0
+[14336.985328] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=90
+[14337.718005] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=90\xc2\xb0
+[14337.871512] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=1, orientation=90
+[14339.665577] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=90
+[14340.324338] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=90
+  [0;32mPASS[0m  M02: rotation=90 (portrait CW)
+
+  [M03] rotation=180 (landscape 180°)
+        insmod args: rotation=180
+[14343.395961] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=180\xc2\xb0
+[14343.447026] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=180\xc2\xb0 data_entry=0x00
+[14343.447379] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=180
+[14345.267421] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+[14345.924285] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+[14346.961970] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=180\xc2\xb0
+[14346.986854] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+[14347.715688] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=180\xc2\xb0
+[14347.863893] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=180
+[14349.657567] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+[14350.314401] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=0, orientation=180
+  [0;32mPASS[0m  M03: rotation=180 (landscape 180°)
+
+  [M04] rotation=270 (portrait CCW)
+        insmod args: rotation=270
+[14353.383947] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=270\xc2\xb0
+[14353.429954] ssd16xx spi0.0: [drm:ssd16xx_hw_init [panel_ssd16xx]] hw_init: orientation=270\xc2\xb0 data_entry=0x03
+[14353.430270] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=1, orientation=270
+[14355.248505] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=270
+[14355.907363] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=270
+[14356.934093] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=270\xc2\xb0
+[14356.957408] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=270
+[14357.705050] ssd16xx spi0.0: [drm:ssd16xx_connector_get_modes [panel_ssd16xx]] connector_get_modes: orientation=270\xc2\xb0
+[14357.862469] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=1, orientation=270
+[14359.656556] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=270
+[14360.316773] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=300x400, refresh_mode=0, orientation=270
+  [0;32mPASS[0m  M04: rotation=270 (portrait CCW)
+
+--- refresh_mode (M05-M06) ---
+
+  [M05] refresh_mode=1 (full)
+        insmod args: refresh_mode=1
+[14363.416258] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14365.239908] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14367.032116] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14368.866633] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14370.900321] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14372.692206] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+[14374.484587] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=1, orientation=0
+  [0;32mPASS[0m  M05: refresh_mode=1 (full)
+
+  [M06] refresh_mode=2 (fast)
+        insmod args: refresh_mode=2
+[14379.816258] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+[14381.598340] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+[14383.416463] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+[14385.216765] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+[14389.030520] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+[14390.817947] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: fb=400x300, refresh_mode=2, orientation=0
+  [0;32mPASS[0m  M06: refresh_mode=2 (fast)
+
+--- clear_on_init (M07-M08) ---
+
+  [M07] clear_on_init=1 (full clear on first launch)
+[14394.327267] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] clear_on_init: running, mode=1
+[14394.489460] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14396.110656] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+[14399.873953] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14399.876378] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14400.626401] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14400.628552] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14400.629697] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14400.636022] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14400.780438] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] clear_on_init: running, mode=1
+[14400.914837] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14402.536220] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+  [0;32mPASS[0m  M07: clear on init fired
+
+  [M08] clear_on_init=0 (partial clear on first launch)
+[14408.347137] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] clear_on_init: running, mode=0
+[14408.518652] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14409.004784] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+[14412.504480] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14412.506643] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14413.258595] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14413.260716] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14413.261864] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14413.268061] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14413.407310] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] clear_on_init: running, mode=0
+[14413.542272] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14414.028582] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+  [0;32mPASS[0m  M08: partial clear on init
+
+--- clear_on_close (M09-M10) ---
+
+  [M09] clear_on_close=1 (full clear on CRTC disable)
+[14422.775474] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14422.777590] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14422.792211] ssd16xx spi0.0: [drm:ssd16xx_drm_master_drop [panel_ssd16xx]] clear_on_close: running, mode=1
+[14422.925718] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14424.547179] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+[14425.309202] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14425.311546] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14425.312735] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14425.319005] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14427.902016] ssd16xx spi0.0: [drm:ssd16xx_drm_master_drop [panel_ssd16xx]] clear_on_close: running, mode=1
+[14428.034563] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14429.655746] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+  [0;32mPASS[0m  M09: clear on close fired after rmmod
+
+  [M10] clear_on_close=0 (partial clear on close)
+[14436.883904] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14436.886202] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14436.901705] ssd16xx spi0.0: [drm:ssd16xx_drm_master_drop [panel_ssd16xx]] clear_on_close: running, mode=0
+[14437.035927] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14437.521977] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+[14438.286579] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14438.288953] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14438.290100] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14438.296401] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14440.889694] ssd16xx spi0.0: [drm:ssd16xx_drm_master_drop [panel_ssd16xx]] clear_on_close: running, mode=0
+[14441.022316] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14441.508635] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+  [0;32mPASS[0m  M10: partial clear on close fired
+
+--- refresh_mode_init (M11-M12) ---
+
+  [M11] refresh_mode_init=0 (skip baseline, start partial)
+[14445.031240] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] atomic_enable: refresh_mode_init=0, using for first frame
+[14445.710984] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+[14446.362887] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+[14447.036182] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+[14447.418391] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14447.420736] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14448.088707] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+[14448.170414] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14448.172517] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14448.173673] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14448.180018] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14448.339995] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] atomic_enable: refresh_mode_init=0, using for first frame
+[14448.987982] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0xff
+[14449.642397] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+[14450.299952] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+  [0;32mPASS[0m  M11: refresh_mode_init=0 applied
+
+  [M12] refresh_mode_init=2 (skip baseline, start fast)
+[14453.881453] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] atomic_enable: refresh_mode_init=2, using for first frame
+[14456.627319] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14456.629439] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14457.379297] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14457.381334] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14457.382494] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14457.388709] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: refresh_mode_init
+[14457.542964] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] atomic_enable: refresh_mode_init=2, using for first frame
+  [0;32mPASS[0m  M12: refresh_mode_init=2 applied
+
+--- border_waveform_init_lut (M13) ---
+
+  [M13] border_waveform_init_lut=1 (white border at module load)
+[14466.911846] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_init
+[14466.911861] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_update
+[14466.913993] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_init
+[14466.914008] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_update
+[14467.668252] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_init
+[14467.668267] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_update
+[14467.669866] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_init
+[14467.669882] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_update
+[14467.674916] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_init
+[14467.674932] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_update
+[14467.681255] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_init
+[14467.681271] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: border_waveform_update
+  [0;32mPASS[0m  M13: border_waveform_init_lut applied
+
+--- border_refresh_on_every_update + border_waveform_lut (M14) ---
+
+  [M14] border_refresh_on_every_update=1 + border_waveform_lut=8
+  [0;32mPASS[0m  M14: border_refresh_on_every_update=1 + border_waveform_lut=8 (visual: clean border)
+
+--- clear_on_disable (M15-M17) ---
+
+  [M15] clear_on_disable=1 (full clear on CRTC disable)
+[14498.465147] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_disable [panel_ssd16xx]] clear_on_disable: running, mode=1
+  [0;32mPASS[0m  M15: full clear on CRTC disable
+  [0;32mPASS[0m  M15: no driver errors
+
+  [M16] clear_on_disable=0 (partial clear on CRTC disable)
+[14509.768544] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_disable [panel_ssd16xx]] clear_on_disable: running, mode=0
+  [0;32mPASS[0m  M16: partial clear on CRTC disable
+  [0;32mPASS[0m  M16: no driver errors
+
+  [M17] clear_on_disable default (-1) — no clear on CRTC disable
+  [0;32mPASS[0m  M17: no clear on CRTC disable (disabled by default)
+  [0;32mPASS[0m  M17: no driver errors
+
+--- Restore: default module load ---
+  [0;36mINFO[0m  Module reloaded with defaults: Connector=35 CRTC=38 Plane=36
+
+================================================
+  PASS: 20    FAIL: 0     SKIP: 0   
+================================================
++ local rc=0
++ echo 'module panel_ssd16xx +p'
++ local result_file
+++ ls -t /root/tests_new2/results/test_module_params_20250529_212419.result /root/tests_new2/results/test_module_params_20250529_224700.result
+++ head -1
++ result_file=/root/tests_new2/results/test_module_params_20250529_224700.result
++ '[' -f /root/tests_new2/results/test_module_params_20250529_224700.result ']'
++ cat /root/tests_new2/results/test_module_params_20250529_224700.result
++ echo ''
++ local p f s
+++ grep -c '^PASS' /root/tests_new2/results/test_module_params_20250529_224700.result
++ p=20
+++ grep -c '^FAIL' /root/tests_new2/results/test_module_params_20250529_224700.result
+++ echo 0
++ f='0
+0'
+++ grep -c '^SKIP' /root/tests_new2/results/test_module_params_20250529_224700.result
+++ echo 0
++ s='0
+0'
++ PASS_TOTAL=71
+./run_all_tests.sh: line 68: 0
+0: syntax error in expression (error token is "0")
++ run_suite test_pm ''
++ local name=test_pm
++ local script=test_pm.sh
++ local extra_args=
++ echo ''
+
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo -e '\033[0;36m--- Running: test_pm ---\033[0m'
+[0;36m--- Running: test_pm ---[0m
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo '--- test_pm ---'
++ cd /home/weston
++ bash /root/tests_new2/test_pm.sh
+=== SSD16xx Power Management Tests ===
+=== Log: /root/tests_new2/logs/test_pm_20250529_225028.log ===
+=== Result: /root/tests_new2/results/test_pm_20250529_225028.result ===
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
+
+  [0;36mINFO[0m  /dev/rtc0 not found — system suspend tests will be skipped
+  [0;36mINFO[0m  Board autosuspend default: 35000ms
+
+--- 5.0 Basic smoke (PM01-PM06) ---
+  [0;36mINFO[0m  Autosuspend shortened to 3s for all PM tests
+  [PM01] Runtime suspend after app close
+  [0;32mPASS[0m  PM01: no driver errors
+  [0;32mPASS[0m  PM01: device suspended after app close  (status: suspended)
+[14537.118734] ssd16xx spi0.0: runtime suspend: entering deep sleep mode 0x01
+  [0;32mPASS[0m  PM01: suspend event in dmesg
+
+  [PM02] Runtime resume on app open
+  [0;32mPASS[0m  PM02: no driver errors
+  [0;32mPASS[0m  PM02: device active while app running  (status: active)
+[14540.039730] ssd16xx spi0.0: runtime resume: initialized=0 (running hw_init)
+[14540.067052] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] atomic_enable: 400x300
+[14540.067069] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] atomic_enable: refresh_mode_init=1, using for first frame
+  [0;32mPASS[0m  PM02: resume event in dmesg
+
+  [PM03] Resume from MODE_1 (RAM retained)
+  [0;32mPASS[0m  PM03: no driver errors
+[14549.918738] ssd16xx spi0.0: runtime suspend: entering deep sleep mode 0x01
+[14550.637885] ssd16xx spi0.0: runtime resume: initialized=0 (running hw_init)
+  [0;32mPASS[0m  PM03: MODE_1 deep sleep + resume
+  [1;33mSKIP[0m  PM04: system suspend test (--no-system-suspend)
+  [1;33mSKIP[0m  PM05: system resume test (--no-system-suspend)
+  [1;33mSKIP[0m  PM06: MODE_2 path test (--no-system-suspend)
+
+--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---
+  [RS01] Verify driver default autosuspend delay
+  [0;32mPASS[0m  RS01: driver default autosuspend = 35000ms
+
+  [RS02] Re-apply shortened autosuspend (3s)
+  [0;32mPASS[0m  RS02: autosuspend re-applied to 3000ms
+
+  [RS03] MODE_1 deep sleep on autosuspend
+  [0;32mPASS[0m  RS03: no driver errors
+  [0;32mPASS[0m  RS03: device suspended after autosuspend  (status: suspended)
+[14560.158722] ssd16xx spi0.0: runtime suspend: entering deep sleep mode 0x01
+  [0;32mPASS[0m  RS03: MODE_1 deep sleep command sent
+
+  [RS04] Resume from MODE_1 runs hw_init
+  [0;32mPASS[0m  RS04: no driver errors
+[14562.343613] ssd16xx spi0.0: runtime resume: initialized=0 (running hw_init)
+  [0;32mPASS[0m  RS04: hw_init on resume from MODE_1
+  [0;32mPASS[0m  RS04: device active after resume  (status: active)
+
+  [RS05] Full active→MODE_1→active→MODE_1 lifecycle (2 cycles)
+  [0;32mPASS[0m  RS05 cycle1: active  (status: active)
+  [0;32mPASS[0m  RS05 cycle1: suspended (MODE_1)  (status: suspended)
+  [0;32mPASS[0m  RS05 cycle2: active again  (status: active)
+  [0;32mPASS[0m  RS05 cycle2: suspended again  (status: suspended)
+  [0;32mPASS[0m  RS05: no driver errors during lifecycle
+  [0;32mPASS[0m  RS05: ≥2 runtime resume events (got 2)
+  [0;32mPASS[0m  RS05: ≥2 runtime suspend events (got 2)
+
+--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---
+  [RS06] Deep sleep fires immediately after clear (not after 30s timer)
+[14597.864407] ssd16xx spi0.0: runtime suspend: entering deep sleep mode 0x01
+  [0;32mPASS[0m  RS06: runtime suspend fired (clear_on_close sync suspend)
+  [0;32mPASS[0m  RS06: suspend within 6018ms (expected <20s, not ~30s timer)
+
+  [RS07] Order: clear_display → runtime suspend
+  dmesg ordering (clear_display should appear before runtime suspend):
+    [14611.855353] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+    [14613.476834] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+    [14613.476910] ssd16xx spi0.0: runtime suspend: entering deep sleep mode 0x01
+  [0;32mPASS[0m  RS07: clear_display appears before runtime suspend
+
+--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---
+  [1;33mSKIP[0m  SS01-SS03: system suspend (--no-system-suspend)
+
+--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---
+  [1;33mSKIP[0m  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)
+
+--- 5.5 System suspend — edge cases (SS07-SS10) ---
+  [1;33mSKIP[0m  SS07-SS10: system suspend edge cases (--no-system-suspend)
+
+--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---
+  [1;33mSKIP[0m  TEST4: system suspend (--no-system-suspend)
+
+--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---
+  [1;33mSKIP[0m  TEST5: system suspend (--no-system-suspend)
+
+  [0;36mINFO[0m  Autosuspend delay restored to 35000ms
+
+================================================
+  PASS: 26    FAIL: 0     SKIP: 8   
+================================================
++ local rc=0
++ echo 'module panel_ssd16xx +p'
++ local result_file
+++ ls -t /root/tests_new2/results/test_pm_20250529_212748.result /root/tests_new2/results/test_pm_20250529_225028.result
+++ head -1
++ result_file=/root/tests_new2/results/test_pm_20250529_225028.result
++ '[' -f /root/tests_new2/results/test_pm_20250529_225028.result ']'
++ cat /root/tests_new2/results/test_pm_20250529_225028.result
++ echo ''
++ local p f s
+++ grep -c '^PASS' /root/tests_new2/results/test_pm_20250529_225028.result
++ p=26
+++ grep -c '^FAIL' /root/tests_new2/results/test_pm_20250529_225028.result
+++ echo 0
++ f='0
+0'
+++ grep -c '^SKIP' /root/tests_new2/results/test_pm_20250529_225028.result
++ s=8
++ PASS_TOTAL=97
+./run_all_tests.sh: line 68: 0
+0: syntax error in expression (error token is "0")
++ run_suite test_integration
++ local name=test_integration
++ local script=test_integration.sh
++ local extra_args=
++ echo ''
+
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo -e '\033[0;36m--- Running: test_integration ---\033[0m'
+[0;36m--- Running: test_integration ---[0m
++ echo -e '\033[0;36m======================================\033[0m'
+[0;36m======================================[0m
++ echo '--- test_integration ---'
++ cd /home/weston
++ bash /root/tests_new2/test_integration.sh
+=== SSD16xx Integration and Ordering Tests ===
+=== Log: /root/tests_new2/logs/test_integration_20250529_225207.log ===
+=== Result: /root/tests_new2/results/test_integration_20250529_225207.result ===
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
+
+
+--- 6: Integration tests (I01-I04) ---
+  [I01] clear_on_init=1 + clear_on_close=1 together
+  [0;32mPASS[0m  I01: no driver errors
+[14630.787160] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] clear_on_init: running, mode=1
+[14630.954848] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14632.576529] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+[14636.337455] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14636.337470] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14636.337486] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_disable
+[14636.339273] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14636.339288] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14636.339303] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_disable
+[14636.353459] ssd16xx spi0.0: [drm:ssd16xx_drm_master_drop [panel_ssd16xx]] clear_on_close: running, mode=1
+[14636.486808] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14638.108217] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+[14638.870594] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14638.870609] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14638.870625] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_disable
+[14638.873025] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14638.873040] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14638.873055] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_disable
+[14638.874189] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14638.874205] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14638.874221] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_disable
+[14638.880671] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_init
+[14638.880686] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_close
+[14638.880701] ssd16xx spi0.0: [drm:ssd16xx_connector_atomic_get_property [panel_ssd16xx]] get_property: clear_on_disable
+[14639.038329] ssd16xx spi0.0: [drm:ssd16xx_crtc_atomic_enable [panel_ssd16xx]] clear_on_init: running, mode=1
+[14639.172396] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14640.793623] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+[14643.232493] ssd16xx spi0.0: [drm:ssd16xx_drm_master_drop [panel_ssd16xx]] clear_on_close: running, mode=1
+[14643.365108] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Set border init waveform: 0x01
+[14644.986730] ssd16xx spi0.0: [drm:ssd16xx_clear_display [panel_ssd16xx]] clear_display: Restored border update waveform: 0xc0
+  [0;32mPASS[0m  I01: clear_display fired on init+close path
+
+  [I02] refresh_mode_init=0 — first and second update both use partial (no baseline)
+[14662.671713] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0xff
+[14663.326118] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+[14663.983823] ssd16xx spi0.0: [drm:ssd16xx_fb_dirty [panel_ssd16xx]] fb_dirty: partial post-update: wrote RED baseline mono[0]=0x00
+  [0;32mPASS[0m  I02: partial mode active without baseline
+
+  [I03] Rotation change after PM suspend/resume
+  [0;32mPASS[0m  I03: portrait mode preserved across suspend/resume (rotation=90)
+
+  [I04] Ghosting cleared by full refresh after fast refresh
+  [0;32mPASS[0m  I04: no driver errors
+  [0;32mPASS[0m  I04: full refresh issued after fast (visual: ghosting should be gone)
+
+--- 7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---
+  [0;36mINFO[0m  Dynamic debug enabled for panel_ssd16xx
+
+  [OR01] First display update uses full refresh (mode=0xf7, not 0xff)
+        First mode seen: mode=0xf7
+  [0;32mPASS[0m  OR01: first update used full refresh (mode=0xf7)
+
+  [OR02] First refresh_mode seen is refresh_mode=1 (full), not refresh_mode=0
+        First refresh_mode: refresh_mode=1
+  [0;32mPASS[0m  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial
+
+  [OR03] crtc_atomic_enable logged BEFORE plane_atomic_update on first commit
+        crtc_atomic_enable at dmesg line: 109
+        plane_atomic_update at dmesg line: 113
+  [0;32mPASS[0m  OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)
+
+  [OR04] Subsequent frames use partial (init_refresh_pending is one-shot)
+        All mode= values: mode=0xf7 mode=0xff mode=0xff 
+  [0;32mPASS[0m  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared
+
+  [OR05] Re-enable after CRTC disable re-arms init_refresh_pending (full again)
+        mode=0xf7 (full) occurrences: 2 (expect ≥2)
+  [0;32mPASS[0m  OR05: ≥2 full-refresh frames — init_refresh_pending re-armed on each enable
+  [0;36mINFO[0m  Dynamic debug disabled
+
+================================================
+  PASS: 11    FAIL: 0     SKIP: 0   
+================================================
++ local rc=0
++ echo 'module panel_ssd16xx +p'
++ local result_file
+++ ls -t /root/tests_new2/results/test_integration_20250529_212926.result /root/tests_new2/results/test_integration_20250529_214644.result /root/tests_new2/results/test_integration_20250529_215329.result /root/tests_new2/results/test_integration_20250529_215345.result /root/tests_new2/results/test_integration_20250529_215359.result /root/tests_new2/results/test_integration_20250529_215414.result /root/tests_new2/results/test_integration_20250529_215929.result /root/tests_new2/results/test_integration_20250529_220525.result /root/tests_new2/results/test_integration_20250529_220544.result /root/tests_new2/results/test_integration_20250529_223910.result /root/tests_new2/results/test_integration_20250529_225207.result
+++ head -1
++ result_file=/root/tests_new2/results/test_integration_20250529_225207.result
++ '[' -f /root/tests_new2/results/test_integration_20250529_225207.result ']'
++ cat /root/tests_new2/results/test_integration_20250529_225207.result
++ echo ''
++ local p f s
+++ grep -c '^PASS' /root/tests_new2/results/test_integration_20250529_225207.result
++ p=11
+++ grep -c '^FAIL' /root/tests_new2/results/test_integration_20250529_225207.result
+++ echo 0
++ f='0
+0'
+++ grep -c '^SKIP' /root/tests_new2/results/test_integration_20250529_225207.result
+++ echo 0
++ s='0
+0'
++ PASS_TOTAL=108
+./run_all_tests.sh: line 68: 0
+0: syntax error in expression (error token is "0")
++ LINE=================================================
+++ printf '  PASS: %-4d  FAIL: %-4d  SKIP: %-4d' 108 0 0
++ TOTALS='  PASS: 108   FAIL: 0     SKIP: 0   '
++ echo ''
+
++ echo -e '\033[1m================================================\033[0m'
+[1m================================================[0m
++ echo -e '  PASS: 108   FAIL: 0     SKIP: 0   '
+  PASS: 108   FAIL: 0     SKIP: 0   
++ echo -e '\033[1m================================================\033[0m'
+[1m================================================[0m
++ echo ''
+
++ echo 'Logs    : /root/tests_new2/logs/'
+Logs    : /root/tests_new2/logs/
++ echo 'Results : /root/tests_new2/results/'
+Results : /root/tests_new2/results/
++ echo 'Summary : /root/tests_new2/results/run_all_20250529_224250.summary'
+Summary : /root/tests_new2/results/run_all_20250529_224250.summary
++ echo ''
++ echo '=== GRAND TOTAL ==='
++ echo ================================================
++ echo '  PASS: 108   FAIL: 0     SKIP: 0   '
++ echo ================================================
++ '[' 0 -eq 0 ']'

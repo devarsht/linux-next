@@ -1,0 +1,992 @@
+=== Log: /root/tests_new2/logs/test_formats_20250529_224251.log ===
+=== Result: /root/tests_new2/results/test_formats_20250529_224251.result ===
++ [L56] lsmod
++ [L56] grep -q panel_ssd16xx
++ [L62] '[' -z /root/tests_new2 ']'
++ [L67] source /root/tests_new2/init.sh
+++ [L11] echo 0xff
+++ [L12] echo module panel_ssd16xx +p
+++ [L15] echo '2 4 1 8'
+++ [L18] export LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:/home/weston/:/home/weston/:/home/weston/:
+++ [L18] LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:/home/weston/:/home/weston/:/home/weston/:
+++ [L21] command -v kmstest
+++ [L26] command -v modetest
+++++ [L32] dirname /root/tests_new2/init.sh
++++ [L32] cd /root/tests_new2
++++ [L32] pwd
+++ [L32] SCRIPT_DIR=/root/tests_new2
+++ [L33] source /root/tests_new2/discover.sh
+++++ [L11] ./modetest -M ssd16xx
++++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
++++ [L13] C=35
+++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
++++ [L14] MODE=
+++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L15] CRTC=38
+++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L16] P=36
++++ [L19] MODE=400x300
++++ [L22] export C CRTC P MODE
++++ [L36] head -1
+++++ [L36] uname -r
++++ [L36] find /lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty -name panel-ssd16xx.ko
+++ [L36] BASE=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko
+++ [L39] DEV=
+++ [L40] for d in /sys/bus/spi/devices/*/
+++++ [L41] readlink /sys/bus/spi/devices/spi0.0/driver
++++ [L41] basename ../../../../../../../bus/spi/drivers/ssd16xx
+++ [L41] drv=ssd16xx
+++ [L42] echo ssd16xx
+++ [L42] grep -q ssd16xx
+++ [L43] DEV=/sys/bus/spi/devices/spi0.0
+++ [L44] break
+++ [L48] '[' -z /sys/bus/spi/devices/spi0.0 ']'
+++ [L51] echo 'Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0'
+++ [L54] export C CRTC P MODE BASE DEV
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
++ [L70] '[' -z 35 ']'
++ [L70] '[' -z 38 ']'
++ [L70] '[' -z 36 ']'
++ [L74] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L78] echo ''
+
++ [L47] ./modetest -M ssd16xx -w 35:rotation:0
++ [L48] ./modetest -M ssd16xx -w 35:refresh_mode:0
++ [L50] hdr 'F01-F08: Direct framebuffer formats'
++ [L16] echo ''
++ [L16] echo '--- F01-F08: Direct framebuffer formats ---'
++ [L16] _result ''
+
+--- F01-F08: Direct framebuffer formats ---
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo ''
++ [L16] _result '--- F01-F08: Direct framebuffer formats ---'
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo '--- F01-F08: Direct framebuffer formats ---'
++ [L51] run_format F01 XR24 'XRGB8888 32bpp'
++ [L19] local id=F01 fourcc=XR24 'desc=XRGB8888 32bpp'
++ [L20] echo ''
++ [L21] echo '  [F01] XRGB8888 32bpp  (fourcc=XR24)'
+
++ [L22] dmesg -C
+  [F01] XRGB8888 32bpp  (fourcc=XR24)
++ [L24] local kpid=9788
++ [L23] ./kmstest -f XR24
++ [L25] sleep 3
++ [L26] kill 9788
++ [L27] wait 9788
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F01: no driver errors'
++ [L169] local 'desc=F01: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F01: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F01: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F01: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F01: no driver errors'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  F01: no driver errors
++ [L12] _result 'PASS  F01: no driver errors'
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F01: no driver errors'
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F01: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F01: fb_dirty not in dmesg (may need drm.debug=0xff)'
+  [0;36mINFO[0m  F01: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L52] run_format F02 RG24 'RGB888 24bpp'
++ [L19] local id=F02 fourcc=RG24 'desc=RGB888 24bpp'
++ [L20] echo ''
++ [L21] echo '  [F02] RGB888 24bpp  (fourcc=RG24)'
+
+  [F02] RGB888 24bpp  (fourcc=RG24)
++ [L22] dmesg -C
++ [L24] local kpid=9797
++ [L23] ./kmstest -f RG24
++ [L25] sleep 3
++ [L26] kill 9797
++ [L27] wait 9797
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F02: no driver errors'
++ [L169] local 'desc=F02: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F02: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F02: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F02: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F02: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F02: no driver errors'
+  [0;32mPASS[0m  F02: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F02: no driver errors'
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F02: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F02: fb_dirty not in dmesg (may need drm.debug=0xff)'
+  [0;36mINFO[0m  F02: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L53] run_format F03 RG16 'RGB565 16bpp'
++ [L19] local id=F03 fourcc=RG16 'desc=RGB565 16bpp'
++ [L20] echo ''
++ [L21] echo '  [F03] RGB565 16bpp  (fourcc=RG16)'
+
+  [F03] RGB565 16bpp  (fourcc=RG16)
++ [L22] dmesg -C
++ [L24] local kpid=9807
++ [L23] ./kmstest -f RG16
++ [L25] sleep 3
++ [L26] kill 9807
++ [L27] wait 9807
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F03: no driver errors'
++ [L169] local 'desc=F03: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F03: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F03: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F03: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F03: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F03: no driver errors'
+  [0;32mPASS[0m  F03: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F03: no driver errors'
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F03: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F03: fb_dirty not in dmesg (may need drm.debug=0xff)'
+  [0;36mINFO[0m  F03: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L54] run_format F04 R8 'Grayscale 8bpp'
++ [L19] local id=F04 fourcc=R8 'desc=Grayscale 8bpp'
++ [L20] echo ''
++ [L21] echo '  [F04] Grayscale 8bpp  (fourcc=R8)'
++ [L22] dmesg -C
+
+  [F04] Grayscale 8bpp  (fourcc=R8)
++ [L24] local kpid=9818
++ [L23] ./kmstest -f R8
++ [L25] sleep 3
++ [L26] kill 9818
++ [L27] wait 9818
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F04: no driver errors'
++ [L169] local 'desc=F04: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F04: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F04: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F04: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F04: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F04: no driver errors'
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F04: no driver errors'
+  [0;32mPASS[0m  F04: no driver errors
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F04: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F04: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L55] run_format F05 NV12 'YUV 4:2:0 semi-planar'
+  [0;36mINFO[0m  F04: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L19] local id=F05 fourcc=NV12 'desc=YUV 4:2:0 semi-planar'
++ [L20] echo ''
++ [L21] echo '  [F05] YUV 4:2:0 semi-planar  (fourcc=NV12)'
++ [L22] dmesg -C
+
+  [F05] YUV 4:2:0 semi-planar  (fourcc=NV12)
++ [L24] local kpid=9827
++ [L23] ./kmstest -f NV12
++ [L25] sleep 3
++ [L26] kill 9827
++ [L27] wait 9827
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F05: no driver errors'
++ [L169] local 'desc=F05: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F05: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F05: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F05: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F05: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F05: no driver errors'
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F05: no driver errors'
+  [0;32mPASS[0m  F05: no driver errors
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F05: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F05: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L56] run_format F06 NV16 'YUV 4:2:2 semi-planar'
+  [0;36mINFO[0m  F05: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L19] local id=F06 fourcc=NV16 'desc=YUV 4:2:2 semi-planar'
++ [L20] echo ''
++ [L21] echo '  [F06] YUV 4:2:2 semi-planar  (fourcc=NV16)'
++ [L22] dmesg -C
+
+  [F06] YUV 4:2:2 semi-planar  (fourcc=NV16)
++ [L24] local kpid=9836
++ [L23] ./kmstest -f NV16
++ [L25] sleep 3
++ [L26] kill 9836
++ [L27] wait 9836
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F06: no driver errors'
++ [L169] local 'desc=F06: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F06: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F06: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F06: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F06: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F06: no driver errors'
+  [0;32mPASS[0m  F06: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F06: no driver errors'
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F06: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F06: fb_dirty not in dmesg (may need drm.debug=0xff)'
+  [0;36mINFO[0m  F06: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L57] run_format F07 YUYV 'Packed YUV 4:2:2 YUYV'
++ [L19] local id=F07 fourcc=YUYV 'desc=Packed YUV 4:2:2 YUYV'
++ [L20] echo ''
++ [L21] echo '  [F07] Packed YUV 4:2:2 YUYV  (fourcc=YUYV)'
++ [L22] dmesg -C
+
+  [F07] Packed YUV 4:2:2 YUYV  (fourcc=YUYV)
++ [L24] local kpid=9845
++ [L23] ./kmstest -f YUYV
++ [L25] sleep 3
++ [L26] kill 9845
++ [L27] wait 9845
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F07: no driver errors'
++ [L169] local 'desc=F07: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F07: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F07: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F07: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F07: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F07: no driver errors'
+  [0;32mPASS[0m  F07: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F07: no driver errors'
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F07: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F07: fb_dirty not in dmesg (may need drm.debug=0xff)'
+  [0;36mINFO[0m  F07: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L58] run_format F08 UYVY 'Packed YUV 4:2:2 UYVY'
++ [L19] local id=F08 fourcc=UYVY 'desc=Packed YUV 4:2:2 UYVY'
++ [L20] echo ''
++ [L21] echo '  [F08] Packed YUV 4:2:2 UYVY  (fourcc=UYVY)'
++ [L22] dmesg -C
+
+  [F08] Packed YUV 4:2:2 UYVY  (fourcc=UYVY)
++ [L24] local kpid=9854
++ [L23] ./kmstest -f UYVY
++ [L25] sleep 3
++ [L26] kill 9854
++ [L27] wait 9854
++ [L28] sleep 0.5
++ [L31] check_no_driver_errors 'F08: no driver errors'
++ [L169] local 'desc=F08: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F08: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F08: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F08: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F08: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F08: no driver errors'
+  [0;32mPASS[0m  F08: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F08: no driver errors'
++ [L153] return 0
++ [L34] dmesg
++ [L34] grep -qE fb_dirty
++ [L38] info 'F08: fb_dirty not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F08: fb_dirty not in dmesg (may need drm.debug=0xff)'
+  [0;36mINFO[0m  F08: fb_dirty not in dmesg (may need drm.debug=0xff)
++ [L60] hdr 'F09: R1 native 1bpp (direct passthrough)'
++ [L16] echo ''
++ [L16] echo '--- F09: R1 native 1bpp (direct passthrough) ---'
+
+--- F09: R1 native 1bpp (direct passthrough) ---
++ [L16] _result ''
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo ''
++ [L16] _result '--- F09: R1 native 1bpp (direct passthrough) ---'
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo '--- F09: R1 native 1bpp (direct passthrough) ---'
++ [L61] echo '  [F09] R1 1bpp — ./kmstest -f R1'
++ [L62] dmesg -C
+  [F09] R1 1bpp — ./kmstest -f R1
++ [L64] KPID=9863
++ [L63] ./kmstest -f R1
++ [L65] sleep 3
++ [L66] kill 9863
++ [L66] wait 9863
++ [L67] sleep 0.5
++ [L70] check_no_driver_errors 'F09: no driver errors'
++ [L169] local 'desc=F09: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'F09: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=F09: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'F09: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  F09: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  F09: no driver errors'
+  [0;32mPASS[0m  F09: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo 'PASS  F09: no driver errors'
++ [L153] return 0
++ [L73] dmesg
++ [L73] grep -qE 'R1-fast|R1-direct'
++ [L75] dmesg
++ [L75] grep -qE fb_dirty
++ [L78] info 'F09: R1 success indicators not in dmesg (may need drm.debug=0xff)'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  F09: R1 success indicators not in dmesg (may need drm.debug=0xff)'
+  [0;36mINFO[0m  F09: R1 success indicators not in dmesg (may need drm.debug=0xff)
++ [L82] ./modetest -M ssd16xx -w 35:refresh_mode:0
++ [L84] summary
++ [L19] local totals
+++ [L20] printf '  PASS: %-4d  FAIL: %-4d  SKIP: %-4d' 9 0 0
++ [L20] totals='  PASS: 9     FAIL: 0     SKIP: 0   '
++ [L21] echo ''
++ [L22] echo ================================================
++ [L23] echo '  PASS: 9     FAIL: 0     SKIP: 0   '
+
++ [L24] echo ================================================
+================================================
+  PASS: 9     FAIL: 0     SKIP: 0   
+================================================
++ [L25] _result ''
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo ''
++ [L25] _result ================================================
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo ================================================
++ [L26] _result '  PASS: 9     FAIL: 0     SKIP: 0   '
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo '  PASS: 9     FAIL: 0     SKIP: 0   '
++ [L26] _result ================================================
++ [L10] '[' -n /root/tests_new2/results/test_formats_20250529_224251.result ']'
++ [L10] echo ================================================
++ [L27] '[' 0 -eq 0 ']'
++ [L1] cleanup
++ [L196] exec
+++ [L196] jobs -p
++ [L196] kill ''
++ [L196] wait

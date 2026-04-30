@@ -1,0 +1,5248 @@
+=== Log: /root/tests_new2/logs/test_integration_20250529_214644.log ===
+=== Result: /root/tests_new2/results/test_integration_20250529_214644.result ===
++ [L56] lsmod
++ [L56] grep -q panel_ssd16xx
++ [L62] '[' -z /root/tests_new2 ']'
++ [L67] source /root/tests_new2/init.sh
+++ [L11] echo 0xff
+++ [L12] echo module panel_ssd16xx +p
+++ [L15] echo '2 4 1 8'
+++ [L18] export LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:
+++ [L18] LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:
+++ [L21] command -v kmstest
+++ [L26] command -v modetest
+++++ [L32] dirname /root/tests_new2/init.sh
++++ [L32] cd /root/tests_new2
++++ [L32] pwd
+++ [L32] SCRIPT_DIR=/root/tests_new2
+++ [L33] source /root/tests_new2/discover.sh
+++++ [L11] ./modetest -M ssd16xx
++++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
++++ [L13] C=35
+++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
++++ [L14] MODE=
+++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L15] CRTC=38
+++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
+++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L16] P=36
++++ [L19] MODE=400x300
++++ [L22] export C CRTC P MODE
++++ [L36] head -1
+++++ [L36] uname -r
++++ [L36] find /lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty -name panel-ssd16xx.ko
+++ [L36] BASE=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko
+++ [L39] DEV=
+++ [L40] for d in /sys/bus/spi/devices/*/
+++++ [L41] readlink /sys/bus/spi/devices/spi0.0/driver
++++ [L41] basename ../../../../../../../bus/spi/drivers/ssd16xx
+++ [L41] drv=ssd16xx
+++ [L42] echo ssd16xx
+++ [L42] grep -q ssd16xx
+++ [L43] DEV=/sys/bus/spi/devices/spi0.0
+++ [L44] break
+++ [L48] '[' -z /sys/bus/spi/devices/spi0.0 ']'
+++ [L51] echo 'Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0'
+++ [L54] export C CRTC P MODE BASE DEV
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=/lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko  Device=/sys/bus/spi/devices/spi0.0
++ [L70] '[' -z 35 ']'
++ [L70] '[' -z 38 ']'
++ [L70] '[' -z 36 ']'
++ [L74] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L78] echo ''
+
++ [L21] hdr '6: Integration tests (I01-I04)'
++ [L16] echo ''
++ [L16] echo '--- 6: Integration tests (I01-I04) ---'
+
+--- 6: Integration tests (I01-I04) ---
++ [L16] _result ''
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo ''
++ [L16] _result '--- 6: Integration tests (I01-I04) ---'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo '--- 6: Integration tests (I01-I04) ---'
++ [L23] echo '  [I01] clear_on_init=1 + clear_on_close=1 together'
++ [L24] dmesg -C
+  [I01] clear_on_init=1 + clear_on_close=1 together
++ [L25] module_reload clear_on_init=1 clear_on_close=1
++ [L92] rmmod panel_ssd16xx
++ [L93] sleep 1
++ [L94] '[' -n 'clear_on_init=1 clear_on_close=1' ']'
++ [L95] insmod /lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko clear_on_init=1 clear_on_close=1
++ [L100] echo 'module panel_ssd16xx +p'
++ [L101] sleep 1
++ [L102] _rediscover
++ [L84] '[' -z /root/tests_new2 ']'
++ [L87] source /root/tests_new2/discover.sh
++++ [L11] ./modetest -M ssd16xx
+++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L26] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=6492
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 6492
++ [L114] wait 6492
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L27] dmesg -C
++ [L28] rmmod panel_ssd16xx
++ [L29] sleep 2
++ [L30] check_no_driver_errors 'I01: no driver errors'
++ [L169] local 'desc=I01: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'I01: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=I01: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'I01: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  I01: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  I01: no driver errors'
+  [0;32mPASS[0m  I01: no driver errors
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  I01: no driver errors'
++ [L153] return 0
++ [L31] check_dmesg 'clear_display|clear_on' 'I01: clear_display fired on init+close path'
++ [L123] local 'pattern=clear_display|clear_on' 'desc=I01: clear_display fired on init+close path'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE 'clear_display|clear_on' /tmp/dmesg_capture.log
++ [L126] pass 'I01: clear_display fired on init+close path'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  I01: clear_display fired on init+close path'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  I01: clear_display fired on init+close path'
+  [0;32mPASS[0m  I01: clear_display fired on init+close path
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  I01: clear_display fired on init+close path'
++ [L127] return 0
++ [L32] insmod /lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko
++ [L32] sleep 1
++ [L32] _rediscover
++ [L84] '[' -z /root/tests_new2 ']'
++ [L87] source /root/tests_new2/discover.sh
++++ [L11] ./modetest -M ssd16xx
+++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L34] echo ''
++ [L35] echo '  [I02] refresh_mode_init=0 — first and second update both use partial (no baseline)'
++ [L36] dmesg -C
+
+  [I02] refresh_mode_init=0 — first and second update both use partial (no baseline)
++ [L37] module_reload refresh_mode_init=0
++ [L92] rmmod panel_ssd16xx
++ [L93] sleep 1
++ [L94] '[' -n refresh_mode_init=0 ']'
++ [L95] insmod /lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko refresh_mode_init=0
++ [L100] echo 'module panel_ssd16xx +p'
++ [L101] sleep 1
++ [L102] _rediscover
++ [L84] '[' -z /root/tests_new2 ']'
++ [L87] source /root/tests_new2/discover.sh
++++ [L11] ./modetest -M ssd16xx
+++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 1
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 1
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 1
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 1
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 1
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L38] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=6557
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 6557
++ [L114] wait 6557
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L39] dmesg -C
++ [L40] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=6564
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 6564
++ [L114] wait 6564
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L41] check_dmesg 'partial_mode_ready|baseline|PARTIAL' 'I02: partial mode active without baseline'
++ [L123] local 'pattern=partial_mode_ready|baseline|PARTIAL' 'desc=I02: partial mode active without baseline'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE 'partial_mode_ready|baseline|PARTIAL' /tmp/dmesg_capture.log
++ [L126] pass 'I02: partial mode active without baseline'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  I02: partial mode active without baseline'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  I02: partial mode active without baseline'
+  [0;32mPASS[0m  I02: partial mode active without baseline
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  I02: partial mode active without baseline'
++ [L127] return 0
++ [L42] module_reload
++ [L92] rmmod panel_ssd16xx
++ [L93] sleep 1
++ [L94] '[' -n '' ']'
++ [L97] insmod /lib/modules/7.0.0-rc7-01927-gbd90a68f8d3a-dirty/kernel/drivers/gpu/drm/tiny/panel-ssd16xx.ko
++ [L100] echo 'module panel_ssd16xx +p'
++ [L101] sleep 1
++ [L102] _rediscover
++ [L84] '[' -z /root/tests_new2 ']'
++ [L87] source /root/tests_new2/discover.sh
++++ [L11] ./modetest -M ssd16xx
+++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L42] sleep 1
++ [L44] echo ''
++ [L45] echo '  [I03] Rotation change after PM suspend/resume'
++ [L46] dmesg -C
+
+  [I03] Rotation change after PM suspend/resume
++ [L48] KMS=6602
++ [L47] ./kmstest
++ [L49] sleep 2
++ [L50] ./modetest -M ssd16xx -w 35:rotation:90
++ [L51] kmstest_hold 3
++ [L109] local secs=3
++ [L111] local kpid=6607
++ [L110] ./kmstest
++ [L112] sleep 3
++ [L113] kill 6607
++ [L114] wait 6607
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L52] kill 6602
++ [L52] wait 6602
++ [L53] sleep 3
++ [L55] KMS=6614
++ [L54] ./kmstest
++ [L56] sleep 2
++ [L57] check_dmesg 'orientation=90|portrait|partial_mode_ready' 'I03: portrait mode preserved across suspend/resume'
++ [L123] local 'pattern=orientation=90|portrait|partial_mode_ready' 'desc=I03: portrait mode preserved across suspend/resume'
++ [L124] '[' -f /tmp/dmesg_capture.log ']'
++ [L125] grep -qE 'orientation=90|portrait|partial_mode_ready' /tmp/dmesg_capture.log
++ [L129] fail 'I03: portrait mode preserved across suspend/resume  [pattern: '\''orientation=90|portrait|partial_mode_ready'\'' not in dmesg]'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  I03: portrait mode preserved across suspend/resume  [pattern: '\''orientation=90|portrait|partial_mode_ready'\'' not in dmesg]'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  I03: portrait mode preserved across suspend/resume  [pattern: '\''orientation=90|portrait|partial_mode_ready'\'' not in dmesg]'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'FAIL  I03: portrait mode preserved across suspend/resume  [pattern: '\''orientation=90|portrait|partial_mode_ready'\'' not in dmesg]'
++ [L130] return 1
++ [L58] kill 6614
++ [L58] wait 6614
+  [0;31mFAIL[0m  I03: portrait mode preserved across suspend/resume  [pattern: 'orientation=90|portrait|partial_mode_ready' not in dmesg]
++ [L59] ./modetest -M ssd16xx -w 35:rotation:0
++ [L61] echo ''
++ [L62] echo '  [I04] Ghosting cleared by full refresh after fast refresh'
+
+  [I04] Ghosting cleared by full refresh after fast refresh
++ [L63] ./modetest -M ssd16xx -w 35:refresh_mode:2
++ [L64] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=6621
++ [L112] sleep 4
++ [L110] ./kmstest
++ [L113] kill 6621
++ [L114] wait 6621
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L64] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=6627
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 6627
++ [L114] wait 6627
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L64] kmstest_hold 4
++ [L109] local secs=4
++ [L111] local kpid=6633
++ [L110] ./kmstest
++ [L112] sleep 4
++ [L113] kill 6633
++ [L114] wait 6633
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L65] ./modetest -M ssd16xx -w 35:refresh_mode:1
++ [L66] kmstest_hold 6
++ [L109] local secs=6
++ [L110] ./kmstest
++ [L111] local kpid=6640
++ [L112] sleep 6
++ [L113] kill 6640
++ [L114] wait 6640
++ [L115] sleep 0.5
++ [L117] dmesg
++ [L67] check_no_driver_errors 'I04: no driver errors'
++ [L169] local 'desc=I04: no driver errors'
++ [L170] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO'
++ [L171] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'I04: no driver errors'
++ [L146] local 'pattern=Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' 'desc=I04: no driver errors'
++ [L147] '[' -f /tmp/dmesg_capture.log ']'
++ [L148] grep -qE 'Busy wait timed out|Hardware initialization failed|Clear display failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO' /tmp/dmesg_capture.log
++ [L152] pass 'I04: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  I04: no driver errors'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  I04: no driver errors
++ [L12] _result 'PASS  I04: no driver errors'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  I04: no driver errors'
++ [L153] return 0
++ [L68] pass 'I04: full refresh issued after fast (visual: ghosting should be gone)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  I04: full refresh issued after fast (visual: ghosting should be gone)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  I04: full refresh issued after fast (visual: ghosting should be gone)'
+  [0;32mPASS[0m  I04: full refresh issued after fast (visual: ghosting should be gone)
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  I04: full refresh issued after fast (visual: ghosting should be gone)'
++ [L69] ./modetest -M ssd16xx -w 35:refresh_mode:0
++ [L72] hdr '7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05)'
++ [L16] echo ''
++ [L16] echo '--- 7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---'
++ [L16] _result ''
+
+--- 7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo ''
++ [L16] _result '--- 7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo '--- 7: Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---'
++ [L75] DYNDBG=/sys/kernel/debug/dynamic_debug/control
++ [L76] '[' -w /sys/kernel/debug/dynamic_debug/control ']'
++ [L77] echo 'module panel_ssd16xx +p'
++ [L78] info 'Dynamic debug enabled for panel_ssd16xx'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  Dynamic debug enabled for panel_ssd16xx'
+  [0;36mINFO[0m  Dynamic debug enabled for panel_ssd16xx
++ [L95] echo ''
+
++ [L96] echo '  [OR01] First display update uses full refresh (mode=0xf7, not 0xff)'
+  [OR01] First display update uses full refresh (mode=0xf7, not 0xff)
++ [L97] _fresh_frame
++ [L85] modprobe -r panel_ssd16xx
++ [L85] sleep 1
++ [L86] dmesg -C
++ [L87] modprobe panel_ssd16xx
++ [L87] sleep 1
++ [L88] _rediscover
++ [L84] '[' -z /root/tests_new2 ']'
++ [L87] source /root/tests_new2/discover.sh
++++ [L11] ./modetest -M ssd16xx
+++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L90] local kpid=6677
++ [L89] ./kmstest
++ [L91] sleep 3
++ [L92] kill 6677
++ [L92] wait 6677
+++ [L98] dmesg
+++ [L98] grep -oE 'mode=0x[0-9a-f]+'
+++ [L98] head -1
++ [L98] FIRST_MODE=mode=0xf7
++ [L99] echo '        First mode seen: mode=0xf7'
+        First mode seen: mode=0xf7
++ [L100] '[' mode=0xf7 = mode=0xf7 ']'
++ [L101] pass 'OR01: first update used full refresh (mode=0xf7)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  OR01: first update used full refresh (mode=0xf7)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  OR01: first update used full refresh (mode=0xf7)
++ [L12] _result 'PASS  OR01: first update used full refresh (mode=0xf7)'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  OR01: first update used full refresh (mode=0xf7)'
++ [L108] echo ''
+
++ [L109] echo '  [OR02] First refresh_mode seen is refresh_mode=1 (full), not refresh_mode=0'
+  [OR02] First refresh_mode seen is refresh_mode=1 (full), not refresh_mode=0
++ [L110] _fresh_frame
++ [L85] modprobe -r panel_ssd16xx
++ [L85] sleep 1
++ [L86] dmesg -C
++ [L87] modprobe panel_ssd16xx
++ [L87] sleep 1
++ [L88] _rediscover
++ [L84] '[' -z /root/tests_new2 ']'
++ [L87] source /root/tests_new2/discover.sh
++++ [L11] ./modetest -M ssd16xx
+++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L90] local kpid=6715
++ [L89] ./kmstest
++ [L91] sleep 3
++ [L92] kill 6715
++ [L92] wait 6715
+++ [L111] dmesg
+++ [L111] grep -oE 'refresh_mode=[0-9]+'
+++ [L111] head -1
++ [L111] FIRST_RM=refresh_mode=1
++ [L112] echo '        First refresh_mode: refresh_mode=1'
+        First refresh_mode: refresh_mode=1
++ [L113] '[' refresh_mode=1 = refresh_mode=1 ']'
++ [L114] pass 'OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial
++ [L12] _result 'PASS  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial'
++ [L121] echo ''
+
++ [L122] echo '  [OR03] crtc_atomic_enable logged BEFORE plane_atomic_update on first commit'
+  [OR03] crtc_atomic_enable logged BEFORE plane_atomic_update on first commit
++ [L123] _fresh_frame
++ [L85] modprobe -r panel_ssd16xx
++ [L85] sleep 1
++ [L86] dmesg -C
++ [L87] modprobe panel_ssd16xx
++ [L87] sleep 1
++ [L88] _rediscover
++ [L84] '[' -z /root/tests_new2 ']'
++ [L87] source /root/tests_new2/discover.sh
++++ [L11] ./modetest -M ssd16xx
+++ [L11] _MT='opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'opened device `DRM driver for SSD16xx e-paper controller family` on driver `ssd16xx` (version 1.0.0 at 0)
+Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+	40 rotation:
+		flags: enum
+		enums: 0=0 90=90 180=180 270=270
+		value: 0
+	41 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+	42 border_waveform_init:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 1
+	43 border_waveform_update:
+		flags: enum
+		enums: lut0_black=0 lut1_white=1 lut2_black=2 lut3_gray=3 vss_black=4 vsh1_black=5 vsl_white=6 vsh2_black=7 vcom_preserve=8 hiz_float=9
+		value: 9
+	44 border_refresh_on_every_update:
+		flags: range
+		values: 0 1
+		value: 0
+	45 clear_on_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	46 clear_on_close:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	47 clear_on_disable:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 0
+	48 refresh_mode_init:
+		flags: enum
+		enums: disabled=0 partial=1 full=2 fast=3
+		value: 2
+	49 color_mode:
+		flags: enum
+		enums: black-white=0
+		value: 0
+
+CRTCs:
+id	fb	pos	size
+38	50	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	50	0,0		0,0	0       	0x00000001
+  formats: XR24 RG24 RG16 R8 NV12 NV16 YUYV UYVY R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000900000018000000
+			01000000400000005852323452473234
+			52473136523820204e5631324e563136
+			59555956555956595231202000000000
+			ff010000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 RG24:  LINEAR(0x0)
+			 RG16:  LINEAR(0x0)
+			 R8:  LINEAR(0x0)
+			 NV12:  LINEAR(0x0)
+			 NV16:  LINEAR(0x0)
+			 YUYV:  LINEAR(0x0)
+			 UYVY:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L90] local kpid=6752
++ [L89] ./kmstest
++ [L91] sleep 3
++ [L92] kill 6752
++ [L92] wait 6752
+++ [L124] dmesg
+++ [L124] head -1
+++ [L124] grep -n crtc_atomic_enable
+++ [L124] cut -d: -f1
++ [L124] ENABLE_LINE=109
+++ [L125] dmesg
+++ [L125] grep -n plane_atomic_update
+++ [L125] head -1
+++ [L125] cut -d: -f1
++ [L125] UPDATE_LINE=113
++ [L126] echo '        crtc_atomic_enable at dmesg line: 109'
++ [L127] echo '        plane_atomic_update at dmesg line: 113'
+        crtc_atomic_enable at dmesg line: 109
+        plane_atomic_update at dmesg line: 113
++ [L128] '[' -z 109 ']'
++ [L128] '[' -z 113 ']'
++ [L130] '[' 109 -lt 113 ']'
++ [L131] pass 'OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)
++ [L12] _result 'PASS  OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
++ [L10] echo 'PASS  OR03: crtc_atomic_enable (line 109) before plane_atomic_update (line 113)'
++ [L136] echo ''
+
++ [L137] echo '  [OR04] Subsequent frames use partial (init_refresh_pending is one-shot)'
+  [OR04] Subsequent frames use partial (init_refresh_pending is one-shot)
++ [L140] ./modetest -M ssd16xx -w 35:refresh_mode:0
++ [L141] dmesg -C
++ [L143] KMS=6768
++ [L142] ./kmstest
++ [L144] sleep 4
++ [L145] kill 6768
++ [L145] wait 6768
+++ [L147] dmesg
+++ [L147] grep -oE 'mode=0x[0-9a-f]+'
+++ [L147] tr '\n' ' '
++ [L147] MODES='mode=0xf7 mode=0xff mode=0xff '
++ [L148] echo '        All mode= values: mode=0xf7 mode=0xff mode=0xff '
+        All mode= values: mode=0xf7 mode=0xff mode=0xff 
+++ [L149] echo 'mode=0xf7 mode=0xff mode=0xff '
+++ [L149] awk '{print $1}'
++ [L149] FIRST=mode=0xf7
+++ [L150] echo 'mode=0xf7 mode=0xff mode=0xff '
+++ [L150] awk '{print $2}'
++ [L150] SECOND=mode=0xff
++ [L151] '[' -z mode=0xf7 ']'
++ [L153] '[' mode=0xf7 = mode=0xf7 ']'
++ [L153] '[' mode=0xff = mode=0xff ']'
++ [L154] pass 'OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared'
++ [L10] '[' -n /root/tests_new2/results/test_integration_20250529_214644.result ']'
+  [0;32mPASS[0m  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared
++ [L10] echo 'PASS  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared'
++ [L159] echo ''
+
++ [L160] echo '  [OR05] Re-enable after CRTC disable re-arms init_refresh_pending (full again)'
+  [OR05] Re-enable after CRTC disable re-arms init_refresh_pending (full again)
++ [L161] dmesg -C
++ [L164] sleep 3
++ [L163] ./kmstest
++ [L165] kill %1
++ [L165] wait
+++ [L1] cleanup
+++ [L196] exec
++++ [L196] jobs -p
+++ [L196] kill ''
+++ [L196] wait

@@ -1,0 +1,43 @@
+=== test_module_params  20250529_224700 ===
+
+--- rotation (M01-M04) ---
+PASS  M01: rotation=0 (landscape)
+PASS  M02: rotation=90 (portrait CW)
+PASS  M03: rotation=180 (landscape 180°)
+PASS  M04: rotation=270 (portrait CCW)
+
+--- refresh_mode (M05-M06) ---
+PASS  M05: refresh_mode=1 (full)
+PASS  M06: refresh_mode=2 (fast)
+
+--- clear_on_init (M07-M08) ---
+PASS  M07: clear on init fired
+PASS  M08: partial clear on init
+
+--- clear_on_close (M09-M10) ---
+PASS  M09: clear on close fired after rmmod
+PASS  M10: partial clear on close fired
+
+--- refresh_mode_init (M11-M12) ---
+PASS  M11: refresh_mode_init=0 applied
+PASS  M12: refresh_mode_init=2 applied
+
+--- border_waveform_init_lut (M13) ---
+PASS  M13: border_waveform_init_lut applied
+
+--- border_refresh_on_every_update + border_waveform_lut (M14) ---
+PASS  M14: border_refresh_on_every_update=1 + border_waveform_lut=8 (visual: clean border)
+
+--- clear_on_disable (M15-M17) ---
+PASS  M15: full clear on CRTC disable
+PASS  M15: no driver errors
+PASS  M16: partial clear on CRTC disable
+PASS  M16: no driver errors
+PASS  M17: no clear on CRTC disable (disabled by default)
+PASS  M17: no driver errors
+
+--- Restore: default module load ---
+
+================================================
+  PASS: 20    FAIL: 0     SKIP: 0   
+================================================
