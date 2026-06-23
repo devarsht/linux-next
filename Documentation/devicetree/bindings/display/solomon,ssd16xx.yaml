@@ -24,12 +24,13 @@ allOf:
 
 properties:
   compatible:
-    items:
-      - enum:
-          # Good Display 4.2" 400x300 monochrome e-ink panel
-          - gooddisplay,gdey042t81
-      - enum:
-          - solomon,ssd1683
+    oneOf:
+      - items:
+          - enum:
+              # Good Display 4.2" 400x300 monochrome e-ink panel
+              - gooddisplay,gdey042t81
+          - const: solomon,ssd1683
+      - const: solomon,ssd1677
 
   reg:
     maxItems: 1
