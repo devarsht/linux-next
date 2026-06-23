@@ -30,6 +30,7 @@ properties:
           - gooddisplay,gdey042t81
       - enum:
           - solomon,ssd1683
+          - solomon,ssd1677
 
   reg:
     maxItems: 1
