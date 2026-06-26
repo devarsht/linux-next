@@ -299,6 +299,18 @@ struct ssd16xx_device_config {
 	bool default_border_refresh_on_every_update;
 
 	/*
+	 * Default clear-on-init behaviour.
+	 * -1=disabled, 0=partial, 1=full, 2=fast (matches enum ssd16xx_refresh_mode)
+	 */
+	int default_clear_on_init;
+
+	/* Default clear-on-close behaviour (-1=disabled, 0=partial, 1=full, 2=fast) */
+	int default_clear_on_close;
+
+	/* Default clear-on-disable behaviour (-1=disabled, 0=partial, 1=full, 2=fast) */
+	int default_clear_on_disable;
+
+	/*
 	 * Default refresh-mode-init: -1=disabled, else skip baseline establishment
 	 * and start directly in this refresh mode.
 	 */
@@ -349,6 +361,8 @@ struct ssd16xx_device {
 	bool initialized;
 	bool reinit_pending;      /* HW re-init required after orientation change */
 	bool init_refresh_pending; /* First frame after refresh_mode_init enable */
+	bool first_clear_done;  /* clear_on_init has already fired once */
+	bool display_cleared_on_deinit; /* Avoid redundant clear in atomic_disable/master_drop */
 
 	int orientation; /* Display orientation in degrees: 0/90/180/270 */
 	enum ssd16xx_refresh_mode refresh_mode; /* Active refresh mode */
@@ -362,6 +376,9 @@ struct ssd16xx_device {
 	bool border_waveform_pending;   /* One-shot: send border cmd on next update */
 
 	/* Display control */
+	int clear_on_init;    /* -1=disabled, 0=partial, 1=full, 2=fast */
+	int clear_on_close;   /* -1=disabled, 0=partial, 1=full, 2=fast */
+	int clear_on_disable; /* -1=disabled, 0=partial, 1=full, 2=fast */
 	int refresh_mode_init; /* -1=disabled, else use this mode for the first frame */
 
 	u8  *tx_buf;     /* 1bpp frame buffer (mono + white) */
@@ -420,6 +437,9 @@ static const struct ssd16xx_device_config ssd16xx_device_configs[] = {
 		.default_border_waveform_init   = SSD16XX_BORDER_LUT1,  /* white, clean clear */
 		.default_border_waveform_update = SSD16XX_BORDER_HIZ,   /* floating, preserve */
 		.default_border_refresh_on_every_update = false,
+		.default_clear_on_init    = -1,
+		.default_clear_on_close   = -1,
+		.default_clear_on_disable = -1,
 		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
 		.red_supported = false,  /* 2-colour black/white panel */
 		.default_color_mode = SSD16XX_COLOR_MODE_BW,
@@ -748,9 +768,110 @@ static int ssd16xx_hw_init(struct ssd16xx_device *device)
 	return err;
 }
 
+/*
+ * Clear display by writing all-white to both BW and RED RAM.
+ * The ctrl2 argument selects the waveform (full/partial/fast refresh).
+ * Border waveform is set to init value before clearing, then restored
+ * to the update value to preserve the border during subsequent updates.
+ */
+static int ssd16xx_clear_display(struct ssd16xx_device *device, u8 ctrl2)
+{
+	const u8 *bw_tbl = device->controller_cfg->border_waveform_table;
+	int err = 0;
+	unsigned int data_size = (device->width * device->height) / 8;
+	u8 *white_buffer = device->tx_buf;
 
+	memset(white_buffer, 0xFF, data_size);
 
+	ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
+	ssd16xx_send_x_param(device, 0x00, &err);
 
+	ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
+	ssd16xx_send_y_param(device, 0x00, &err);
+
+	ssd16xx_send_cmd(device, SSD16XX_CMD_WRITE_RAM_BW, &err);
+	ssd16xx_send_data_bulk(device, white_buffer, data_size, &err);
+
+	ssd16xx_send_cmd(device, SSD1683_CMD_WRITE_RAM_RED, &err);
+	ssd16xx_send_data_bulk(device, white_buffer, data_size, &err);
+
+	/* Set border waveform for the clear operation */
+	drm_dbg(&device->drm, "clear_display: Set border init waveform: 0x%02x\n",
+		bw_tbl[device->border_waveform_init_idx]);
+	ssd16xx_send_cmd(device, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
+	ssd16xx_send_data(device,
+			  bw_tbl[device->border_waveform_init_idx],
+			  &err);
+
+	/* 3-colour mode: CTRL1_NORMAL (read both RAMs); BW mode: bypass RED. */
+	ssd16xx_display_update(device,
+			       device->color_mode == SSD16XX_COLOR_MODE_3COLOR
+					? device->controller_cfg->ctrl1_normal
+					: device->controller_cfg->ctrl1_bypass_red_ram,
+			       SSD16XX_CTRL1_BYTE2_DEFAULT, ctrl2, &err);
+
+	/* Restore border waveform to update/preservation value */
+	drm_dbg(&device->drm, "clear_display: Restored border update waveform: 0x%02x\n",
+		bw_tbl[device->border_waveform_update_idx]);
+	ssd16xx_send_cmd(device, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
+	ssd16xx_send_data(device,
+			  bw_tbl[device->border_waveform_update_idx],
+			  &err);
+
+	return err;
+}
+
+static u8 ssd16xx_refresh_mode_to_ctrl2(struct ssd16xx_device *device,
+					enum ssd16xx_refresh_mode mode)
+{
+	if (mode < ARRAY_SIZE(device->controller_cfg->ctrl2_refresh))
+		return device->controller_cfg->ctrl2_refresh[mode];
+	return device->controller_cfg->ctrl2_refresh[SSD16XX_REFRESH_FULL];
+}
+
+/*
+ * Clear display on new DRM master open (if clear_on_init >= 0).
+ * Guarded by device->first_clear_done; master_drop resets it unconditionally
+ * so each new client session gets a fresh clear.
+ */
+static int ssd16xx_clear_display_on_init(struct ssd16xx_device *device)
+{
+	int ret;
+
+	if (device->clear_on_init < 0 || device->first_clear_done)
+		return 0;
+
+	drm_dbg(&device->drm, "clear_on_init: running, mode=%d\n",
+		device->clear_on_init);
+	ret = ssd16xx_clear_display(device,
+				    ssd16xx_refresh_mode_to_ctrl2(device, device->clear_on_init));
+	if (ret)
+		return ret;
+
+	device->first_clear_done = true;
+	return 0;
+}
+
+/*
+ * Clear display when the displaying client exits (if clear_on_close >= 0).
+ * Called from ssd16xx_drm_master_drop().
+ */
+static int ssd16xx_clear_display_on_exit(struct ssd16xx_device *device)
+{
+	int ret;
+
+	if (device->clear_on_close < 0)
+		return 0;
+
+	drm_dbg(&device->drm, "clear_on_close: running, mode=%d\n",
+		device->clear_on_close);
+	ret = ssd16xx_clear_display(device,
+				    ssd16xx_refresh_mode_to_ctrl2(device, device->clear_on_close));
+	if (ret)
+		return ret;
+
+	return 0;
+}
 
 /*
  * ssd16xx_pixel_luma() - return ITU-R BT.601 luminance (0-255) for one pixel.
@@ -1372,11 +1493,26 @@ static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
 					struct drm_atomic_commit *state)
 {
 	struct ssd16xx_device *device = crtc_to_ssd16xx_device(crtc);
-	int idx;
+	int ret, idx;
 
 	if (!drm_dev_enter(&device->drm, &idx))
 		return;
 
+	if (device->clear_on_disable < 0 || device->display_cleared_on_deinit)
+		goto out;
+
+	drm_dbg(&device->drm, "clear_on_disable: running, mode=%d\n",
+		device->clear_on_disable);
+	ret = ssd16xx_clear_display(device,
+				    ssd16xx_refresh_mode_to_ctrl2(device,
+								  device->clear_on_disable));
+	if (ret) {
+		drm_err(&device->drm, "atomic_disable: clear failed: %d\n", ret);
+		goto out;
+	}
+
+	device->display_cleared_on_deinit = true;
+out:
 	drm_dev_exit(idx);
 }
 
@@ -1405,7 +1541,13 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 	if (ret) {
 		drm_err(&device->drm, "crtc_atomic_enable: HW init failed: %d\n", ret);
 		goto out;
+	}
 	device->initialized = true;
+
+	/* Clear display on first app launch if configured */
+	ret = ssd16xx_clear_display_on_init(device);
+	if (ret)
+		drm_err(&device->drm, "crtc_atomic_enable: clear on init failed: %d\n", ret);
 
 	/*
 	 * If refresh_mode_init is set, arm init_refresh_pending so
@@ -1552,6 +1694,8 @@ static void ssd16xx_drm_master_set(struct drm_device *drm,
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(drm);
 
+	device->display_cleared_on_deinit = false;
+	device->first_clear_done = false;
 
 	if (device->refresh_mode_init >= 0)
 		device->init_refresh_pending = true;
@@ -1565,8 +1709,19 @@ static void ssd16xx_drm_master_drop(struct drm_device *drm,
 				    struct drm_file *file)
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(drm);
+	int ret;
 
 	device->init_refresh_pending = false;
+	device->first_clear_done = false;
+
+	if (device->clear_on_close < 0 || device->display_cleared_on_deinit)
+		return;
+
+	ret = ssd16xx_clear_display_on_exit(device);
+	if (ret)
+		drm_err(drm, "master_drop: clear on close failed: %d\n", ret);
+
+	device->display_cleared_on_deinit = true;
 }
 
 static struct drm_driver ssd16xx_drm_driver = {
@@ -1701,6 +1856,9 @@ static int ssd16xx_probe(struct spi_device *spi)
 	device->border_waveform_update_idx = device->device_cfg->default_border_waveform_update;
 	device->border_refresh_on_every_update =
 		device->device_cfg->default_border_refresh_on_every_update;
+	device->clear_on_init    = device->device_cfg->default_clear_on_init;
+	device->clear_on_close   = device->device_cfg->default_clear_on_close;
+	device->clear_on_disable = device->device_cfg->default_clear_on_disable;
 	device->refresh_mode_init = device->device_cfg->default_refresh_mode_init;
 
 	/* Parse "rotation" DT property; swap mode dimensions for portrait. */
