@@ -19,6 +19,7 @@
 #include <drm/clients/drm_client_setup.h>
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
+#include <drm/drm_blend.h>
 #include <drm/drm_damage_helper.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_encoder.h>
@@ -392,7 +393,6 @@ struct ssd16xx_device {
 	u32 height;
 
 	bool initialized;
-	bool reinit_pending;      /* HW re-init required after orientation change */
 	bool init_refresh_pending; /* First frame after refresh_mode_init enable */
 	bool first_clear_done;  /* clear_on_init has already fired once */
 	bool display_cleared_on_deinit; /* Avoid redundant clear in atomic_disable/master_drop */
@@ -421,7 +421,21 @@ struct ssd16xx_device {
 	u16 *tx_buf9;    /* 9-bit SPI expansion buffer (3-wire mode only) */
 
 	struct drm_framebuffer *last_fb;        /* Last drawn FB for reinit redraws */
+	struct drm_property *rotation_property;
 };
+
+/*
+ * Connector state subclass: holds property values that must not be applied
+ * to device state until a commit is validated and committed.  This prevents
+ * a failed atomic check from leaving stale values in device->orientation etc.
+ */
+struct ssd16xx_connector_state {
+	struct drm_connector_state base;
+	int orientation;  /* Pending orientation: 0/90/180/270 */
+};
+
+#define to_ssd16xx_connector_state(s) \
+	container_of((s), struct ssd16xx_connector_state, base)
 
 static inline struct ssd16xx_device *to_ssd16xx_device(struct drm_device *drm)
 {
@@ -1464,6 +1478,10 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 {
 	struct drm_plane_state *old_state = drm_atomic_get_old_plane_state(state, plane);
 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state, plane);
+	struct drm_connector_state *old_cs =
+		drm_atomic_get_old_connector_state(state, &device->connector);
+	struct drm_connector_state *new_cs =
+		drm_atomic_get_new_connector_state(state, &device->connector);
 	struct drm_shadow_plane_state *shadow_state = to_drm_shadow_plane_state(new_state);
 	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
 	enum ssd16xx_refresh_mode saved_mode;
@@ -1478,12 +1496,21 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 		return;
 
 	/*
-	 * If a rotation change is pending, skip the update here — crtc_atomic_flush
+	 * If a rotation change is pending, skip the update here as crtc_atomic_flush
 	 * will re-init the hardware for the new orientation and redraw.
 	 */
-	if (device->reinit_pending) {
-		drm_dbg(&device->drm, "plane_atomic_update: skipping (reinit pending)\n");
-		return;
+
+	if (old_cs && new_cs) {
+		struct ssd16xx_connector_state *old_ssd =
+			to_ssd16xx_connector_state(old_cs);
+		struct ssd16xx_connector_state *new_ssd =
+			to_ssd16xx_connector_state(new_cs);
+
+		if (old_ssd->orientation != new_ssd->orientation) {
+			drm_dbg(&device->drm,
+					"plane_atomic_update: skipping (reinit pending)\n");
+			return;
+		}
 	}
 
 	ret = pm_runtime_resume_and_get(device->drm.dev);
@@ -1702,22 +1729,41 @@ out:
  * Re-initialize hardware and redraw the current framebuffer when the
  * display orientation changes at runtime via the rotation connector property.
  * Called by the DRM atomic helper after atomic_enable/disable have run.
+ *
+ * Orientation was already applied in atomic_enable (so runtime_resume's
+ * hw_init uses the correct value).  Here we compare old vs new connector
+ * states to detect whether a reinit + redraw is needed.
  */
 static void ssd16xx_crtc_atomic_flush(struct drm_crtc *crtc,
 				      struct drm_atomic_commit *state)
 {
 	struct ssd16xx_device *device = crtc_to_ssd16xx_device(crtc);
+	struct drm_connector_state *old_conn_state =
+		drm_atomic_get_old_connector_state(state, &device->connector);
+	struct drm_connector_state *new_conn_state =
+		drm_atomic_get_new_connector_state(state, &device->connector);
+	struct ssd16xx_connector_state *old_ssd_state, *new_ssd_state;
 	struct drm_framebuffer *fb;
 	struct drm_rect full;
 	int ret, idx;
 
-	if (!device->reinit_pending)
+	/* Check if orientation actually changed in this commit */
+	if (!old_conn_state || !new_conn_state)
+		return;
+	old_ssd_state = to_ssd16xx_connector_state(old_conn_state);
+	new_ssd_state = to_ssd16xx_connector_state(new_conn_state);
+	if (old_ssd_state->orientation == new_ssd_state->orientation)
 		return;
 
 	if (!drm_dev_enter(&device->drm, &idx))
 		return;
 
-	device->reinit_pending = false;
+	/*
+	 * Orientation was already applied in atomic_enable.  If atomic_enable
+	 * didn't run (non-modeset commit — shouldn't happen since atomic_check
+	 * forces connectors_changed), apply it now as a safety net.
+	 */
+	device->orientation = new_ssd_state->orientation;
 
 	ret = pm_runtime_resume_and_get(device->drm.dev);
 	if (ret < 0) {
@@ -1807,18 +1853,181 @@ static int ssd16xx_connector_get_modes(struct drm_connector *connector)
 	return drm_connector_helper_get_modes_fixed(connector, device->mode);
 }
 
+static int ssd16xx_connector_atomic_check(struct drm_connector *connector,
+					  struct drm_atomic_commit *state);
+
 static const struct drm_connector_helper_funcs ssd16xx_connector_helper_funcs = {
-	.get_modes = ssd16xx_connector_get_modes,
+	.get_modes    = ssd16xx_connector_get_modes,
+	.atomic_check = ssd16xx_connector_atomic_check,
 };
 
+static int ssd16xx_connector_create_properties(struct ssd16xx_device *device)
+{
+	struct drm_device *drm = &device->drm;
+	struct drm_connector *connector = &device->connector;
+	static const struct drm_prop_enum_list rotation_props[] = {
+		{ __builtin_ffs(DRM_MODE_ROTATE_0)   - 1, "rotate-0"   },
+		{ __builtin_ffs(DRM_MODE_ROTATE_90)  - 1, "rotate-90"  },
+		{ __builtin_ffs(DRM_MODE_ROTATE_180) - 1, "rotate-180" },
+		{ __builtin_ffs(DRM_MODE_ROTATE_270) - 1, "rotate-270" },
+	};
+	unsigned int initial_rot;
 
+	/*
+	 * Rotation: standard DRM_MODE_ROTATE_* bitmask on the connector.
+	 * Attached to the connector (not the plane) so that a change triggers
+	 * a full modeset via connector_atomic_check -> connectors_changed.
+	 * This causes connector_get_modes to return the correctly-dimensioned
+	 * mode and userspace to receive a mode-changed event.
+	 *
+	 * The SSD16xx has no hardware transpose; rotation is implemented via
+	 * pixel traversal order in ssd16xx_convert_fb_to_1bpp and the
+	 * controller data entry mode register (command 0x11).
+	 */
+	switch (device->orientation) {
+	case 90:  initial_rot = DRM_MODE_ROTATE_90;  break;
+	case 180: initial_rot = DRM_MODE_ROTATE_180; break;
+	case 270: initial_rot = DRM_MODE_ROTATE_270; break;
+	default:  initial_rot = DRM_MODE_ROTATE_0;   break;
+	}
+	device->rotation_property =
+		drm_property_create_bitmask(drm, 0, "rotation",
+					    rotation_props,
+					    ARRAY_SIZE(rotation_props),
+					    DRM_MODE_ROTATE_0 |
+					    DRM_MODE_ROTATE_90 |
+					    DRM_MODE_ROTATE_180 |
+					    DRM_MODE_ROTATE_270);
+	if (!device->rotation_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   device->rotation_property, initial_rot);
+	return 0;
+}
+
+static int ssd16xx_connector_atomic_get_property(struct drm_connector *connector,
+						 const struct drm_connector_state *state,
+						 struct drm_property *property,
+						 uint64_t *val)
+{
+	struct ssd16xx_device *device = to_ssd16xx_device(connector->dev);
+	const struct ssd16xx_connector_state *ssd_state =
+		to_ssd16xx_connector_state(state);
+
+	if (property == device->rotation_property) {
+		switch (ssd_state->orientation) {
+		case 90:  *val = DRM_MODE_ROTATE_90;  break;
+		case 180: *val = DRM_MODE_ROTATE_180; break;
+		case 270: *val = DRM_MODE_ROTATE_270; break;
+		default:  *val = DRM_MODE_ROTATE_0;   break;
+		}
+		return 0;
+	}
+	return -EINVAL;
+}
+
+static int ssd16xx_connector_atomic_set_property(struct drm_connector *connector,
+						 struct drm_connector_state *state,
+						 struct drm_property *property,
+						 uint64_t val)
+{
+	struct ssd16xx_device *device = to_ssd16xx_device(connector->dev);
+	struct ssd16xx_connector_state *ssd_state = to_ssd16xx_connector_state(state);
+
+	if (property == device->rotation_property) {
+		switch (val) {
+		case DRM_MODE_ROTATE_90:  ssd_state->orientation = 90;  break;
+		case DRM_MODE_ROTATE_180: ssd_state->orientation = 180; break;
+		case DRM_MODE_ROTATE_270: ssd_state->orientation = 270; break;
+		case DRM_MODE_ROTATE_0:
+		default:
+			ssd_state->orientation = 0;
+			break;
+		}
+		return 0;
+	}
+	return -EINVAL;
+}
+
+static int ssd16xx_connector_atomic_check(struct drm_connector *connector,
+					  struct drm_atomic_commit *state)
+{
+	struct ssd16xx_device *device = to_ssd16xx_device(connector->dev);
+	struct drm_connector_state *new_conn_state =
+		drm_atomic_get_new_connector_state(state, connector);
+	struct ssd16xx_connector_state *new_ssd_state =
+		to_ssd16xx_connector_state(new_conn_state);
+	struct drm_crtc_state *crtc_state;
+
+	/* No rotation change in this commit — nothing to do */
+	if (new_ssd_state->orientation == device->orientation)
+		return 0;
+	if (!new_conn_state->crtc)
+		return 0;
+	crtc_state = drm_atomic_get_new_crtc_state(state, new_conn_state->crtc);
+	if (!crtc_state)
+		return 0;
+
+	/*
+	 * Rotation changes the logical mode dimensions (landscape <-> portrait).
+	 * Force a full modeset so connector_get_modes returns the new dimensions
+	 * and userspace receives a mode-changed event.
+	 */
+	crtc_state->connectors_changed = true;
+	return 0;
+}
+
+static void ssd16xx_connector_reset(struct drm_connector *connector)
+{
+	struct ssd16xx_connector_state *ssd_state;
+	struct ssd16xx_device *device = to_ssd16xx_device(connector->dev);
+
+	if (connector->state) {
+		__drm_atomic_helper_connector_destroy_state(connector->state);
+		kfree(to_ssd16xx_connector_state(connector->state));
+		connector->state = NULL;
+	}
+
+	ssd_state = kzalloc(sizeof(*ssd_state), GFP_KERNEL);
+	if (!ssd_state)
+		return;
+
+	__drm_atomic_helper_connector_reset(connector, &ssd_state->base);
+	ssd_state->orientation = device->orientation;
+}
+
+static struct drm_connector_state *
+ssd16xx_connector_atomic_duplicate_state(struct drm_connector *connector)
+{
+	struct ssd16xx_connector_state *ssd_state, *old_ssd_state;
+
+	old_ssd_state = to_ssd16xx_connector_state(connector->state);
+	ssd_state = kmemdup(old_ssd_state, sizeof(*ssd_state), GFP_KERNEL);
+	if (!ssd_state)
+		return NULL;
+
+	__drm_atomic_helper_connector_duplicate_state(connector, &ssd_state->base);
+	return &ssd_state->base;
+}
+
+static void
+ssd16xx_connector_atomic_destroy_state(struct drm_connector *connector,
+				       struct drm_connector_state *state)
+{
+	struct ssd16xx_connector_state *ssd_state = to_ssd16xx_connector_state(state);
+
+	__drm_atomic_helper_connector_destroy_state(state);
+	kfree(ssd_state);
+}
 
 static const struct drm_connector_funcs ssd16xx_connector_funcs = {
-	.reset = drm_atomic_helper_connector_reset,
+	.reset = ssd16xx_connector_reset,
 	.fill_modes = drm_helper_probe_single_connector_modes,
 	.destroy = drm_connector_cleanup,
-	.atomic_duplicate_state = drm_atomic_helper_connector_duplicate_state,
-	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
+	.atomic_duplicate_state = ssd16xx_connector_atomic_duplicate_state,
+	.atomic_destroy_state = ssd16xx_connector_atomic_destroy_state,
+	.atomic_get_property = ssd16xx_connector_atomic_get_property,
+	.atomic_set_property = ssd16xx_connector_atomic_set_property,
 };
 
 static const u32 ssd16xx_formats[] = {
@@ -2128,6 +2337,9 @@ static int ssd16xx_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
+	ret = ssd16xx_connector_create_properties(device);
+	if (ret)
+		return ret;
 
 	drm_mode_config_reset(drm);
 
