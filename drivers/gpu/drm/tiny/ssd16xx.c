@@ -193,6 +193,7 @@ enum ssd16xx_controller {
 
 enum ssd16xx_model {
 	GDEY042T81 = 1,
+	PIXPAPER426M,
 };
 
 enum ssd16xx_refresh_mode {
@@ -534,6 +535,22 @@ static const struct drm_display_mode gdey042t81_mode = {
 	DRM_SIMPLE_MODE(400, 300, 85, 64),
 };
 
+/*
+ * PIXPAPER 4.26m: Mayqueen 4.26" 800x480 monochrome e-ink panel.
+ * Controller: Solomon SSD1677.  Active area: 92.8x55.68mm.
+ *
+ * Booster soft-start values from the Mayqueen reference implementation.
+ * Level 2 configuration (last byte 0x80); tune if needed for other
+ * boards using the same panel.
+ */
+static const u8 pixpaper426m_booster_soft_start[] = {
+	0xAE, 0xC7, 0xC3, 0xC0, 0x80,
+};
+
+static const struct drm_display_mode pixpaper426m_mode = {
+	DRM_SIMPLE_MODE(800, 480, 93, 56),
+};
+
 static const struct ssd16xx_device_config ssd16xx_device_configs[] = {
 	[GDEY042T81] = {
 		.data_entry_mode = SSD16XX_DATA_ENTRY_XINC_YINC,
@@ -549,6 +566,29 @@ static const struct ssd16xx_device_config ssd16xx_device_configs[] = {
 		.red_supported     = false,
 		.default_color_mode = SSD16XX_COLOR_MODE_BW,
 		.mode = &gdey042t81_mode,
+	},
+	[PIXPAPER426M] = {
+		/*
+		 * SM=1 (BIT(1)): interlaced gate scan required by this panel.
+		 * DATA_ENTRY_MODE is not sent for SSD1677 (skip_data_entry_mode
+		 * in the controller config), so data_entry_mode is for reference
+		 * only and is not programmed to the hardware.
+		 */
+		.data_entry_mode          = SSD16XX_DATA_ENTRY_XINC_YINC,
+		.driver_output_ctrl_byte3 = BIT(1),   /* SM=1, interlaced */
+		.default_refresh_mode     = SSD16XX_REFRESH_FULL,
+		.default_border_waveform_init   = SSD16XX_BORDER_LUT1,
+		.default_border_waveform_update = SSD16XX_BORDER_LUT1,
+		.default_border_refresh_on_every_update = false,
+		.default_clear_on_init    = -1,
+		.default_clear_on_close   = -1,
+		.default_clear_on_disable = -1,
+		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
+		.red_supported     = false,
+		.default_color_mode = SSD16XX_COLOR_MODE_BW,
+		.booster_soft_start_data = pixpaper426m_booster_soft_start,
+		.booster_soft_start_len  = ARRAY_SIZE(pixpaper426m_booster_soft_start),
+		.mode = &pixpaper426m_mode,
 	},
 };
 
@@ -2428,6 +2468,9 @@ static int ssd16xx_probe(struct spi_device *spi)
 	case GDEY042T81:
 		device->controller = SSD1683;
 		break;
+	case PIXPAPER426M:
+		device->controller = SSD1677;
+		break;
 	default:
 		drm_err(drm, "Unknown panel model: %d\n", model);
 		return -EINVAL;
@@ -2759,12 +2802,14 @@ static const struct dev_pm_ops ssd16xx_pm_ops = {
 
 static const struct of_device_id ssd16xx_of_match[] = {
 	{ .compatible = "gooddisplay,gdey042t81",  .data = (void *)GDEY042T81  },
+	{ .compatible = "mayqueen,pixpaper-426m",  .data = (void *)PIXPAPER426M },
 	{ }
 };
 MODULE_DEVICE_TABLE(of, ssd16xx_of_match);
 
 static const struct spi_device_id ssd16xx_id[] = {
 	{ "gdey042t81",    GDEY042T81   },
+	{ "pixpaper-426m", PIXPAPER426M },
 	{ }
 };
 MODULE_DEVICE_TABLE(spi, ssd16xx_id);
