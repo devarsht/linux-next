@@ -39,6 +39,7 @@
 
 /* SPI command codes (common) */
 #define SSD16XX_CMD_DRIVER_OUTPUT_CONTROL		0x01
+#define SSD16XX_CMD_BOOSTER_SOFT_START			0x0C
 #define SSD16XX_CMD_DATA_ENTRY_MODE			0x11
 #define SSD16XX_CMD_SW_RESET				0x12
 #define SSD16XX_CMD_MASTER_ACTIVATION			0x20
@@ -181,6 +182,7 @@
 
 enum ssd16xx_controller {
 	SSD1683 = 1,
+	SSD1677,
 };
 
 enum ssd16xx_model {
@@ -332,6 +334,10 @@ struct ssd16xx_device_config {
 	 */
 	enum ssd16xx_color_mode default_color_mode;
 
+	/* Optional BOOSTER_SOFT_START (0x0C) tuning bytes; NULL if unused. */
+	const u8 *booster_soft_start_data;
+	u8        booster_soft_start_len;
+
 	/* Panel-specific display mode (resolution and physical dimensions) */
 	const struct drm_display_mode *mode;
 };
@@ -416,6 +422,29 @@ static const struct ssd16xx_controller_config ssd16xx_controller_configs[] = {
 		.ctrl2_refresh = {
 			[SSD16XX_REFRESH_PARTIAL] = SSD1683_CTRL2_PARTIAL_REFRESH,
 			[SSD16XX_REFRESH_FULL]    = SSD1683_CTRL2_FULL_REFRESH,
+			[SSD16XX_REFRESH_FAST]    = SSD1683_CTRL2_FAST_REFRESH,
+		},
+		.ctrl2_load_temp_lut     = SSD1683_CTRL2_LOAD_TEMP_LUT,
+	},
+	[SSD1677] = {
+		/*
+		 * 10-bit pixel-level X/Y addressing; only deep sleep mode
+		 * 0x03 is supported (no RAM-retain mode).  Border waveform
+		 * encoding matches SSD1683.
+		 */
+		.max_width  = 960,
+		.max_height = 680,
+		.ram_x_address_bits = 10,
+		.ram_y_address_bits = 10,
+		.has_temp_sensor_ctrl    = true,
+		.deep_sleep_mode_level1  = SSD1683_DEEP_SLEEP_MODE_2,  /* 0x03 */
+		.deep_sleep_mode_level2  = SSD1683_DEEP_SLEEP_MODE_2,  /* 0x03 */
+		.border_waveform_table   = ssd1683_border_waveform_table,
+		.ctrl1_normal            = SSD1683_CTRL1_NORMAL,
+		.ctrl1_bypass_red_ram    = SSD1683_CTRL1_BYPASS_RED_RAM,
+		.ctrl2_refresh = {
+			[SSD16XX_REFRESH_PARTIAL] = 0xFF,
+			[SSD16XX_REFRESH_FULL]    = 0xF4,
 			[SSD16XX_REFRESH_FAST]    = SSD1683_CTRL2_FAST_REFRESH,
 		},
 		.ctrl2_load_temp_lut     = SSD1683_CTRL2_LOAD_TEMP_LUT,
@@ -553,28 +582,44 @@ static void ssd16xx_send_data(struct ssd16xx_device *device, u8 data,
 static void ssd16xx_send_x_param(struct ssd16xx_device *device, u16 x,
 				 int *err)
 {
+	u8 bits = device->controller_cfg->ram_x_address_bits;
+	u16 max_val = (1U << bits) - 1;
+
 	if (*err)
 		return;
 
-	if (device->controller_cfg->ram_x_address_bits == 8) {
+	if (x > max_val)
+		x = max_val;
+
+	if (bits <= 8) {
 		ssd16xx_send_data(device, (u8)x, err);
 	} else {
+		u8 hi_mask = (1U << (bits - 8)) - 1;
+
 		ssd16xx_send_data(device, x & 0xFF, err);
-		ssd16xx_send_data(device, (x >> 8) & 0xFF, err);
+		ssd16xx_send_data(device, (x >> 8) & hi_mask, err);
 	}
 }
 
 static void ssd16xx_send_y_param(struct ssd16xx_device *device, u16 y,
 				 int *err)
 {
+	u8 bits = device->controller_cfg->ram_y_address_bits;
+	u16 max_val = (1U << bits) - 1;
+
 	if (*err)
 		return;
 
-	if (device->controller_cfg->ram_y_address_bits == 8) {
+	if (y > max_val)
+		y = max_val;
+
+	if (bits <= 8) {
 		ssd16xx_send_data(device, (u8)y, err);
 	} else {
+		u8 hi_mask = (1U << (bits - 8)) - 1;
+
 		ssd16xx_send_data(device, y & 0xFF, err);
-		ssd16xx_send_data(device, (y >> 8) & 0xFF, err);
+		ssd16xx_send_data(device, (y >> 8) & hi_mask, err);
 	}
 }
 
@@ -691,20 +736,33 @@ static int ssd16xx_hw_init(struct ssd16xx_device *device)
 
 	ssd16xx_hw_reset(device);
 
-	/* Software reset */
+	/* Software reset (0x12): resets command/parameter registers to defaults. */
 	ssd16xx_send_cmd(device, SSD16XX_CMD_SW_RESET, &err);
 	ssd16xx_wait_for_device(device, &err);
-
-	/* Driver output control (0x01): MUX ratio and scan direction. */
-	ssd16xx_send_cmd(device, SSD16XX_CMD_DRIVER_OUTPUT_CONTROL, &err);
-	ssd16xx_send_y_param(device, device->height - 1, &err);
-	ssd16xx_send_data(device, device->device_cfg->driver_output_ctrl_byte3, &err);
 
 	/* Internal temperature sensor (SSD1683/SSD1680 only; not present in SSD1673) */
 	if (device->controller_cfg->has_temp_sensor_ctrl) {
 		ssd16xx_send_cmd(device, SSD1683_CMD_TEMPERATURE_SENSOR_CONTROL, &err);
 		ssd16xx_send_data(device, SSD1683_TEMP_SENSOR_INTERNAL, &err);
 	}
+
+	/*
+	 * Booster soft-start (0x0C): panel-specific charge pump tuning.
+	 * Some panels (e.g. PIXPAPER 4.26m on SSD1677) require this step;
+	 * others (e.g. GDEY042T81 on SSD1683) omit it.
+	 */
+	if (device->device_cfg->booster_soft_start_data) {
+		ssd16xx_send_cmd(device, SSD16XX_CMD_BOOSTER_SOFT_START, &err);
+		ssd16xx_send_data_bulk(device,
+				       device->device_cfg->booster_soft_start_data,
+				       device->device_cfg->booster_soft_start_len,
+				       &err);
+	}
+
+	/* Driver output control (0x01): MUX ratio and scan direction. */
+	ssd16xx_send_cmd(device, SSD16XX_CMD_DRIVER_OUTPUT_CONTROL, &err);
+	ssd16xx_send_y_param(device, device->height - 1, &err);
+	ssd16xx_send_data(device, device->device_cfg->driver_output_ctrl_byte3, &err);
 
 	/*
 	 * For FAST refresh mode, pre-load the LUT once here during initialization.
