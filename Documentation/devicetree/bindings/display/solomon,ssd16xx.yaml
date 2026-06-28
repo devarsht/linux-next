@@ -26,8 +26,10 @@ properties:
   compatible:
     items:
       - enum:
-          # Good Display 4.2" 400x300 monochrome e-ink panel
+          # Good Display 4.2" 400x300 monochrome e-ink panel (SSD1683)
           - gooddisplay,gdey042t81
+          # Mayqueen 4.26" 800x480 monochrome e-ink panel (SSD1677)
+          - mayqueen,pixpaper-426m
       - enum:
           - solomon,ssd1683
           - solomon,ssd1677
@@ -77,6 +79,7 @@ examples:
         #address-cells = <1>;
         #size-cells = <0>;
 
+        /* Good Display GDEY042T81: 4.2" 400x300 (SSD1683) */
         display@0 {
             compatible = "gooddisplay,gdey042t81", "solomon,ssd1683";
             reg = <0>;
@@ -84,5 +87,15 @@ examples:
             reset-gpios = <&gpio1 17 GPIO_ACTIVE_LOW>;
             busy-gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;
             dc-gpios = <&gpio1 19 GPIO_ACTIVE_HIGH>;
+        };
+
+        /* Mayqueen PIXPAPER 4.26m: 800x480 (SSD1677) */
+        display@1 {
+            compatible = "mayqueen,pixpaper-426m", "solomon,ssd1677";
+            reg = <1>;
+            spi-max-frequency = <1000000>;
+            reset-gpios = <&gpio2 0 GPIO_ACTIVE_LOW>;
+            busy-gpios = <&gpio2 1 GPIO_ACTIVE_HIGH>;
+            dc-gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
         };
     };
