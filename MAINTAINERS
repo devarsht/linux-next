@@ -8566,6 +8566,15 @@ F:	Documentation/devicetree/bindings/display/solomon,ssd-common.yaml
 F:	Documentation/devicetree/bindings/display/solomon,ssd13*.yaml
 F:	drivers/gpu/drm/solomon/ssd130x*
 
+DRM DRIVER FOR SOLOMON SSD16XX E-PAPER DISPLAY CONTROLLERS
+M:	Devarsh Thakkar <devarsht@ti.com>
+R:	LiangCheng Wang <zaq14760@gmail.com>
+S:	Maintained
+T:	git https://gitlab.freedesktop.org/drm/misc/kernel.git
+F:	Documentation/devicetree/bindings/display/solomon,ssd1683.yaml
+F:	arch/arm64/boot/dts/ti/k3-am62l3-evm-epaper-gdey042t81.dtso
+F:	drivers/gpu/drm/solomon/ssd16xx.c
+
 DRM DRIVER FOR ST-ERICSSON MCDE
 M:	Linus Walleij <linusw@kernel.org>
 S:	Maintained
