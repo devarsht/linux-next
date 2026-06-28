@@ -423,6 +423,7 @@ struct ssd16xx_device {
 	struct drm_framebuffer *last_fb;        /* Last drawn FB for reinit redraws */
 	struct drm_property *rotation_property;
 	struct drm_property *refresh_mode_property;
+	struct drm_property *color_mode_property;
 };
 
 /*
@@ -434,6 +435,7 @@ struct ssd16xx_connector_state {
 	struct drm_connector_state base;
 	int orientation;  /* Pending orientation: 0/90/180/270 */
 	enum ssd16xx_refresh_mode refresh_mode; /* Pending refresh mode */
+	enum ssd16xx_color_mode color_mode;     /* Pending color mode */
 };
 
 #define to_ssd16xx_connector_state(s) \
@@ -1533,8 +1535,8 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 		rect.x1, rect.y1, rect.x2, rect.y2);
 
 	/*
-	 * Apply committed refresh_mode from connector state.  Determine whether
-	 * fast LUT preload is needed by comparing old vs new committed values.
+	 * Apply committed refresh_mode and color_mode from connector state.
+	 * Determine whether fast LUT preload is needed by comparing old vs new.
 	 */
 	if (old_cs && new_cs) {
 		struct ssd16xx_connector_state *old_ssd =
@@ -1555,6 +1557,8 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 			else
 				device->fast_lut_pending = false;
 		}
+		if (old_ssd->color_mode != new_ssd->color_mode)
+			device->color_mode = new_ssd->color_mode;
 	}
 
 	/*
@@ -1888,6 +1892,11 @@ static const struct drm_connector_helper_funcs ssd16xx_connector_helper_funcs = 
 	.atomic_check = ssd16xx_connector_atomic_check,
 };
 
+static const struct drm_prop_enum_list ssd16xx_color_mode_enum[] = {
+	{ SSD16XX_COLOR_MODE_BW,     "black-white" },
+	{ SSD16XX_COLOR_MODE_3COLOR, "3-color"     },
+};
+
 static const struct drm_prop_enum_list ssd16xx_refresh_mode_enum[] = {
 	{ SSD16XX_REFRESH_PARTIAL, "partial" },
 	{ SSD16XX_REFRESH_FULL,    "full"    },
@@ -1945,6 +1954,23 @@ static int ssd16xx_connector_create_properties(struct ssd16xx_device *device)
 	drm_object_attach_property(&connector->base,
 				   device->refresh_mode_property,
 				   device->refresh_mode);
+
+	/*
+	 * Color mode: for BW-only panels the property exists but only
+	 * "black-white" is selectable; the 3-color option is restricted
+	 * to panels with a physical red plane.
+	 */
+	device->color_mode_property =
+		drm_property_create_enum(drm, 0, "color_mode",
+					 ssd16xx_color_mode_enum,
+					 device->device_cfg->red_supported
+						? ARRAY_SIZE(ssd16xx_color_mode_enum)
+						: 1);
+	if (!device->color_mode_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   device->color_mode_property,
+				   device->color_mode);
 	return 0;
 }
 
@@ -1968,6 +1994,10 @@ static int ssd16xx_connector_atomic_get_property(struct drm_connector *connector
 	}
 	if (property == device->refresh_mode_property) {
 		*val = ssd_state->refresh_mode;
+		return 0;
+	}
+	if (property == device->color_mode_property) {
+		*val = ssd_state->color_mode;
 		return 0;
 	}
 	return -EINVAL;
@@ -1997,6 +2027,18 @@ static int ssd16xx_connector_atomic_set_property(struct drm_connector *connector
 		if (val > SSD16XX_REFRESH_FAST)
 			return -EINVAL;
 		ssd_state->refresh_mode = val;
+		return 0;
+	}
+	if (property == device->color_mode_property) {
+		if (val > SSD16XX_COLOR_MODE_3COLOR)
+			return -EINVAL;
+		if (val == SSD16XX_COLOR_MODE_3COLOR &&
+		    !device->device_cfg->red_supported) {
+			drm_dbg(&device->drm,
+				"3-color not supported by this panel\n");
+			return -EINVAL;
+		}
+		ssd_state->color_mode = val;
 		return 0;
 	}
 	return -EINVAL;
@@ -2048,6 +2090,7 @@ static void ssd16xx_connector_reset(struct drm_connector *connector)
 	__drm_atomic_helper_connector_reset(connector, &ssd_state->base);
 	ssd_state->orientation = device->orientation;
 	ssd_state->refresh_mode = device->refresh_mode;
+	ssd_state->color_mode = device->color_mode;
 }
 
 static struct drm_connector_state *
