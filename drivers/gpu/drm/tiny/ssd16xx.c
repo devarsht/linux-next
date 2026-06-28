@@ -422,6 +422,7 @@ struct ssd16xx_device {
 
 	struct drm_framebuffer *last_fb;        /* Last drawn FB for reinit redraws */
 	struct drm_property *rotation_property;
+	struct drm_property *refresh_mode_property;
 };
 
 /*
@@ -432,6 +433,7 @@ struct ssd16xx_device {
 struct ssd16xx_connector_state {
 	struct drm_connector_state base;
 	int orientation;  /* Pending orientation: 0/90/180/270 */
+	enum ssd16xx_refresh_mode refresh_mode; /* Pending refresh mode */
 };
 
 #define to_ssd16xx_connector_state(s) \
@@ -1476,6 +1478,7 @@ static int ssd16xx_plane_atomic_check(struct drm_plane *plane,
 static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 					struct drm_atomic_commit *state)
 {
+	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
 	struct drm_plane_state *old_state = drm_atomic_get_old_plane_state(state, plane);
 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state, plane);
 	struct drm_connector_state *old_cs =
@@ -1483,7 +1486,6 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	struct drm_connector_state *new_cs =
 		drm_atomic_get_new_connector_state(state, &device->connector);
 	struct drm_shadow_plane_state *shadow_state = to_drm_shadow_plane_state(new_state);
-	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
 	enum ssd16xx_refresh_mode saved_mode;
 	u8 saved_border_waveform_idx;
 	struct drm_framebuffer *fb = new_state->fb;
@@ -1529,6 +1531,32 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 
 	drm_dbg(&device->drm, "plane_atomic_update: calling fb_dirty rect=(%d,%d)-(%d,%d)\n",
 		rect.x1, rect.y1, rect.x2, rect.y2);
+
+	/*
+	 * Apply committed refresh_mode from connector state.  Determine whether
+	 * fast LUT preload is needed by comparing old vs new committed values.
+	 */
+	if (old_cs && new_cs) {
+		struct ssd16xx_connector_state *old_ssd =
+			to_ssd16xx_connector_state(old_cs);
+		struct ssd16xx_connector_state *new_ssd =
+			to_ssd16xx_connector_state(new_cs);
+
+		if (old_ssd->refresh_mode != new_ssd->refresh_mode) {
+			device->refresh_mode = new_ssd->refresh_mode;
+			/*
+			 * Fast refresh omits LOAD_LUT each update; arm the
+			 * one-shot flag so LUT is pre-loaded before the first
+			 * fast frame.
+			 */
+			if (new_ssd->refresh_mode == SSD16XX_REFRESH_FAST &&
+			    old_ssd->refresh_mode != SSD16XX_REFRESH_FULL)
+				device->fast_lut_pending = true;
+			else
+				device->fast_lut_pending = false;
+		}
+	}
+
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
 	 * frame only, then restore the user-configured refresh_mode so
@@ -1543,10 +1571,9 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 
 	/*
 	 * Fast refresh (0xC7) omits LOAD_LUT on every update cycle and relies
-	 * on the LUT being pre-loaded upfront.  The property setter arms
-	 * fast_lut_pending whenever the user switches into fast mode.  Consume
-	 * the flag here (once) before the first fast-refresh frame so the
-	 * controller's LUT is in the correct state.
+	 * on the LUT being pre-loaded upfront.  Consume the flag here (once)
+	 * before the first fast-refresh frame so the controller's LUT is in
+	 * the correct state.
 	 */
 	if (device->fast_lut_pending) {
 		ret = ssd16xx_preload_fast_lut(device);
@@ -1861,6 +1888,12 @@ static const struct drm_connector_helper_funcs ssd16xx_connector_helper_funcs = 
 	.atomic_check = ssd16xx_connector_atomic_check,
 };
 
+static const struct drm_prop_enum_list ssd16xx_refresh_mode_enum[] = {
+	{ SSD16XX_REFRESH_PARTIAL, "partial" },
+	{ SSD16XX_REFRESH_FULL,    "full"    },
+	{ SSD16XX_REFRESH_FAST,    "fast"    },
+};
+
 static int ssd16xx_connector_create_properties(struct ssd16xx_device *device)
 {
 	struct drm_device *drm = &device->drm;
@@ -1902,6 +1935,16 @@ static int ssd16xx_connector_create_properties(struct ssd16xx_device *device)
 		return -ENOMEM;
 	drm_object_attach_property(&connector->base,
 				   device->rotation_property, initial_rot);
+
+	device->refresh_mode_property =
+		drm_property_create_enum(drm, 0, "refresh_mode",
+					 ssd16xx_refresh_mode_enum,
+					 ARRAY_SIZE(ssd16xx_refresh_mode_enum));
+	if (!device->refresh_mode_property)
+		return -ENOMEM;
+	drm_object_attach_property(&connector->base,
+				   device->refresh_mode_property,
+				   device->refresh_mode);
 	return 0;
 }
 
@@ -1921,6 +1964,10 @@ static int ssd16xx_connector_atomic_get_property(struct drm_connector *connector
 		case 270: *val = DRM_MODE_ROTATE_270; break;
 		default:  *val = DRM_MODE_ROTATE_0;   break;
 		}
+		return 0;
+	}
+	if (property == device->refresh_mode_property) {
+		*val = ssd_state->refresh_mode;
 		return 0;
 	}
 	return -EINVAL;
@@ -1944,6 +1991,12 @@ static int ssd16xx_connector_atomic_set_property(struct drm_connector *connector
 			ssd_state->orientation = 0;
 			break;
 		}
+		return 0;
+	}
+	if (property == device->refresh_mode_property) {
+		if (val > SSD16XX_REFRESH_FAST)
+			return -EINVAL;
+		ssd_state->refresh_mode = val;
 		return 0;
 	}
 	return -EINVAL;
@@ -1994,6 +2047,7 @@ static void ssd16xx_connector_reset(struct drm_connector *connector)
 
 	__drm_atomic_helper_connector_reset(connector, &ssd_state->base);
 	ssd_state->orientation = device->orientation;
+	ssd_state->refresh_mode = device->refresh_mode;
 }
 
 static struct drm_connector_state *
