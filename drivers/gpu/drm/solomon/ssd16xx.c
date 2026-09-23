@@ -358,6 +358,9 @@ struct ssd16xx_device_config {
 	const u8 *booster_soft_start_data;
 	u8        booster_soft_start_len;
 
+	/* Controller scans this panel's RAM X in the reverse direction. */
+	bool x_mirror;
+
 	/* Panel-specific display mode (resolution and physical dimensions) */
 	const struct drm_display_mode *mode;
 };
@@ -513,6 +516,7 @@ static const struct ssd16xx_device_config ssd16xx_device_configs[] = {
 		.default_clear_on_disable = -1,
 		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
 		.red_supported = false,  /* 2-colour black/white panel */
+		.x_mirror = false,
 		.default_color_mode = SSD16XX_COLOR_MODE_BW,
 		.mode = &gdey042t81_mode,
 	},
@@ -1121,10 +1125,11 @@ static void ssd16xx_convert_fb_to_3color(u8 *bw_dst, u8 *red_dst,
 static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 				       struct drm_framebuffer *fb,
 				       struct drm_rect *rect,
-				       unsigned int orientation)
+				       unsigned int orientation,
+				       bool x_mirror)
 {
 	u32 format = fb->format->format;
-	int x, y;
+	int x, y, i;
 	u8 byte = 0;
 	unsigned int bit_pos = 0;
 	unsigned int dst_idx = 0;
@@ -1146,7 +1151,8 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 	 * if not, the generic pixel-by-pixel loop below handles non-aligned
 	 * rects safely.
 	 */
-	if (format == DRM_FORMAT_R1 && orientation == 0 && rect->x1 % 8 == 0) {
+	if (format == DRM_FORMAT_R1 && orientation == 0 && rect->x1 % 8 == 0 &&
+	    !x_mirror) {
 		unsigned int src_pitch = fb->pitches[0];
 		unsigned int width_bytes = drm_rect_width(rect) / 8;
 
@@ -1168,7 +1174,8 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 		 * The data entry mode and cursor position control scan direction.
 		 */
 		for (x = rect->x2 - 1; x >= (int)rect->x1; x--) {
-			for (y = rect->y1; y < rect->y2; y++) {
+			for (i = 0; i < drm_rect_height(rect); i++) {
+				y = x_mirror ? rect->y2 - 1 - i : rect->y1 + i;
 				if (ssd16xx_pixel_is_white(src, fb, x, y))
 					byte |= (1 << (7 - bit_pos));
 				if (++bit_pos == 8) {
@@ -1194,7 +1201,8 @@ static void ssd16xx_convert_fb_to_1bpp(u8 *dst, struct iosys_map *src,
 		 * The data entry mode and cursor position control scan direction.
 		 */
 		for (y = rect->y1; y < rect->y2; y++) {
-			for (x = rect->x1; x < rect->x2; x++) {
+			for (i = 0; i < drm_rect_width(rect); i++) {
+				x = x_mirror ? rect->x2 - 1 - i : rect->x1 + i;
 				if (ssd16xx_pixel_is_white(src, fb, x, y))
 					byte |= (1 << (7 - bit_pos));
 				if (++bit_pos == 8) {
@@ -1267,7 +1275,9 @@ static int ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	if (red_buffer)
 		ssd16xx_convert_fb_to_3color(mono_buffer, red_buffer, &map, fb, rect);
 	else
-		ssd16xx_convert_fb_to_1bpp(mono_buffer, &map, fb, rect, device->orientation);
+		ssd16xx_convert_fb_to_1bpp(mono_buffer, &map, fb, rect,
+					   device->orientation,
+					   device->device_cfg->x_mirror);
 
 	drm_dbg(&device->drm,
 		"fb_dirty: mono[0..3]=0x%02x 0x%02x 0x%02x 0x%02x (data_size=%u)\n",
