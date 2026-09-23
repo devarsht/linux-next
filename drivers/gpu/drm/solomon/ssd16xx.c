@@ -401,6 +401,7 @@ struct ssd16xx_device {
 	u8  spi_buf[64] ____cacheline_aligned; /* DMA-safe buffer for SPI transfers */
 
 	struct drm_property *refresh_mode_property;
+	struct drm_property *color_mode_property;
 };
 
 /* Plane state subclass: refresh_mode lives on the plane, not the connector,
@@ -409,6 +410,7 @@ struct ssd16xx_device {
 struct ssd16xx_plane_state {
 	struct drm_shadow_plane_state base;
 	enum ssd16xx_refresh_mode refresh_mode; /* Pending refresh mode */
+	enum ssd16xx_color_mode color_mode;     /* Pending color mode */
 };
 
 #define to_ssd16xx_plane_state(s) \
@@ -1453,6 +1455,7 @@ static struct drm_plane_state *ssd16xx_plane_atomic_create_state(struct drm_plan
 
 	__drm_gem_shadow_plane_state_init(plane, &ssd_state->base);
 	ssd_state->refresh_mode = device->refresh_mode;
+	ssd_state->color_mode = device->color_mode;
 
 	return &ssd_state->base.base;
 }
@@ -1495,6 +1498,10 @@ static int ssd16xx_plane_atomic_get_property(struct drm_plane *plane,
 		*val = ssd_state->refresh_mode;
 		return 0;
 	}
+	if (property == device->color_mode_property) {
+		*val = ssd_state->color_mode;
+		return 0;
+	}
 	return -EINVAL;
 }
 
@@ -1510,6 +1517,18 @@ static int ssd16xx_plane_atomic_set_property(struct drm_plane *plane,
 		if (val > SSD16XX_REFRESH_FAST)
 			return -EINVAL;
 		ssd_state->refresh_mode = val;
+		return 0;
+	}
+	if (property == device->color_mode_property) {
+		if (val > SSD16XX_COLOR_MODE_3COLOR)
+			return -EINVAL;
+		if (val == SSD16XX_COLOR_MODE_3COLOR &&
+		    !device->device_cfg->red_supported) {
+			drm_dbg(&device->drm,
+				"3-color not supported by this panel\n");
+			return -EINVAL;
+		}
+		ssd_state->color_mode = val;
 		return 0;
 	}
 	return -EINVAL;
@@ -1531,10 +1550,19 @@ static int ssd16xx_plane_atomic_check(struct drm_plane *plane,
 {
 	struct drm_plane_state *new_plane_state =
 		drm_atomic_get_new_plane_state(state, plane);
+	struct ssd16xx_plane_state *ssd_state =
+		to_ssd16xx_plane_state(new_plane_state);
 	struct drm_crtc_state *crtc_state;
 
 	if (!new_plane_state->crtc)
 		return 0;
+
+	if (ssd_state->color_mode == SSD16XX_COLOR_MODE_3COLOR &&
+	    ssd_state->refresh_mode == SSD16XX_REFRESH_PARTIAL) {
+		drm_dbg_atomic(plane->dev,
+			       "3-color mode does not support partial refresh\n");
+		return -EINVAL;
+	}
 
 	crtc_state = drm_atomic_get_new_crtc_state(state, new_plane_state->crtc);
 
@@ -1596,6 +1624,7 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	}
 
 	device->refresh_mode = new_ssd->refresh_mode;
+	device->color_mode = new_ssd->color_mode;
 
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
@@ -1834,6 +1863,11 @@ static const struct drm_prop_enum_list ssd16xx_refresh_mode_enum[] = {
 	{ SSD16XX_REFRESH_FAST,    "fast"    },
 };
 
+static const struct drm_prop_enum_list ssd16xx_color_mode_enum[] = {
+	{ SSD16XX_COLOR_MODE_BW,     "black-white" },
+	{ SSD16XX_COLOR_MODE_3COLOR, "3-color"     },
+};
+
 static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
 {
 	struct drm_device *drm = &device->drm;
@@ -1848,6 +1882,23 @@ static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
 	drm_object_attach_property(plane_obj,
 				   device->refresh_mode_property,
 				   device->refresh_mode);
+
+	/*
+	 * Color mode: for BW-only panels the property exists but only
+	 * "black-white" is selectable; the 3-color option is restricted
+	 * to panels with a physical red plane.
+	 */
+	device->color_mode_property =
+		drm_property_create_enum(drm, 0, "color_mode",
+					 ssd16xx_color_mode_enum,
+					 device->device_cfg->red_supported
+						? ARRAY_SIZE(ssd16xx_color_mode_enum)
+						: 1);
+	if (!device->color_mode_property)
+		return -ENOMEM;
+	drm_object_attach_property(plane_obj,
+				   device->color_mode_property,
+				   device->color_mode);
 	return 0;
 }
 
