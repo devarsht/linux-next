@@ -205,6 +205,18 @@ enum ssd16xx_color_mode {
 	SSD16XX_COLOR_MODE_3COLOR = 1, /* 3-colour BWR; RED RAM used for red pixels */
 };
 
+/*
+ * Clear/refresh-mode-init session property values exposed to userspace.
+ * "disabled" means the action is skipped; the others select which refresh
+ * mode to use for the clear/init operation.
+ */
+enum ssd16xx_session_mode {
+	SSD16XX_SESSION_DISABLED = 0,
+	SSD16XX_SESSION_PARTIAL,
+	SSD16XX_SESSION_FULL,
+	SSD16XX_SESSION_FAST,
+};
+
 /* Border waveform enum indices (0-9); mapped to HW bytes via
  * controller_cfg->border_waveform_table[]
  */
@@ -373,6 +385,12 @@ struct ssd16xx_device {
 	bool first_clear_done;  /* clear_on_init has already fired once */
 	bool cleared_on_disable; /* Avoid redundant clear in atomic_disable */
 	bool cleared_on_close;   /* Avoid redundant clear in master_drop */
+
+	/*
+	 * Serializes panel access and the session state between atomic commits
+	 * and master_set()/master_drop(), which run outside the commit machinery.
+	 */
+	struct mutex lock;
 	bool pm_force_suspended;  /* pm_runtime_force_suspend was called in pm_suspend */
 
 	int orientation;      /* Display orientation in degrees: 0/90/180/270 */
@@ -400,6 +418,10 @@ struct ssd16xx_device {
 
 	struct drm_property *refresh_mode_property;
 	struct drm_property *color_mode_property;
+	struct drm_property *clear_on_init_property;
+	struct drm_property *clear_on_close_property;
+	struct drm_property *clear_on_disable_property;
+	struct drm_property *refresh_mode_init_property;
 };
 
 /* Plane state subclass: refresh_mode lives on the plane, not the connector,
@@ -409,6 +431,10 @@ struct ssd16xx_plane_state {
 	struct drm_shadow_plane_state base;
 	enum ssd16xx_refresh_mode refresh_mode; /* Pending refresh mode */
 	enum ssd16xx_color_mode color_mode;     /* Pending color mode */
+	int clear_on_init;    /* Session: -1=disabled, 0=partial, 1=full, 2=fast */
+	int clear_on_close;
+	int clear_on_disable;
+	int refresh_mode_init;
 };
 
 #define to_ssd16xx_plane_state(s) \
@@ -1460,6 +1486,10 @@ static struct drm_plane_state *ssd16xx_plane_atomic_create_state(struct drm_plan
 	__drm_gem_shadow_plane_state_init(plane, &ssd_state->base);
 	ssd_state->refresh_mode = device->refresh_mode;
 	ssd_state->color_mode = device->color_mode;
+	ssd_state->clear_on_init = device->clear_on_init;
+	ssd_state->clear_on_close = device->clear_on_close;
+	ssd_state->clear_on_disable = device->clear_on_disable;
+	ssd_state->refresh_mode_init = device->refresh_mode_init;
 
 	return &ssd_state->base.base;
 }
@@ -1490,6 +1520,24 @@ static void ssd16xx_plane_atomic_destroy_state(struct drm_plane *plane,
 	kfree(ssd_state);
 }
 
+/*
+ * Convert internal clear_on / refresh_mode_init value (-1=disabled, 0/1/2=mode)
+ * to the userspace-facing enum (0=disabled, 1=partial, 2=full, 3=fast).
+ */
+static inline unsigned int ssd16xx_internal_to_session_prop(int internal_val)
+{
+	if (internal_val < 0)
+		return SSD16XX_SESSION_DISABLED;
+	return (unsigned int)internal_val + 1;
+}
+
+static inline int ssd16xx_session_prop_to_internal(uint64_t prop_val)
+{
+	if (prop_val == SSD16XX_SESSION_DISABLED)
+		return -1;
+	return (int)prop_val - 1;
+}
+
 static int ssd16xx_plane_atomic_get_property(struct drm_plane *plane,
 					     const struct drm_plane_state *state,
 					     struct drm_property *property,
@@ -1504,6 +1552,22 @@ static int ssd16xx_plane_atomic_get_property(struct drm_plane *plane,
 	}
 	if (property == device->color_mode_property) {
 		*val = ssd_state->color_mode;
+		return 0;
+	}
+	if (property == device->clear_on_init_property) {
+		*val = ssd16xx_internal_to_session_prop(ssd_state->clear_on_init);
+		return 0;
+	}
+	if (property == device->clear_on_close_property) {
+		*val = ssd16xx_internal_to_session_prop(ssd_state->clear_on_close);
+		return 0;
+	}
+	if (property == device->clear_on_disable_property) {
+		*val = ssd16xx_internal_to_session_prop(ssd_state->clear_on_disable);
+		return 0;
+	}
+	if (property == device->refresh_mode_init_property) {
+		*val = ssd16xx_internal_to_session_prop(ssd_state->refresh_mode_init);
 		return 0;
 	}
 	return -EINVAL;
@@ -1533,6 +1597,30 @@ static int ssd16xx_plane_atomic_set_property(struct drm_plane *plane,
 			return -EINVAL;
 		}
 		ssd_state->color_mode = val;
+		return 0;
+	}
+	if (property == device->clear_on_init_property) {
+		if (val > SSD16XX_SESSION_FAST)
+			return -EINVAL;
+		ssd_state->clear_on_init = ssd16xx_session_prop_to_internal(val);
+		return 0;
+	}
+	if (property == device->clear_on_close_property) {
+		if (val > SSD16XX_SESSION_FAST)
+			return -EINVAL;
+		ssd_state->clear_on_close = ssd16xx_session_prop_to_internal(val);
+		return 0;
+	}
+	if (property == device->clear_on_disable_property) {
+		if (val > SSD16XX_SESSION_FAST)
+			return -EINVAL;
+		ssd_state->clear_on_disable = ssd16xx_session_prop_to_internal(val);
+		return 0;
+	}
+	if (property == device->refresh_mode_init_property) {
+		if (val > SSD16XX_SESSION_FAST)
+			return -EINVAL;
+		ssd_state->refresh_mode_init = ssd16xx_session_prop_to_internal(val);
 		return 0;
 	}
 	return -EINVAL;
@@ -1574,6 +1662,24 @@ static int ssd16xx_plane_atomic_check(struct drm_plane *plane,
 						   DRM_PLANE_NO_SCALING,
 						   DRM_PLANE_NO_SCALING,
 						   false, false);
+}
+
+/*
+ * Copy the session properties of a plane state into the device.  Called from
+ * both crtc_atomic_enable() and plane_atomic_update(): the former runs first
+ * in a commit, so it must not rely on values only synced by the latter.
+ */
+static void ssd16xx_sync_session_props(struct ssd16xx_device *device,
+				       const struct ssd16xx_plane_state *ssd_state)
+{
+	lockdep_assert_held(&device->lock);
+
+	device->refresh_mode = ssd_state->refresh_mode;
+	device->color_mode = ssd_state->color_mode;
+	device->clear_on_init = ssd_state->clear_on_init;
+	device->clear_on_close = ssd_state->clear_on_close;
+	device->clear_on_disable = ssd_state->clear_on_disable;
+	device->refresh_mode_init = ssd_state->refresh_mode_init;
 }
 
 static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
@@ -1619,6 +1725,8 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	drm_dbg(&device->drm, "plane_atomic_update: calling fb_dirty rect=(%d,%d)-(%d,%d)\n",
 		rect.x1, rect.y1, rect.x2, rect.y2);
 
+	mutex_lock(&device->lock);
+
 	/* Diff refresh_mode against the plane's own previous state to see
 	 * whether fast LUT preload is needed.
 	 */
@@ -1635,8 +1743,7 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 			device->fast_lut_pending = false;
 	}
 
-	device->refresh_mode = new_ssd->refresh_mode;
-	device->color_mode = new_ssd->color_mode;
+	ssd16xx_sync_session_props(device, new_ssd);
 
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
@@ -1692,6 +1799,8 @@ out_restore:
 		device->init_refresh_pending = false;
 		device->border_waveform_pending = true;
 	}
+
+	mutex_unlock(&device->lock);
 
 	pm_runtime_mark_last_busy(device->drm.dev);
 	pm_runtime_put_autosuspend(device->drm.dev);
@@ -1754,6 +1863,8 @@ static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
 	if (!drm_dev_enter(&device->drm, &idx))
 		return;
 
+	mutex_lock(&device->lock);
+
 	if (device->clear_on_disable < 0 || device->cleared_on_disable)
 		goto out;
 
@@ -1775,6 +1886,7 @@ static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
 	device->cleared_on_disable = true;
 	pm_runtime_put_sync_suspend(device->drm.dev);
 out:
+	mutex_unlock(&device->lock);
 	drm_dev_exit(idx);
 }
 
@@ -1782,6 +1894,8 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 				       struct drm_atomic_commit *state)
 {
 	struct ssd16xx_device *device = crtc_to_ssd16xx_device(crtc);
+	struct drm_plane_state *new_plane_state =
+		drm_atomic_get_new_plane_state(state, &device->primary_plane);
 	int ret, idx;
 
 	if (!drm_dev_enter(&device->drm, &idx))
@@ -1797,16 +1911,28 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 	drm_dbg(&device->drm, "atomic_enable: %dx%d orientation=%u°\n",
 		device->width, device->height, device->orientation);
 
+	/* Serialise hw_init and session-prop setup against master_drop(). */
+	mutex_lock(&device->lock);
+
 	if (!device->initialized) {
 		ret = ssd16xx_hw_init(device);
 		if (ret) {
 			drm_err(&device->drm, "atomic_enable: hw_init failed: %d\n", ret);
+			mutex_unlock(&device->lock);
 			pm_runtime_put_autosuspend(device->drm.dev);
 			drm_dev_exit(idx);
 			return;
 		}
 		device->initialized = true;
 	}
+
+	/*
+	 * atomic_enable runs before plane_atomic_update, so pick up the session
+	 * properties of this very commit instead of the previous one's.
+	 */
+	if (new_plane_state)
+		ssd16xx_sync_session_props(device, to_ssd16xx_plane_state(new_plane_state));
+
 	device->cleared_on_disable = false;
 
 	/* Clear display on first app launch if configured */
@@ -1825,6 +1951,8 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 			device->refresh_mode_init);
 		device->init_refresh_pending = true;
 	}
+
+	mutex_unlock(&device->lock);
 
 	pm_runtime_mark_last_busy(device->drm.dev);
 	pm_runtime_put_autosuspend(device->drm.dev);
@@ -1889,6 +2017,13 @@ static const struct drm_prop_enum_list ssd16xx_color_mode_enum[] = {
 	{ SSD16XX_COLOR_MODE_3COLOR, "3-color"     },
 };
 
+static const struct drm_prop_enum_list ssd16xx_session_mode_enum[] = {
+	{ SSD16XX_SESSION_DISABLED, "disabled" },
+	{ SSD16XX_SESSION_PARTIAL,  "partial"  },
+	{ SSD16XX_SESSION_FULL,     "full"     },
+	{ SSD16XX_SESSION_FAST,     "fast"     },
+};
+
 static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
 {
 	struct drm_device *drm = &device->drm;
@@ -1908,18 +2043,58 @@ static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
 	 * Color mode: only meaningful on panels with a physical red plane.
 	 * BW-only panels get no property at all rather than a one-value knob.
 	 */
-	if (!device->device_cfg->red_supported)
-		return 0;
+	if (device->device_cfg->red_supported) {
+		device->color_mode_property =
+			drm_property_create_enum(drm, 0, "color_mode",
+						 ssd16xx_color_mode_enum,
+						 ARRAY_SIZE(ssd16xx_color_mode_enum));
+		if (!device->color_mode_property)
+			return -ENOMEM;
+		drm_object_attach_property(plane_obj,
+					   device->color_mode_property,
+					   device->color_mode);
+	}
 
-	device->color_mode_property =
-		drm_property_create_enum(drm, 0, "color_mode",
-					 ssd16xx_color_mode_enum,
-					 ARRAY_SIZE(ssd16xx_color_mode_enum));
-	if (!device->color_mode_property)
+	device->clear_on_init_property =
+		drm_property_create_enum(drm, 0, "clear_on_init",
+					 ssd16xx_session_mode_enum,
+					 ARRAY_SIZE(ssd16xx_session_mode_enum));
+	if (!device->clear_on_init_property)
 		return -ENOMEM;
 	drm_object_attach_property(plane_obj,
-				   device->color_mode_property,
-				   device->color_mode);
+				   device->clear_on_init_property,
+				   ssd16xx_internal_to_session_prop(device->clear_on_init));
+
+	device->clear_on_close_property =
+		drm_property_create_enum(drm, 0, "clear_on_close",
+					 ssd16xx_session_mode_enum,
+					 ARRAY_SIZE(ssd16xx_session_mode_enum));
+	if (!device->clear_on_close_property)
+		return -ENOMEM;
+	drm_object_attach_property(plane_obj,
+				   device->clear_on_close_property,
+				   ssd16xx_internal_to_session_prop(device->clear_on_close));
+
+	device->clear_on_disable_property =
+		drm_property_create_enum(drm, 0, "clear_on_disable",
+					 ssd16xx_session_mode_enum,
+					 ARRAY_SIZE(ssd16xx_session_mode_enum));
+	if (!device->clear_on_disable_property)
+		return -ENOMEM;
+	drm_object_attach_property(plane_obj,
+				   device->clear_on_disable_property,
+				   ssd16xx_internal_to_session_prop(device->clear_on_disable));
+
+	device->refresh_mode_init_property =
+		drm_property_create_enum(drm, 0, "refresh_mode_init",
+					 ssd16xx_session_mode_enum,
+					 ARRAY_SIZE(ssd16xx_session_mode_enum));
+	if (!device->refresh_mode_init_property)
+		return -ENOMEM;
+	drm_object_attach_property(plane_obj,
+				   device->refresh_mode_init_property,
+				   ssd16xx_internal_to_session_prop(device->refresh_mode_init));
+
 	return 0;
 }
 
@@ -1946,6 +2121,8 @@ static void ssd16xx_drm_master_set(struct drm_device *drm,
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(drm);
 
+	guard(mutex)(&device->lock);
+
 	device->cleared_on_close = false;
 	device->first_clear_done = false;
 
@@ -1962,6 +2139,12 @@ static void ssd16xx_drm_master_drop(struct drm_device *drm,
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(drm);
 	int ret, idx;
+
+	/*
+	 * Not serialized against nonblocking commits by the DRM core (e.g. on
+	 * DROP_MASTER), so hold the lock across the panel clear too.
+	 */
+	guard(mutex)(&device->lock);
 
 	device->init_refresh_pending = false;
 	device->first_clear_done = false;
@@ -2074,6 +2257,10 @@ static int ssd16xx_probe(struct spi_device *spi)
 		return PTR_ERR(device);
 
 	drm = &device->drm;
+	ret = drmm_mutex_init(drm, &device->lock);
+	if (ret)
+		return ret;
+
 	device->spi = spi;
 	device->model = model;
 	spi_set_drvdata(spi, device);
