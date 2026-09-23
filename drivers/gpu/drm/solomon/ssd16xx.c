@@ -1815,6 +1815,40 @@ static enum drm_mode_status ssd16xx_crtc_mode_valid(struct drm_crtc *crtc,
 static int ssd16xx_crtc_atomic_check(struct drm_crtc *crtc,
 				     struct drm_atomic_commit *state)
 {
+	struct ssd16xx_device *device = crtc_to_ssd16xx_device(crtc);
+	struct drm_crtc_state *new_crtc_state =
+		drm_atomic_get_new_crtc_state(state, crtc);
+	struct drm_connector_state *new_conn_state;
+	unsigned int orientation;
+	bool want_portrait, mode_is_portrait;
+
+	if (!new_crtc_state->enable)
+		return 0;
+
+	new_conn_state = drm_atomic_get_new_connector_state(state,
+							    &device->connector);
+	if (!new_conn_state)
+		return 0;
+
+	/*
+	 * Portrait packing needs the transposed mode that
+	 * ssd16xx_connector_get_modes() reports; without it the client keeps a
+	 * framebuffer that would be packed with the wrong geometry.
+	 */
+	orientation = to_ssd16xx_connector_state(new_conn_state)->orientation;
+	want_portrait = (orientation == 90 || orientation == 270);
+	mode_is_portrait = new_crtc_state->mode.hdisplay <
+			   new_crtc_state->mode.vdisplay;
+
+	if (want_portrait != mode_is_portrait) {
+		drm_dbg(&device->drm,
+			"atomic_check: %u° orientation needs a %s mode, but %ux%u is set\n",
+			orientation, want_portrait ? "portrait" : "landscape",
+			new_crtc_state->mode.hdisplay,
+			new_crtc_state->mode.vdisplay);
+		return -EINVAL;
+	}
+
 	return 0;
 }
 
