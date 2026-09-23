@@ -402,6 +402,7 @@ struct ssd16xx_device {
 
 	struct drm_framebuffer *last_fb;        /* Last drawn FB for reinit redraws */
 	struct drm_property *rotation_property;
+	struct drm_property *refresh_mode_property;
 };
 
 /*
@@ -416,6 +417,17 @@ struct ssd16xx_connector_state {
 
 #define to_ssd16xx_connector_state(s) \
 	container_of((s), struct ssd16xx_connector_state, base)
+
+/* Plane state subclass: refresh_mode lives on the plane, not the connector,
+ * so plane_atomic_update() can diff against its own old/new state.
+ */
+struct ssd16xx_plane_state {
+	struct drm_shadow_plane_state base;
+	enum ssd16xx_refresh_mode refresh_mode; /* Pending refresh mode */
+};
+
+#define to_ssd16xx_plane_state(s) \
+	container_of((s), struct ssd16xx_plane_state, base.base)
 
 static inline struct ssd16xx_device *to_ssd16xx_device(struct drm_device *drm)
 {
@@ -1412,11 +1424,91 @@ static void ssd16xx_plane_destroy(struct drm_plane *plane)
 	drm_plane_cleanup(plane);
 }
 
+static void ssd16xx_plane_atomic_destroy_state(struct drm_plane *plane,
+					       struct drm_plane_state *state);
+
+static struct drm_plane_state *ssd16xx_plane_atomic_create_state(struct drm_plane *plane)
+{
+	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
+	struct ssd16xx_plane_state *ssd_state;
+
+	ssd_state = kzalloc(sizeof(*ssd_state), GFP_KERNEL);
+	if (!ssd_state)
+		return ERR_PTR(-ENOMEM);
+
+	__drm_gem_shadow_plane_state_init(plane, &ssd_state->base);
+	ssd_state->refresh_mode = device->refresh_mode;
+
+	return &ssd_state->base.base;
+}
+
+static struct drm_plane_state *
+ssd16xx_plane_atomic_duplicate_state(struct drm_plane *plane)
+{
+	struct ssd16xx_plane_state *old_ssd_state, *ssd_state;
+
+	if (WARN_ON(!plane->state))
+		return NULL;
+
+	old_ssd_state = to_ssd16xx_plane_state(plane->state);
+	ssd_state = kmemdup(old_ssd_state, sizeof(*ssd_state), GFP_KERNEL);
+	if (!ssd_state)
+		return NULL;
+
+	__drm_gem_duplicate_shadow_plane_state(plane, &ssd_state->base);
+	return &ssd_state->base.base;
+}
+
+static void ssd16xx_plane_atomic_destroy_state(struct drm_plane *plane,
+					       struct drm_plane_state *state)
+{
+	struct ssd16xx_plane_state *ssd_state = to_ssd16xx_plane_state(state);
+
+	__drm_gem_destroy_shadow_plane_state(&ssd_state->base);
+	kfree(ssd_state);
+}
+
+static int ssd16xx_plane_atomic_get_property(struct drm_plane *plane,
+					     const struct drm_plane_state *state,
+					     struct drm_property *property,
+					     uint64_t *val)
+{
+	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
+	const struct ssd16xx_plane_state *ssd_state = to_ssd16xx_plane_state(state);
+
+	if (property == device->refresh_mode_property) {
+		*val = ssd_state->refresh_mode;
+		return 0;
+	}
+	return -EINVAL;
+}
+
+static int ssd16xx_plane_atomic_set_property(struct drm_plane *plane,
+					     struct drm_plane_state *state,
+					     struct drm_property *property,
+					     uint64_t val)
+{
+	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
+	struct ssd16xx_plane_state *ssd_state = to_ssd16xx_plane_state(state);
+
+	if (property == device->refresh_mode_property) {
+		if (val > SSD16XX_REFRESH_FAST)
+			return -EINVAL;
+		ssd_state->refresh_mode = val;
+		return 0;
+	}
+	return -EINVAL;
+}
+
 static const struct drm_plane_funcs ssd16xx_plane_funcs = {
 	.update_plane = drm_atomic_helper_update_plane,
 	.disable_plane = drm_atomic_helper_disable_plane,
 	.destroy = ssd16xx_plane_destroy,
-	DRM_GEM_SHADOW_PLANE_FUNCS,
+	.atomic_create_state = ssd16xx_plane_atomic_create_state,
+	.atomic_duplicate_state = ssd16xx_plane_atomic_duplicate_state,
+	.atomic_destroy_state = ssd16xx_plane_atomic_destroy_state,
+	.atomic_get_property = ssd16xx_plane_atomic_get_property,
+	.atomic_set_property = ssd16xx_plane_atomic_set_property,
 };
 
 static int ssd16xx_plane_atomic_check(struct drm_plane *plane,
@@ -1448,6 +1540,8 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 		drm_atomic_get_old_connector_state(state, &device->connector);
 	struct drm_connector_state *new_cs =
 		drm_atomic_get_new_connector_state(state, &device->connector);
+	struct ssd16xx_plane_state *new_ssd = to_ssd16xx_plane_state(new_state);
+	struct ssd16xx_plane_state *old_ssd = to_ssd16xx_plane_state(old_state);
 	enum ssd16xx_refresh_mode saved_mode;
 	u8 saved_border_waveform_idx;
 	struct drm_framebuffer *fb = new_state->fb;
@@ -1492,6 +1586,25 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 
 	drm_dbg(&device->drm, "plane_atomic_update: calling fb_dirty rect=(%d,%d)-(%d,%d)\n",
 		rect.x1, rect.y1, rect.x2, rect.y2);
+
+	/* Diff refresh_mode against the plane's own previous state to see
+	 * whether fast LUT preload is needed.
+	 */
+	if (old_ssd->refresh_mode != new_ssd->refresh_mode) {
+		/*
+		 * Fast refresh omits LOAD_LUT each update; arm the
+		 * one-shot flag so LUT is pre-loaded before the first
+		 * fast frame.
+		 */
+		if (new_ssd->refresh_mode == SSD16XX_REFRESH_FAST &&
+		    old_ssd->refresh_mode != SSD16XX_REFRESH_FULL)
+			device->fast_lut_pending = true;
+		else
+			device->fast_lut_pending = false;
+	}
+
+	device->refresh_mode = new_ssd->refresh_mode;
+
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
 	 * frame only, then restore the user-configured refresh_mode so
@@ -1869,6 +1982,29 @@ static int ssd16xx_connector_create_properties(struct ssd16xx_device *device)
 		return -ENOMEM;
 	drm_object_attach_property(&connector->base,
 				   device->rotation_property, initial_rot);
+	return 0;
+}
+
+static const struct drm_prop_enum_list ssd16xx_refresh_mode_enum[] = {
+	{ SSD16XX_REFRESH_PARTIAL, "partial" },
+	{ SSD16XX_REFRESH_FULL,    "full"    },
+	{ SSD16XX_REFRESH_FAST,    "fast"    },
+};
+
+static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
+{
+	struct drm_device *drm = &device->drm;
+	struct drm_mode_object *plane_obj = &device->primary_plane.base;
+
+	device->refresh_mode_property =
+		drm_property_create_enum(drm, 0, "refresh_mode",
+					 ssd16xx_refresh_mode_enum,
+					 ARRAY_SIZE(ssd16xx_refresh_mode_enum));
+	if (!device->refresh_mode_property)
+		return -ENOMEM;
+	drm_object_attach_property(plane_obj,
+				   device->refresh_mode_property,
+				   device->refresh_mode);
 	return 0;
 }
 
@@ -2324,6 +2460,10 @@ static int ssd16xx_probe(struct spi_device *spi)
 		return ret;
 
 	ret = ssd16xx_connector_create_properties(device);
+	if (ret)
+		return ret;
+
+	ret = ssd16xx_plane_create_properties(device);
 	if (ret)
 		return ret;
 
