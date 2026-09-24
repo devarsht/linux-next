@@ -24,15 +24,17 @@ allOf:
 
 properties:
   compatible:
-    items:
-      - enum:
-          # Good Display 4.2" 400x300 monochrome e-ink panel (SSD1683)
-          - gooddisplay,gdey042t81
-          # Mayqueen 4.26" 800x480 monochrome e-ink panel (SSD1677)
-          - mayqueen,pixpaper-426m
-      - enum:
-          - solomon,ssd1683
-          - solomon,ssd1677
+    oneOf:
+      - items:
+          - enum:
+              # Good Display 4.2" 400x300 monochrome e-ink panel (SSD1683)
+              - gooddisplay,gdey042t81
+          - const: solomon,ssd1683
+      - items:
+          - enum:
+              # Mayqueen 4.26" 800x480 monochrome e-ink panel (SSD1677)
+              - mayqueen,pixpaper-426m
+          - const: solomon,ssd1677
 
   reg:
     maxItems: 1
@@ -61,7 +63,7 @@ properties:
     $ref: /schemas/types.yaml#/definitions/uint32
     enum: [0, 90, 180, 270]
     description:
-      Display rotation in degrees counter clockwise.
+      Display rotation in degrees clockwise.
 
 required:
   - compatible
