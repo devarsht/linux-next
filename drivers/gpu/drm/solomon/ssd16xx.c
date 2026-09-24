@@ -598,7 +598,7 @@ static void ssd16xx_wait_for_device(struct ssd16xx_device *device,
 			*err = -ETIMEDOUT;
 			return;
 		}
-		usleep_range(100, 200);
+		usleep_range(1000, 2000);
 	}
 
 	drm_dbg(&device->drm, "BUSY became ready after %lums\n",
@@ -691,8 +691,8 @@ static void ssd16xx_send_x_param(struct ssd16xx_device *device, u16 x,
 	if (*err)
 		return;
 
-	if (WARN_ON_ONCE(x > max_val))
-		x &= max_val;
+	if (x > max_val)
+		x = max_val;
 
 	if (bits <= 8) {
 		ssd16xx_send_data(device, (u8)x, err);
@@ -713,8 +713,8 @@ static void ssd16xx_send_y_param(struct ssd16xx_device *device, u16 y,
 	if (*err)
 		return;
 
-	if (WARN_ON_ONCE(y > max_val))
-		y &= max_val;
+	if (y > max_val)
+		y = max_val;
 
 	if (bits <= 8) {
 		ssd16xx_send_data(device, (u8)y, err);
@@ -2440,7 +2440,7 @@ static void ssd16xx_drm_master_drop(struct drm_device *drm,
 				    struct drm_file *file)
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(drm);
-	int ret;
+	int ret, idx;
 
 	device->init_refresh_pending = false;
 	device->first_clear_done = false;
@@ -2448,9 +2448,14 @@ static void ssd16xx_drm_master_drop(struct drm_device *drm,
 	if (device->clear_on_close < 0 || device->display_cleared_on_deinit)
 		return;
 
-	ret = pm_runtime_resume_and_get(drm->dev);
-	if (ret < 0)
+	if (!drm_dev_enter(drm, &idx))
 		return;
+
+	ret = pm_runtime_resume_and_get(drm->dev);
+	if (ret < 0) {
+		drm_dev_exit(idx);
+		return;
+	}
 
 	ret = ssd16xx_clear_display_on_exit(device);
 	if (ret)
@@ -2459,6 +2464,7 @@ static void ssd16xx_drm_master_drop(struct drm_device *drm,
 	device->display_cleared_on_deinit = true;
 	/* sync suspend — bypass autosuspend, sleep immediately after clear */
 	pm_runtime_put_sync_suspend(drm->dev);
+	drm_dev_exit(idx);
 }
 
 static struct drm_driver ssd16xx_drm_driver = {
@@ -2497,7 +2503,7 @@ static int ssd16xx_alloc_tx_bufs(struct ssd16xx_device *device)
 	 * Allocate for the actual physical panel size (width × height are
 	 * always the physical dimensions, never swapped for orientation).
 	 */
-	size_t frame_size = (device->width * device->height) / 8;
+	size_t frame_size = DIV_ROUND_UP(device->width * device->height, 8);
 
 	device->tx_buf = drmm_kmalloc(&device->drm, frame_size, GFP_KERNEL);
 	if (!device->tx_buf)
@@ -2762,25 +2768,25 @@ static void ssd16xx_remove(struct spi_device *spi)
 {
 	struct ssd16xx_device *device = spi_get_drvdata(spi);
 
-	pm_runtime_dont_use_autosuspend(&spi->dev);
-	pm_runtime_disable(&spi->dev);
 	drm_dev_unplug(&device->drm);
 	drm_atomic_helper_shutdown(&device->drm);
+	pm_runtime_dont_use_autosuspend(&spi->dev);
+	pm_runtime_disable(&spi->dev);
 }
 
 static void ssd16xx_shutdown(struct spi_device *spi)
 {
 	struct ssd16xx_device *device = spi_get_drvdata(spi);
 
+	drm_atomic_helper_shutdown(&device->drm);
 	pm_runtime_dont_use_autosuspend(&spi->dev);
 	pm_runtime_disable(&spi->dev);
-	drm_atomic_helper_shutdown(&device->drm);
 }
 
 static int ssd16xx_pm_suspend(struct device *dev)
 {
-	struct drm_device *drm = dev_get_drvdata(dev);
-	struct ssd16xx_device *device = to_ssd16xx_device(drm);
+	struct ssd16xx_device *device = dev_get_drvdata(dev);
+	struct drm_device *drm = &device->drm;
 	int ret;
 
 	/*
@@ -2824,6 +2830,7 @@ static int ssd16xx_pm_suspend(struct device *dev)
 		} else {
 			dev_dbg(dev, "system suspend: already at deepest sleep mode\n");
 		}
+		device->initialized = false;
 		device->pm_force_suspended = false;  /* Skip force_resume on resume */
 		return err;
 	}
@@ -2837,8 +2844,8 @@ static int ssd16xx_pm_suspend(struct device *dev)
 
 static int ssd16xx_pm_resume(struct device *dev)
 {
-	struct drm_device *drm = dev_get_drvdata(dev);
-	struct ssd16xx_device *device = to_ssd16xx_device(drm);
+	struct ssd16xx_device *device = dev_get_drvdata(dev);
+	struct drm_device *drm = &device->drm;
 
 	dev_dbg(dev, "system resume: restoring state\n");
 
@@ -2855,12 +2862,15 @@ static int ssd16xx_pm_resume(struct device *dev)
 	/* Restore Mode 1 (RAM retained) for subsequent runtime PM cycles. */
 	device->deep_sleep_mode = device->controller_cfg->deep_sleep_mode_level1;
 
+	/* Hardware must be re-initialized after waking from system sleep */
+	device->initialized = false;
+
 	return drm_mode_config_helper_resume(drm);
 }
 
 static int ssd16xx_pm_runtime_suspend(struct device *dev)
 {
-	struct ssd16xx_device *device = to_ssd16xx_device(dev_get_drvdata(dev));
+	struct ssd16xx_device *device = dev_get_drvdata(dev);
 	int err = 0;
 
 	dev_dbg(dev, "runtime suspend: entering deep sleep mode 0x%02x\n",
@@ -2875,7 +2885,7 @@ static int ssd16xx_pm_runtime_suspend(struct device *dev)
 
 static int ssd16xx_pm_runtime_resume(struct device *dev)
 {
-	struct ssd16xx_device *device = to_ssd16xx_device(dev_get_drvdata(dev));
+	struct ssd16xx_device *device = dev_get_drvdata(dev);
 	int ret;
 
 	dev_dbg(dev, "runtime resume: initialized=%d%s\n",
