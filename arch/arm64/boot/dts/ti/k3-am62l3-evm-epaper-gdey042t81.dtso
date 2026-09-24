@@ -81,8 +81,8 @@
 	pinctrl-0 = <&main_spi1_pins_default>, <&fet_sel_pins_default>;
 	status = "okay";
 
-	gdey042t81: epaper@0 {
-		compatible = "gooddisplay,gdey042t81";
+	gdey042t81: display@0 {
+		compatible = "gooddisplay,gdey042t81", "solomon,ssd1683";
 		reg = <0>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&dc_pins_default>,
