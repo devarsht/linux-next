@@ -19,6 +19,7 @@
 #include <drm/clients/drm_client_setup.h>
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
+#include <drm/drm_blend.h>
 #include <drm/drm_damage_helper.h>
 #include <drm/drm_drv.h>
 #include <drm/drm_encoder.h>
@@ -1341,6 +1342,14 @@ static int ssd16xx_fb_dirty(struct drm_framebuffer *fb, struct drm_rect *rect,
 	ram_y_start = 0;
 	ram_y_end = device->height - 1;
 
+	/* Set Data Entry Mode to match current orientation */
+	ssd16xx_send_cmd(device, SSD16XX_CMD_DATA_ENTRY_MODE, &err);
+	ssd16xx_send_data(device,
+			  (device->orientation == 90 || device->orientation == 180)
+				  ? SSD16XX_DATA_ENTRY_XDEC_YDEC
+				  : SSD16XX_DATA_ENTRY_XINC_YINC,
+			  &err);
+
 	switch (device->orientation) {
 	case 90:
 	case 180:
@@ -1725,6 +1734,22 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	device->clear_on_disable = new_ssd->clear_on_disable;
 	device->refresh_mode_init = new_ssd->refresh_mode_init;
 
+	switch (new_state->rotation & DRM_MODE_ROTATE_MASK) {
+	case DRM_MODE_ROTATE_90:
+		device->orientation = 90;
+		break;
+	case DRM_MODE_ROTATE_180:
+		device->orientation = 180;
+		break;
+	case DRM_MODE_ROTATE_270:
+		device->orientation = 270;
+		break;
+	case DRM_MODE_ROTATE_0:
+	default:
+		device->orientation = 0;
+		break;
+	}
+
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
 	 * frame only, then restore the user-configured refresh_mode so
@@ -1989,31 +2014,6 @@ static const struct drm_crtc_helper_funcs ssd16xx_crtc_helper_funcs = {
 static int ssd16xx_connector_get_modes(struct drm_connector *connector)
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(connector->dev);
-	bool mode_is_portrait = (device->mode->hdisplay < device->mode->vdisplay);
-	bool orient_is_portrait = (device->orientation == 90 || device->orientation == 270);
-
-	drm_dbg(&device->drm,
-		"connector_get_modes: orientation=%u° mode=%ux%u mode_portrait=%d orient_portrait=%d\n",
-		device->orientation, device->mode->hdisplay, device->mode->vdisplay,
-		mode_is_portrait, orient_is_portrait);
-
-	/* For portrait, swap dimensions so clients see logical size. */
-	if (mode_is_portrait != orient_is_portrait) {
-		struct drm_display_mode *mode;
-
-		mode = drm_mode_duplicate(&device->drm, device->mode);
-		if (!mode)
-			return 0;
-		swap(mode->hdisplay, mode->vdisplay);
-		swap(mode->hsync_start, mode->vsync_start);
-		swap(mode->hsync_end, mode->vsync_end);
-		swap(mode->htotal, mode->vtotal);
-		swap(mode->width_mm, mode->height_mm);
-		mode->type |= DRM_MODE_TYPE_PREFERRED;
-		drm_mode_set_name(mode);
-		drm_mode_probed_add(connector, mode);
-		return 1;
-	}
 
 	return drm_connector_helper_get_modes_fixed(connector, device->mode);
 }
@@ -2044,6 +2044,8 @@ static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
 {
 	struct drm_device *drm = &device->drm;
 	struct drm_mode_object *plane_obj = &device->primary_plane.base;
+	unsigned int initial_rot;
+	int ret;
 
 	device->refresh_mode_property =
 		drm_property_create_enum(drm, 0, "refresh_mode",
@@ -2111,6 +2113,30 @@ static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
 	drm_object_attach_property(plane_obj,
 				   device->refresh_mode_init_property,
 				   ssd16xx_internal_to_session_prop(device->refresh_mode_init));
+
+	switch (device->orientation) {
+	case 90:
+		initial_rot = DRM_MODE_ROTATE_90;
+		break;
+	case 180:
+		initial_rot = DRM_MODE_ROTATE_180;
+		break;
+	case 270:
+		initial_rot = DRM_MODE_ROTATE_270;
+		break;
+	default:
+		initial_rot = DRM_MODE_ROTATE_0;
+		break;
+	}
+
+	ret = drm_plane_create_rotation_property(&device->primary_plane,
+						 initial_rot,
+						 DRM_MODE_ROTATE_0 |
+						 DRM_MODE_ROTATE_90 |
+						 DRM_MODE_ROTATE_180 |
+						 DRM_MODE_ROTATE_270);
+	if (ret)
+		return ret;
 
 	return 0;
 }
@@ -2319,7 +2345,7 @@ static int ssd16xx_probe(struct spi_device *spi)
 	device->clear_on_disable = device->device_cfg->default_clear_on_disable;
 	device->refresh_mode_init = device->device_cfg->default_refresh_mode_init;
 
-	/* Parse "rotation" DT property; swap mode dimensions for portrait. */
+	/* Parse "rotation" DT property to seed initial plane rotation. */
 	device_property_read_u32(dev, "rotation", &dt_rotation);
 	if (dt_rotation != 0 && dt_rotation != 90 && dt_rotation != 180 && dt_rotation != 270) {
 		drm_warn(drm, "Invalid DT rotation %u, defaulting to 0°\n", dt_rotation);
@@ -2329,25 +2355,10 @@ static int ssd16xx_probe(struct spi_device *spi)
 
 	device->width = mode->hdisplay;
 	device->height = mode->vdisplay;
-
-	drm_dbg(drm, "Using %s orientation (%u°, physical %ux%u)\n",
-		(device->orientation == 90 || device->orientation == 270) ?
-		 "portrait" : "landscape", device->orientation, device->width, device->height);
-
-	/* Swap mode dimensions for portrait so clients see logical size. */
-	if (device->orientation == 90 || device->orientation == 270) {
-		swap(mode->hdisplay, mode->vdisplay);
-		swap(mode->hsync_start, mode->vsync_start);
-		swap(mode->hsync_end, mode->vsync_end);
-		swap(mode->htotal, mode->vtotal);
-		swap(mode->width_mm, mode->height_mm);
-		drm_dbg(drm, "Mode dimensions swapped for portrait: %ux%u\n",
-			mode->hdisplay, mode->vdisplay);
-	} else {
-		drm_dbg(drm, "Mode dimensions unchanged: %ux%u\n",
-			mode->hdisplay, mode->vdisplay);
-	}
 	device->mode = mode;
+
+	drm_dbg(drm, "SSD16xx panel (%ux%u, initial orientation %u°)\n",
+		device->width, device->height, device->orientation);
 
 	/* Validate panel dimensions against controller hardware limits. */
 	if (device->width > device->controller_cfg->max_width ||
@@ -2412,6 +2423,25 @@ static int ssd16xx_probe(struct spi_device *spi)
 				 DRM_MODE_CONNECTOR_SPI);
 	if (ret)
 		return ret;
+
+	switch (dt_rotation) {
+	case 90:
+		drm_connector_set_panel_orientation(&device->connector,
+						    DRM_MODE_PANEL_ORIENTATION_RIGHT_UP);
+		break;
+	case 180:
+		drm_connector_set_panel_orientation(&device->connector,
+						    DRM_MODE_PANEL_ORIENTATION_BOTTOM_UP);
+		break;
+	case 270:
+		drm_connector_set_panel_orientation(&device->connector,
+						    DRM_MODE_PANEL_ORIENTATION_LEFT_UP);
+		break;
+	default:
+		drm_connector_set_panel_orientation(&device->connector,
+						    DRM_MODE_PANEL_ORIENTATION_NORMAL);
+		break;
+	}
 
 	ret = drm_universal_plane_init(drm, &device->primary_plane, 0,
 				       &ssd16xx_plane_funcs,
