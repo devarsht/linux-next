@@ -1,0 +1,162 @@
+=== SSD16xx Full Test Suite Run ===
+Date      : Thu May 29 19:08:54 UTC 2025
+Board     : am62lxx-evm
+Kernel    : 7.3.0-rc4-01497-g731a1cf75117-dirty
+
+--- test_formats ---
+=== test_formats  20250529_190854 ===
+
+--- F01: XR24 (XRGB8888 32bpp) ---
+PASS  F01: no driver errors
+PASS  F01: XRGB8888 32bpp — fmt=XR24 path=landscape confirmed
+
+--- F02: R1 native 1bpp (direct passthrough) ---
+PASS  F02: no driver errors
+PASS  F02: R1 1bpp native zero-copy fast path — fmt=R1 path=R1-fast confirmed
+
+================================================
+  PASS: 4     FAIL: 0     SKIP: 0   
+================================================
+
+--- test_properties ---
+=== test_properties  20250529_190919 ===
+
+--- refresh_mode property (P01-P03) ---
+PASS  P01: no driver errors
+PASS  P01: refresh_mode=0 (partial, ~300-500ms)
+PASS  P02: no driver errors
+PASS  P02: refresh_mode=1 (full, ~1.5-2s)
+PASS  P03: no driver errors
+PASS  P03: refresh_mode=2 (fast, ~1.0-1.5s)
+
+--- color_mode property (P04) ---
+PASS  P04: no driver errors
+PASS  P04: color_mode=0 (black-white, only supported value)
+
+--- clear_on_init property (P05-P08) ---
+PASS  P05: no driver errors
+PASS  P05: clear_on_init=0 (disabled)
+PASS  P06: no driver errors
+PASS  P06: clear_on_init=1 (partial)
+PASS  P07: no driver errors
+PASS  P07: clear_on_init=2 (full)
+PASS  P08: no driver errors
+PASS  P08: clear_on_init=3 (fast)
+
+--- clear_on_close property (P09-P12) ---
+PASS  P09: no driver errors
+PASS  P09: clear_on_close=0 (disabled)
+PASS  P10: no driver errors
+PASS  P10: clear_on_close=1 (partial)
+PASS  P11: no driver errors
+PASS  P11: clear_on_close=2 (full)
+PASS  P12: no driver errors
+PASS  P12: clear_on_close=3 (fast)
+
+--- clear_on_disable property (P13-P16) ---
+PASS  P13: no driver errors
+PASS  P13: clear_on_disable=0 (disabled)
+PASS  P14: no driver errors
+PASS  P14: clear_on_disable=1 (partial)
+PASS  P15: no driver errors
+PASS  P15: clear_on_disable=2 (full)
+PASS  P16: no driver errors
+PASS  P16: clear_on_disable=3 (fast)
+
+--- refresh_mode_init property (P17-P18) ---
+PASS  P17: no driver errors
+PASS  P17: refresh_mode_init=0 (disabled, use default mode)
+PASS  P18: no driver errors
+PASS  P18: refresh_mode_init=3 (use fast for first frame)
+
+================================================
+  PASS: 36    FAIL: 0     SKIP: 0   
+================================================
+
+--- test_pm ---
+=== test_pm  20250529_191513 ===
+
+--- 5.0 Basic smoke (PM01-PM06) ---
+PASS  PM01: no driver errors
+PASS  PM01: device suspended after app close  (status: suspended)
+PASS  PM01: suspend event in dmesg
+PASS  PM02: no driver errors
+PASS  PM02: device active while app running  (status: active)
+PASS  PM02: resume event in dmesg
+PASS  PM03: no driver errors
+PASS  PM03: MODE_1 deep sleep + resume
+SKIP  PM04: system suspend test (--no-system-suspend)
+SKIP  PM05: system resume test (--no-system-suspend)
+SKIP  PM06: MODE_2 path test (--no-system-suspend)
+
+--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---
+PASS  RS01: driver default autosuspend = 35000ms
+PASS  RS02: autosuspend re-applied to 3000ms
+PASS  RS03: no driver errors
+PASS  RS03: device suspended after autosuspend  (status: suspended)
+PASS  RS03: MODE_1 deep sleep command sent
+PASS  RS04: no driver errors
+PASS  RS04: hw_init on resume from MODE_1
+PASS  RS04: device active after resume  (status: active)
+PASS  RS05 cycle1: active  (status: active)
+PASS  RS05 cycle1: suspended (MODE_1)  (status: suspended)
+PASS  RS05 cycle2: active again  (status: active)
+PASS  RS05 cycle2: suspended again  (status: suspended)
+PASS  RS05: no driver errors during lifecycle
+PASS  RS05: ≥2 runtime resume events (got 2)
+PASS  RS05: ≥2 runtime suspend events (got 2)
+
+--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---
+PASS  RS06: runtime suspend fired (clear_on_close sync suspend)
+PASS  RS06: suspend within 5552ms (expected <20s, not ~30s timer)
+PASS  RS07: clear_display appears before runtime suspend
+
+--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---
+SKIP  SS01-SS03: system suspend (--no-system-suspend)
+
+--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---
+SKIP  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)
+
+--- 5.5 System suspend — edge cases (SS07-SS10) ---
+SKIP  SS07-SS10: system suspend edge cases (--no-system-suspend)
+
+--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---
+SKIP  TEST4: system suspend (--no-system-suspend)
+
+--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---
+SKIP  TEST5: system suspend (--no-system-suspend)
+
+================================================
+  PASS: 26    FAIL: 0     SKIP: 8   
+================================================
+
+--- test_integration ---
+=== test_integration  20250529_191712 ===
+
+--- Integration tests (I01-I04) ---
+PASS  I01: no driver errors
+PASS  I01: clear callbacks fired
+PASS  I01: clear_on_init and clear_on_close work together
+PASS  I02: no driver errors
+PASS  I02: refresh_mode transitions completed
+PASS  I03: no driver errors
+PASS  I03: refresh_mode_init=fast applied to first frame
+PASS  I04: no driver errors
+PASS  I04: color_mode black-white set and maintained
+
+--- Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---
+PASS  OR01: first update used full refresh (mode=0xf7)
+PASS  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial
+PASS  OR03: crtc_atomic_enable (line 106) before plane_atomic_update (line 115)
+PASS  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared
+PASS  OR05: ≥2 full-refresh frames — init_refresh_pending re-armed on each enable
+
+================================================
+  PASS: 14    FAIL: 0     SKIP: 0   
+================================================
+
+
+=== GRAND TOTAL ===
+================================================
+  PASS: 80    FAIL: 0     SKIP: 0   
+================================================

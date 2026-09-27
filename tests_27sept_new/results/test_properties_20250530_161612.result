@@ -1,0 +1,5 @@
+=== test_properties  20250530_161612 ===
+
+--- refresh_mode property (P01-P03) ---
+PASS  P01: no driver errors
+PASS  P01: partial refresh mode set

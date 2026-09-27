@@ -1,0 +1,53 @@
+=== test_properties  20250530_161855 ===
+
+--- refresh_mode property (P01-P03) ---
+PASS  P01: no driver errors
+PASS  P01: partial refresh mode set
+PASS  P02: no driver errors
+PASS  P02: full refresh mode set
+PASS  P03: no driver errors
+PASS  P03: fast refresh mode set
+
+--- color_mode property (P04) ---
+PASS  P04: no driver errors
+PASS  P04: color_mode set to black-white
+
+--- clear_on_init property (P05-P08) ---
+PASS  P05: no driver errors
+PASS  P05: clear_on_init disabled
+PASS  P06: no driver errors
+FAIL  P06: partial clear on init  [pattern: 'clear_on_init: running.*mode=1' not in dmesg]
+PASS  P07: no driver errors
+FAIL  P07: full clear on init  [pattern: 'clear_on_init: running.*mode=2' not in dmesg]
+PASS  P08: no driver errors
+FAIL  P08: fast clear on init  [pattern: 'clear_on_init: running.*mode=3' not in dmesg]
+
+--- clear_on_close property (P09-P12) ---
+PASS  P09: no driver errors
+PASS  P09: clear_on_close disabled
+PASS  P10: no driver errors
+FAIL  P10: partial clear on close  [pattern: 'clear_on_close: running.*mode=1' not in dmesg]
+PASS  P11: no driver errors
+FAIL  P11: full clear on close  [pattern: 'clear_on_close: running.*mode=2' not in dmesg]
+PASS  P12: no driver errors
+FAIL  P12: fast clear on close  [pattern: 'clear_on_close: running.*mode=3' not in dmesg]
+
+--- clear_on_disable property (P13-P16) ---
+PASS  P13: no driver errors
+PASS  P13: clear_on_disable disabled
+PASS  P14: no driver errors
+FAIL  P14: partial clear on disable  [pattern: 'clear_on_disable: running.*mode=1' not in dmesg]
+PASS  P15: no driver errors
+FAIL  P15: full clear on disable  [pattern: 'clear_on_disable: running.*mode=2' not in dmesg]
+PASS  P16: no driver errors
+FAIL  P16: fast clear on disable  [pattern: 'clear_on_disable: running.*mode=3' not in dmesg]
+
+--- refresh_mode_init property (P17-P18) ---
+PASS  P17: no driver errors
+PASS  P17: refresh_mode_init set to disabled
+PASS  P18: no driver errors
+PASS  P18: refresh_mode_init set to fast
+
+================================================
+  PASS: 27    FAIL: 9     SKIP: 0   
+================================================

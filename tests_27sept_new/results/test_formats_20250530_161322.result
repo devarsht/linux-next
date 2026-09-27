@@ -1,0 +1,11 @@
+=== test_formats  20250530_161322 ===
+
+--- F01: XR24 (XRGB8888 32bpp) ---
+PASS  F01: no driver errors
+
+--- F02: R1 native 1bpp (direct passthrough) ---
+PASS  F02: no driver errors
+
+================================================
+  PASS: 2     FAIL: 0     SKIP: 0   
+================================================
