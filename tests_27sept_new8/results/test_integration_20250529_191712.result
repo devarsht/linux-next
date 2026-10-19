@@ -1,0 +1,23 @@
+=== test_integration  20250529_191712 ===
+
+--- Integration tests (I01-I04) ---
+PASS  I01: no driver errors
+PASS  I01: clear callbacks fired
+PASS  I01: clear_on_init and clear_on_close work together
+PASS  I02: no driver errors
+PASS  I02: refresh_mode transitions completed
+PASS  I03: no driver errors
+PASS  I03: refresh_mode_init=fast applied to first frame
+PASS  I04: no driver errors
+PASS  I04: color_mode black-white set and maintained
+
+--- Commit ordering — drm_atomic_helper_commit_tail_rpm (OR01-OR05) ---
+PASS  OR01: first update used full refresh (mode=0xf7)
+PASS  OR02: first refresh_mode is refresh_mode=1 (full) — no phantom partial
+PASS  OR03: crtc_atomic_enable (line 106) before plane_atomic_update (line 115)
+PASS  OR04: first=full(0xf7), subsequent=partial(0xff) — init_refresh_pending cleared
+PASS  OR05: ≥2 full-refresh frames — init_refresh_pending re-armed on each enable
+
+================================================
+  PASS: 14    FAIL: 0     SKIP: 0   
+================================================

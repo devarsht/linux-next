@@ -1,0 +1,6 @@
+=== SSD16xx Full Test Suite Run ===
+Date      : Thu May 29 19:01:25 UTC 2025
+Board     : am62lxx-evm
+Kernel    : 7.3.0-rc4-01496-g8c7410053306-dirty
+
+--- test_formats ---

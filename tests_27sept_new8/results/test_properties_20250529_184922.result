@@ -1,0 +1,53 @@
+=== test_properties  20250529_184922 ===
+
+--- refresh_mode property (P01-P03) ---
+PASS  P01: no driver errors
+PASS  P01: refresh_mode=0 (partial, ~300-500ms)
+PASS  P02: no driver errors
+PASS  P02: refresh_mode=1 (full, ~1.5-2s)
+PASS  P03: no driver errors
+PASS  P03: refresh_mode=2 (fast, ~1.0-1.5s)
+
+--- color_mode property (P04) ---
+PASS  P04: no driver errors
+PASS  P04: color_mode=0 (black-white, only supported value)
+
+--- clear_on_init property (P05-P08) ---
+PASS  P05: no driver errors
+PASS  P05: clear_on_init=0 (disabled)
+PASS  P06: no driver errors
+FAIL  P06: clear_on_init=1 (partial)  [pattern: 'clear_on_init: running.*mode=0' not in dmesg]
+PASS  P07: no driver errors
+FAIL  P07: clear_on_init=2 (full)  [pattern: 'clear_on_init: running.*mode=1' not in dmesg]
+PASS  P08: no driver errors
+FAIL  P08: clear_on_init=3 (fast)  [pattern: 'clear_on_init: running.*mode=2' not in dmesg]
+
+--- clear_on_close property (P09-P12) ---
+PASS  P09: no driver errors
+PASS  P09: clear_on_close=0 (disabled)
+PASS  P10: no driver errors
+FAIL  P10: clear_on_close=1 (partial)  [pattern: 'clear_on_close: running.*mode=0' not in dmesg]
+PASS  P11: no driver errors
+FAIL  P11: clear_on_close=2 (full)  [pattern: 'clear_on_close: running.*mode=1' not in dmesg]
+PASS  P12: no driver errors
+FAIL  P12: clear_on_close=3 (fast)  [pattern: 'clear_on_close: running.*mode=2' not in dmesg]
+
+--- clear_on_disable property (P13-P16) ---
+PASS  P13: no driver errors
+PASS  P13: clear_on_disable=0 (disabled)
+PASS  P14: no driver errors
+FAIL  P14: clear_on_disable=1 (partial)  [pattern: 'clear_on_disable: running.*mode=0' not in dmesg]
+PASS  P15: no driver errors
+FAIL  P15: clear_on_disable=2 (full)  [pattern: 'clear_on_disable: running.*mode=1' not in dmesg]
+PASS  P16: no driver errors
+FAIL  P16: clear_on_disable=3 (fast)  [pattern: 'clear_on_disable: running.*mode=2' not in dmesg]
+
+--- refresh_mode_init property (P17-P18) ---
+PASS  P17: no driver errors
+FAIL  P17: refresh_mode_init=0 (disabled, use default mode)  [unexpected pattern found: 'atomic_enable: refresh_mode_init=[0-9]+, using for first frame']
+PASS  P18: no driver errors
+FAIL  P18: refresh_mode_init=3 (use fast for first frame)  [pattern: 'atomic_enable: refresh_mode_init=2, using for first frame' not in dmesg]
+
+================================================
+  PASS: 25    FAIL: 11    SKIP: 0   
+================================================

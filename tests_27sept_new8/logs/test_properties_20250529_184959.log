@@ -1,0 +1,24 @@
+=== Log: /root/tests_27sept_new8/logs/test_properties_20250529_184959.log ===
+=== Result: /root/tests_27sept_new8/results/test_properties_20250529_184959.result ===
++ [L56] lsmod
++ [L56] grep -q ssd16xx
++ [L62] '[' -z /root/tests_27sept_new8 ']'
++ [L67] source /root/tests_27sept_new8/init.sh
+++ [L11] echo 0xff
+++ [L12] echo module ssd16xx +p
+++ [L15] echo '2 4 1 8'
+++ [L18] export LD_LIBRARY_PATH=/home/weston/:
+++ [L18] LD_LIBRARY_PATH=/home/weston/:
+++ [L21] command -v kmstest
+++ [L26] command -v modetest
+++++ [L32] dirname /root/tests_27sept_new8/init.sh
++++ [L32] cd /root/tests_27sept_new8
++++ [L32] pwd
+++ [L32] SCRIPT_DIR=/root/tests_27sept_new8
+++ [L33] source /root/tests_27sept_new8/discover.sh
+++++ [L11] modetest -M ssd16xx
+++++ [L1] cleanup
+++++ [L265] exec
++++++ [L265] jobs -p
+++++ [L265] kill ''
+++++ [L265] wait

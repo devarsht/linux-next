@@ -1,0 +1,13 @@
+=== test_formats  20250529_184906 ===
+
+--- F01: XR24 (XRGB8888 32bpp) ---
+PASS  F01: no driver errors
+PASS  F01: XRGB8888 32bpp — fmt=XR24 path=landscape confirmed
+
+--- F02: R1 native 1bpp (direct passthrough) ---
+PASS  F02: no driver errors
+PASS  F02: R1 1bpp native zero-copy fast path — fmt=R1 path=R1-fast confirmed
+
+================================================
+  PASS: 4     FAIL: 0     SKIP: 0   
+================================================

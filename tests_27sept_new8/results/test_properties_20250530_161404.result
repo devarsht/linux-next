@@ -1,0 +1,17 @@
+=== test_properties  20250530_161404 ===
+
+--- refresh_mode property (P01-P03) ---
+PASS  P01: no driver errors
+PASS  P01: partial refresh mode set
+PASS  P02: no driver errors
+PASS  P02: full refresh mode set
+PASS  P03: no driver errors
+PASS  P03: fast refresh mode set
+
+--- color_mode property (P04) ---
+PASS  P04: no driver errors
+PASS  P04: color_mode set to black-white
+
+--- clear_on_init property (P05-P08) ---
+PASS  P05: no driver errors
+PASS  P05: clear_on_init disabled

@@ -1,0 +1,2628 @@
+=== Log: /root/tests_27sept_new8/logs/test_pm_20250529_190039.log ===
+=== Result: /root/tests_27sept_new8/results/test_pm_20250529_190039.result ===
++ [L56] lsmod
++ [L56] grep -q ssd16xx
++ [L62] '[' -z /root/tests_27sept_new8 ']'
++ [L67] source /root/tests_27sept_new8/init.sh
+++ [L11] echo 0xff
+++ [L12] echo module ssd16xx +p
+++ [L15] echo '2 4 1 8'
+/root/tests_27sept_new8/init.sh: line 12: /sys/kernel/debug/dynamic_debug/control: No such file or directory
+++ [L18] export LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:
+++ [L18] LD_LIBRARY_PATH=/home/weston/:/home/weston/:/home/weston/:
+++ [L21] command -v kmstest
+++ [L26] command -v modetest
+++++ [L32] dirname /root/tests_27sept_new8/init.sh
++++ [L32] cd /root/tests_27sept_new8
++++ [L32] pwd
+++ [L32] SCRIPT_DIR=/root/tests_27sept_new8
+++ [L33] source /root/tests_27sept_new8/discover.sh
+++++ [L11] modetest -M ssd16xx
++++ [L11] _MT='Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
+++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
++++ [L13] C=35
+++++ [L14] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
+++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
++++ [L14] MODE=
+++++ [L15] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
+++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L15] CRTC=38
+++++ [L16] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
+++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
++++ [L16] P=36
++++ [L19] MODE=400x300
++++ [L22] export C CRTC P MODE
++++ [L36] head -1
+++++ [L36] uname -r
++++ [L36] find /lib/modules/7.3.0-rc4-01495-ga67e2d7da41a-dirty -name panel-ssd16xx.ko
+++ [L36] BASE=
+++ [L39] DEV=
+++ [L40] for d in /sys/bus/spi/devices/*/
+++++ [L41] readlink /sys/bus/spi/devices/spi0.0/driver
++++ [L41] basename ../../../../../../../bus/spi/drivers/ssd16xx
+++ [L41] drv=ssd16xx
+++ [L42] echo ssd16xx
+++ [L42] grep -q ssd16xx
+++ [L43] DEV=/sys/bus/spi/devices/spi0.0
+++ [L44] break
+++ [L48] '[' -z /sys/bus/spi/devices/spi0.0 ']'
+++ [L51] echo 'Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=  Device=/sys/bus/spi/devices/spi0.0'
+++ [L54] export C CRTC P MODE BASE DEV
++ [L70] '[' -z 35 ']'
++ [L70] '[' -z 38 ']'
++ [L70] '[' -z 36 ']'
++ [L74] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L78] echo ''
+Connector=35  CRTC=38  Plane=36  Mode=400x300  Module=  Device=/sys/bus/spi/devices/spi0.0
+
++ [L30] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L36] command -v rtcwake
++ [L42] '[' 0 -eq 0 ']'
++ [L42] '[' '!' -e /dev/rtc0 ']'
++ [L43] info '/dev/rtc0 not found — system suspend tests will be skipped'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  /dev/rtc0 not found — system suspend tests will be skipped'
++ [L44] SKIP_SS=1
+  [0;36mINFO[0m  /dev/rtc0 not found — system suspend tests will be skipped
+++ [L61] cat /sys/bus/spi/devices/spi0.0/power/autosuspend_delay_ms
++ [L61] AUTOSUSPEND_DEFAULT=35000
++ [L62] info 'Board autosuspend default: 35000ms'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  Board autosuspend default: 35000ms'
++ [L65] hdr '5.0 Basic smoke (PM01-PM06)'
++ [L16] echo ''
+  [0;36mINFO[0m  Board autosuspend default: 35000ms
+
++ [L16] echo '--- 5.0 Basic smoke (PM01-PM06) ---'
++ [L16] _result ''
+--- 5.0 Basic smoke (PM01-PM06) ---
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L16] _result '--- 5.0 Basic smoke (PM01-PM06) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.0 Basic smoke (PM01-PM06) ---'
++ [L68] echo 3000
++ [L69] info 'Autosuspend shortened to 3s for all PM tests'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  Autosuspend shortened to 3s for all PM tests'
++ [L71] echo '  [PM01] Runtime suspend after app close'
+  [0;36mINFO[0m  Autosuspend shortened to 3s for all PM tests
+  [PM01] Runtime suspend after app close
++ [L72] rm -f /tmp/dmesg_capture.log
++ [L73] dmesg -C
++ [L75] KMS=1264
++ [L74] ./kmstest
++ [L76] sleep 5
++ [L77] kill 1264
++ [L77] wait 1264
++ [L78] sleep 4
++ [L79] dmesg
++ [L80] check_no_driver_errors 'PM01: no driver errors'
++ [L238] local 'desc=PM01: no driver errors'
++ [L239] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed'
++ [L240] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'PM01: no driver errors'
++ [L215] local 'pattern=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'desc=PM01: no driver errors'
++ [L216] '[' -f /tmp/dmesg_capture.log ']'
++ [L217] grep -qE 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' /tmp/dmesg_capture.log
++ [L221] pass 'PM01: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  PM01: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  PM01: no driver errors'
+  [0;32mPASS[0m  PM01: no driver errors
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  PM01: no driver errors'
++ [L222] return 0
++ [L81] check_pm_status suspended 'PM01: device suspended after app close'
++ [L245] local expected=suspended 'desc=PM01: device suspended after app close'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=suspended
++ [L249] '[' suspended = suspended ']'
++ [L250] pass 'PM01: device suspended after app close  (status: suspended)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  PM01: device suspended after app close  (status: suspended)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  PM01: device suspended after app close  (status: suspended)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
+  [0;32mPASS[0m  PM01: device suspended after app close  (status: suspended)
++ [L10] echo 'PASS  PM01: device suspended after app close  (status: suspended)'
++ [L82] check_dmesg 'runtime suspend|atomic_disable' 'PM01: suspend event in dmesg'
++ [L192] local 'pattern=runtime suspend|atomic_disable' 'desc=PM01: suspend event in dmesg'
++ [L193] '[' -f /tmp/dmesg_capture.log ']'
++ [L194] grep -qE 'runtime suspend|atomic_disable' /tmp/dmesg_capture.log
++ [L198] fail 'PM01: suspend event in dmesg  [pattern: '\''runtime suspend|atomic_disable'\'' not in dmesg]'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  PM01: suspend event in dmesg  [pattern: '\''runtime suspend|atomic_disable'\'' not in dmesg]'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  PM01: suspend event in dmesg  [pattern: '\''runtime suspend|atomic_disable'\'' not in dmesg]'
+  [0;31mFAIL[0m  PM01: suspend event in dmesg  [pattern: 'runtime suspend|atomic_disable' not in dmesg]
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  PM01: suspend event in dmesg  [pattern: '\''runtime suspend|atomic_disable'\'' not in dmesg]'
++ [L199] return 1
++ [L84] echo ''
++ [L85] echo '  [PM02] Runtime resume on app open'
+
++ [L86] rm -f /tmp/dmesg_capture.log
+  [PM02] Runtime resume on app open
++ [L87] dmesg -C
++ [L89] KMS=1276
++ [L88] ./kmstest
++ [L90] sleep 2
++ [L91] dmesg
++ [L92] check_no_driver_errors 'PM02: no driver errors'
++ [L238] local 'desc=PM02: no driver errors'
++ [L239] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed'
++ [L240] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'PM02: no driver errors'
++ [L215] local 'pattern=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'desc=PM02: no driver errors'
++ [L216] '[' -f /tmp/dmesg_capture.log ']'
++ [L217] grep -qE 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' /tmp/dmesg_capture.log
++ [L221] pass 'PM02: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  PM02: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  PM02: no driver errors'
+  [0;32mPASS[0m  PM02: no driver errors
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  PM02: no driver errors'
++ [L222] return 0
++ [L93] check_pm_status active 'PM02: device active while app running'
++ [L245] local expected=active 'desc=PM02: device active while app running'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=active
++ [L249] '[' active = active ']'
++ [L250] pass 'PM02: device active while app running  (status: active)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  PM02: device active while app running  (status: active)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  PM02: device active while app running  (status: active)'
+  [0;32mPASS[0m  PM02: device active while app running  (status: active)
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  PM02: device active while app running  (status: active)'
++ [L94] check_dmesg 'runtime resume|atomic_enable' 'PM02: resume event in dmesg'
++ [L192] local 'pattern=runtime resume|atomic_enable' 'desc=PM02: resume event in dmesg'
++ [L193] '[' -f /tmp/dmesg_capture.log ']'
++ [L194] grep -qE 'runtime resume|atomic_enable' /tmp/dmesg_capture.log
++ [L198] fail 'PM02: resume event in dmesg  [pattern: '\''runtime resume|atomic_enable'\'' not in dmesg]'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  PM02: resume event in dmesg  [pattern: '\''runtime resume|atomic_enable'\'' not in dmesg]'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  PM02: resume event in dmesg  [pattern: '\''runtime resume|atomic_enable'\'' not in dmesg]'
+  [0;31mFAIL[0m  PM02: resume event in dmesg  [pattern: 'runtime resume|atomic_enable' not in dmesg]
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  PM02: resume event in dmesg  [pattern: '\''runtime resume|atomic_enable'\'' not in dmesg]'
++ [L199] return 1
++ [L95] kill 1276
++ [L95] wait 1276
++ [L97] echo ''
++ [L98] echo '  [PM03] Resume from MODE_1 (RAM retained)'
++ [L99] rm -f /tmp/dmesg_capture.log
+
+  [PM03] Resume from MODE_1 (RAM retained)
++ [L100] dmesg -C
++ [L102] KMS=1287
++ [L101] ./kmstest
++ [L103] sleep 2
++ [L104] kill 1287
++ [L104] wait 1287
++ [L105] sleep 4
++ [L107] KMS=1292
++ [L106] ./kmstest
++ [L108] sleep 2
++ [L109] dmesg
++ [L110] check_no_driver_errors 'PM03: no driver errors'
++ [L238] local 'desc=PM03: no driver errors'
++ [L239] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed'
++ [L240] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'PM03: no driver errors'
++ [L215] local 'pattern=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'desc=PM03: no driver errors'
++ [L216] '[' -f /tmp/dmesg_capture.log ']'
++ [L217] grep -qE 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' /tmp/dmesg_capture.log
++ [L221] pass 'PM03: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  PM03: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  PM03: no driver errors'
+  [0;32mPASS[0m  PM03: no driver errors
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  PM03: no driver errors'
++ [L222] return 0
++ [L111] check_dmesg 'deep sleep mode 0x01|runtime resume' 'PM03: MODE_1 deep sleep + resume'
++ [L192] local 'pattern=deep sleep mode 0x01|runtime resume' 'desc=PM03: MODE_1 deep sleep + resume'
++ [L193] '[' -f /tmp/dmesg_capture.log ']'
++ [L194] grep -qE 'deep sleep mode 0x01|runtime resume' /tmp/dmesg_capture.log
++ [L198] fail 'PM03: MODE_1 deep sleep + resume  [pattern: '\''deep sleep mode 0x01|runtime resume'\'' not in dmesg]'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  PM03: MODE_1 deep sleep + resume  [pattern: '\''deep sleep mode 0x01|runtime resume'\'' not in dmesg]'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  PM03: MODE_1 deep sleep + resume  [pattern: '\''deep sleep mode 0x01|runtime resume'\'' not in dmesg]'
+  [0;31mFAIL[0m  PM03: MODE_1 deep sleep + resume  [pattern: 'deep sleep mode 0x01|runtime resume' not in dmesg]
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  PM03: MODE_1 deep sleep + resume  [pattern: '\''deep sleep mode 0x01|runtime resume'\'' not in dmesg]'
++ [L199] return 1
++ [L112] kill 1292
++ [L112] wait 1292
++ [L114] '[' 1 -eq 0 ']'
++ [L130] skip 'PM04: system suspend test (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  PM04: system suspend test (--no-system-suspend)'
+  [1;33mSKIP[0m  PM04: system suspend test (--no-system-suspend)
++ [L14] (( SKIP_COUNT++ ))
++ [L14] _result 'SKIP  PM04: system suspend test (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  PM04: system suspend test (--no-system-suspend)'
++ [L131] skip 'PM05: system resume test (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  PM05: system resume test (--no-system-suspend)'
+  [1;33mSKIP[0m  PM05: system resume test (--no-system-suspend)
++ [L14] (( SKIP_COUNT++ ))
++ [L14] _result 'SKIP  PM05: system resume test (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  PM05: system resume test (--no-system-suspend)'
++ [L132] skip 'PM06: MODE_2 path test (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  PM06: MODE_2 path test (--no-system-suspend)'
+  [1;33mSKIP[0m  PM06: MODE_2 path test (--no-system-suspend)
++ [L14] (( SKIP_COUNT++ ))
++ [L14] _result 'SKIP  PM06: MODE_2 path test (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  PM06: MODE_2 path test (--no-system-suspend)'
++ [L136] hdr '5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05)'
++ [L16] echo ''
++ [L16] echo '--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---'
+
++ [L16] _result ''
+--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L16] _result '--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.1 Runtime suspend — autosuspend + MODE_1 (RS01-RS05) ---'
++ [L138] echo '  [RS01] Verify driver default autosuspend delay'
++ [L139] echo 35000
+  [RS01] Verify driver default autosuspend delay
+++ [L140] cat /sys/bus/spi/devices/spi0.0/power/autosuspend_delay_ms
++ [L140] DELAY=35000
++ [L141] '[' 35000 -eq 35000 ']'
++ [L142] pass 'RS01: driver default autosuspend = 35000ms'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS01: driver default autosuspend = 35000ms'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS01: driver default autosuspend = 35000ms'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS01: driver default autosuspend = 35000ms'
+  [0;32mPASS[0m  RS01: driver default autosuspend = 35000ms
++ [L147] echo ''
++ [L148] echo '  [RS02] Re-apply shortened autosuspend (3s)'
+
+  [RS02] Re-apply shortened autosuspend (3s)
++ [L149] echo 3000
+++ [L150] cat /sys/bus/spi/devices/spi0.0/power/autosuspend_delay_ms
++ [L150] DELAY=3000
++ [L151] '[' 3000 -eq 3000 ']'
++ [L151] pass 'RS02: autosuspend re-applied to 3000ms'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS02: autosuspend re-applied to 3000ms'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS02: autosuspend re-applied to 3000ms'
+  [0;32mPASS[0m  RS02: autosuspend re-applied to 3000ms
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS02: autosuspend re-applied to 3000ms'
++ [L153] echo ''
++ [L154] echo '  [RS03] MODE_1 deep sleep on autosuspend'
+
+  [RS03] MODE_1 deep sleep on autosuspend
++ [L155] rm -f /tmp/dmesg_capture.log
++ [L156] dmesg -C
++ [L158] KMS=1305
++ [L157] ./kmstest
++ [L159] sleep 2
++ [L160] kill 1305
++ [L160] wait 1305
++ [L161] sleep 5
++ [L162] dmesg
++ [L163] check_no_driver_errors 'RS03: no driver errors'
++ [L238] local 'desc=RS03: no driver errors'
++ [L239] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed'
++ [L240] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'RS03: no driver errors'
++ [L215] local 'pattern=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'desc=RS03: no driver errors'
++ [L216] '[' -f /tmp/dmesg_capture.log ']'
++ [L217] grep -qE 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' /tmp/dmesg_capture.log
++ [L221] pass 'RS03: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS03: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS03: no driver errors'
+  [0;32mPASS[0m  RS03: no driver errors
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS03: no driver errors'
++ [L222] return 0
++ [L164] check_pm_status suspended 'RS03: device suspended after autosuspend'
++ [L245] local expected=suspended 'desc=RS03: device suspended after autosuspend'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=suspended
++ [L249] '[' suspended = suspended ']'
++ [L250] pass 'RS03: device suspended after autosuspend  (status: suspended)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS03: device suspended after autosuspend  (status: suspended)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS03: device suspended after autosuspend  (status: suspended)'
+  [0;32mPASS[0m  RS03: device suspended after autosuspend  (status: suspended)
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS03: device suspended after autosuspend  (status: suspended)'
++ [L165] check_dmesg 'runtime suspend: entering deep sleep mode 0x01' 'RS03: MODE_1 deep sleep command sent'
++ [L192] local 'pattern=runtime suspend: entering deep sleep mode 0x01' 'desc=RS03: MODE_1 deep sleep command sent'
++ [L193] '[' -f /tmp/dmesg_capture.log ']'
++ [L194] grep -qE 'runtime suspend: entering deep sleep mode 0x01' /tmp/dmesg_capture.log
++ [L198] fail 'RS03: MODE_1 deep sleep command sent  [pattern: '\''runtime suspend: entering deep sleep mode 0x01'\'' not in dmesg]'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  RS03: MODE_1 deep sleep command sent  [pattern: '\''runtime suspend: entering deep sleep mode 0x01'\'' not in dmesg]'
++ [L13] (( FAIL_COUNT++ ))
+  [0;31mFAIL[0m  RS03: MODE_1 deep sleep command sent  [pattern: 'runtime suspend: entering deep sleep mode 0x01' not in dmesg]
++ [L13] _result 'FAIL  RS03: MODE_1 deep sleep command sent  [pattern: '\''runtime suspend: entering deep sleep mode 0x01'\'' not in dmesg]'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  RS03: MODE_1 deep sleep command sent  [pattern: '\''runtime suspend: entering deep sleep mode 0x01'\'' not in dmesg]'
++ [L199] return 1
++ [L167] echo ''
++ [L168] echo '  [RS04] Resume from MODE_1 runs hw_init'
+
+  [RS04] Resume from MODE_1 runs hw_init
++ [L169] rm -f /tmp/dmesg_capture.log
++ [L170] dmesg -C
++ [L172] KMS=1318
++ [L171] ./kmstest
++ [L173] sleep 2
++ [L174] dmesg
++ [L175] check_no_driver_errors 'RS04: no driver errors'
++ [L238] local 'desc=RS04: no driver errors'
++ [L239] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed'
++ [L240] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'RS04: no driver errors'
++ [L215] local 'pattern=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'desc=RS04: no driver errors'
++ [L216] '[' -f /tmp/dmesg_capture.log ']'
++ [L217] grep -qE 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' /tmp/dmesg_capture.log
++ [L221] pass 'RS04: no driver errors'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS04: no driver errors'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS04: no driver errors'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
+  [0;32mPASS[0m  RS04: no driver errors
++ [L10] echo 'PASS  RS04: no driver errors'
++ [L222] return 0
++ [L176] check_dmesg 'runtime resume' 'RS04: hw_init on resume from MODE_1'
++ [L192] local 'pattern=runtime resume' 'desc=RS04: hw_init on resume from MODE_1'
++ [L193] '[' -f /tmp/dmesg_capture.log ']'
++ [L194] grep -qE 'runtime resume' /tmp/dmesg_capture.log
++ [L198] fail 'RS04: hw_init on resume from MODE_1  [pattern: '\''runtime resume'\'' not in dmesg]'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  RS04: hw_init on resume from MODE_1  [pattern: '\''runtime resume'\'' not in dmesg]'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  RS04: hw_init on resume from MODE_1  [pattern: '\''runtime resume'\'' not in dmesg]'
+  [0;31mFAIL[0m  RS04: hw_init on resume from MODE_1  [pattern: 'runtime resume' not in dmesg]
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  RS04: hw_init on resume from MODE_1  [pattern: '\''runtime resume'\'' not in dmesg]'
++ [L199] return 1
++ [L177] check_pm_status active 'RS04: device active after resume'
++ [L245] local expected=active 'desc=RS04: device active after resume'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=active
++ [L249] '[' active = active ']'
++ [L250] pass 'RS04: device active after resume  (status: active)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS04: device active after resume  (status: active)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS04: device active after resume  (status: active)'
+  [0;32mPASS[0m  RS04: device active after resume  (status: active)
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS04: device active after resume  (status: active)'
++ [L178] kill 1318
++ [L178] wait 1318
++ [L180] echo ''
++ [L181] echo '  [RS05] Full active→MODE_1→active→MODE_1 lifecycle (2 cycles)'
++ [L182] rm -f /tmp/dmesg_capture.log
+
+  [RS05] Full active→MODE_1→active→MODE_1 lifecycle (2 cycles)
++ [L184] sleep 5
++ [L185] dmesg -C
++ [L187] KMS=1330
++ [L186] ./kmstest
++ [L188] sleep 1
++ [L188] check_pm_status active 'RS05 cycle1: active'
++ [L245] local expected=active 'desc=RS05 cycle1: active'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=active
++ [L249] '[' active = active ']'
++ [L250] pass 'RS05 cycle1: active  (status: active)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS05 cycle1: active  (status: active)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS05 cycle1: active  (status: active)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
+  [0;32mPASS[0m  RS05 cycle1: active  (status: active)
++ [L10] echo 'PASS  RS05 cycle1: active  (status: active)'
++ [L189] kill 1330
++ [L189] wait 1330
++ [L190] sleep 5
++ [L190] check_pm_status suspended 'RS05 cycle1: suspended (MODE_1)'
++ [L245] local expected=suspended 'desc=RS05 cycle1: suspended (MODE_1)'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=suspended
++ [L249] '[' suspended = suspended ']'
++ [L250] pass 'RS05 cycle1: suspended (MODE_1)  (status: suspended)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS05 cycle1: suspended (MODE_1)  (status: suspended)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS05 cycle1: suspended (MODE_1)  (status: suspended)'
+  [0;32mPASS[0m  RS05 cycle1: suspended (MODE_1)  (status: suspended)
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS05 cycle1: suspended (MODE_1)  (status: suspended)'
++ [L192] KMS=1339
++ [L191] ./kmstest
++ [L193] sleep 1
++ [L193] check_pm_status active 'RS05 cycle2: active again'
++ [L245] local expected=active 'desc=RS05 cycle2: active again'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=active
++ [L249] '[' active = active ']'
++ [L250] pass 'RS05 cycle2: active again  (status: active)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS05 cycle2: active again  (status: active)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS05 cycle2: active again  (status: active)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
+  [0;32mPASS[0m  RS05 cycle2: active again  (status: active)
++ [L10] echo 'PASS  RS05 cycle2: active again  (status: active)'
++ [L194] kill 1339
++ [L194] wait 1339
++ [L195] sleep 5
++ [L195] check_pm_status suspended 'RS05 cycle2: suspended again'
++ [L245] local expected=suspended 'desc=RS05 cycle2: suspended again'
++ [L246] '[' -z /sys/bus/spi/devices/spi0.0 ']'
++ [L247] local actual
+++ [L248] cat /sys/bus/spi/devices/spi0.0/power/runtime_status
++ [L248] actual=suspended
++ [L249] '[' suspended = suspended ']'
++ [L250] pass 'RS05 cycle2: suspended again  (status: suspended)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS05 cycle2: suspended again  (status: suspended)'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS05 cycle2: suspended again  (status: suspended)'
+  [0;32mPASS[0m  RS05 cycle2: suspended again  (status: suspended)
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS05 cycle2: suspended again  (status: suspended)'
++ [L196] check_no_driver_errors 'RS05: no driver errors during lifecycle'
++ [L238] local 'desc=RS05: no driver errors during lifecycle'
++ [L239] local 'ERROR_PATTERN=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed'
++ [L240] check_dmesg_absent 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'RS05: no driver errors during lifecycle'
++ [L215] local 'pattern=Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed' 'desc=RS05: no driver errors during lifecycle'
++ [L216] '[' -f /tmp/dmesg_capture.log ']'
++ [L225] dmesg
++ [L225] grep -qE 'Busy wait timed out|Hardware initialization failed|Display update failed|failed to resume|HW init failed|Orientation re-init failed|SPI setup failed|Unknown panel model|Failed to get.*GPIO|atomic_disable: clear failed|crtc_atomic_enable: failed|atomic_flush: failed'
++ [L229] pass 'RS05: no driver errors during lifecycle'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS05: no driver errors during lifecycle'
++ [L12] (( PASS_COUNT++ ))
++ [L12] _result 'PASS  RS05: no driver errors during lifecycle'
+  [0;32mPASS[0m  RS05: no driver errors during lifecycle
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS05: no driver errors during lifecycle'
++ [L230] return 0
++ [L197] dmesg
+++ [L198] dmesg_count 'runtime resume'
+++ [L48] dmesg
+++ [L48] grep -E 'runtime resume'
+++ [L48] wc -l
++ [L198] RESUME_COUNT=0
+++ [L199] dmesg_count 'runtime suspend'
+++ [L48] dmesg
+++ [L48] grep -E 'runtime suspend'
+++ [L48] wc -l
++ [L199] SUSPEND_COUNT=0
++ [L200] '[' 0 -ge 2 ']'
++ [L201] fail 'RS05: <2 runtime resume events (got 0)'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  RS05: <2 runtime resume events (got 0)'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  RS05: <2 runtime resume events (got 0)'
+  [0;31mFAIL[0m  RS05: <2 runtime resume events (got 0)
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  RS05: <2 runtime resume events (got 0)'
++ [L202] '[' 0 -ge 2 ']'
++ [L203] fail 'RS05: <2 runtime suspend events (got 0)'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  RS05: <2 runtime suspend events (got 0)'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  RS05: <2 runtime suspend events (got 0)'
+  [0;31mFAIL[0m  RS05: <2 runtime suspend events (got 0)
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  RS05: <2 runtime suspend events (got 0)'
++ [L206] hdr '5.2 clear_on_close immediate deep sleep (RS06-RS07)'
++ [L16] echo ''
++ [L16] echo '--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---'
+
++ [L16] _result ''
+--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L16] _result '--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.2 clear_on_close immediate deep sleep (RS06-RS07) ---'
++ [L208] echo '  [RS06] Deep sleep fires immediately after clear (not after 30s timer)'
++ [L209] module_reload
+  [RS06] Deep sleep fires immediately after clear (not after 30s timer)
++ [L92] rmmod ssd16xx
++ [L93] sleep 1
++ [L94] '[' -n '' ']'
++ [L97] insmod ''
++ [L97] modprobe ssd16xx
++ [L100] echo 'module ssd16xx +p'
++ [L101] sleep 1
+/root/tests_27sept_new8/common.sh: line 100: /sys/kernel/debug/dynamic_debug/control: No such file or directory
++ [L102] _rediscover
++ [L84] '[' -z /root/tests_27sept_new8 ']'
++ [L87] source /root/tests_27sept_new8/discover.sh
++++ [L11] modetest -M ssd16xx
+++ [L11] _MT='Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L210] ./modetest -M ssd16xx -w 36:clear_on_close:1
++ [L211] echo 30000
++ [L212] ./kmstest
++ [L213] KMS=1389
++ [L214] sleep 2
++ [L215] rm -f /tmp/dmesg_capture.log
++ [L216] dmesg -C
+++ [L217] date +%s%3N
++ [L217] T_BEFORE=1748545310902
++ [L218] kill 1389
++ [L218] wait 1389
++ [L219] sleep 3
+++ [L220] date +%s%3N
++ [L220] T_AFTER=1748545315695
++ [L221] ELAPSED=4793
++ [L222] dmesg
++ [L225] check_dmesg 'runtime suspend' 'RS06: runtime suspend fired (clear_on_close sync suspend)'
++ [L192] local 'pattern=runtime suspend' 'desc=RS06: runtime suspend fired (clear_on_close sync suspend)'
++ [L193] '[' -f /tmp/dmesg_capture.log ']'
++ [L194] grep -qE 'runtime suspend' /tmp/dmesg_capture.log
++ [L198] fail 'RS06: runtime suspend fired (clear_on_close sync suspend)  [pattern: '\''runtime suspend'\'' not in dmesg]'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  RS06: runtime suspend fired (clear_on_close sync suspend)  [pattern: '\''runtime suspend'\'' not in dmesg]'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  RS06: runtime suspend fired (clear_on_close sync suspend)  [pattern: '\''runtime suspend'\'' not in dmesg]'
+  [0;31mFAIL[0m  RS06: runtime suspend fired (clear_on_close sync suspend)  [pattern: 'runtime suspend' not in dmesg]
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'FAIL  RS06: runtime suspend fired (clear_on_close sync suspend)  [pattern: '\''runtime suspend'\'' not in dmesg]'
++ [L199] return 1
++ [L226] '[' 4793 -lt 20000 ']'
++ [L227] pass 'RS06: suspend within 4793ms (expected <20s, not ~30s timer)'
++ [L12] echo -e '  \033[0;32mPASS\033[0m  RS06: suspend within 4793ms (expected <20s, not ~30s timer)'
++ [L12] (( PASS_COUNT++ ))
+  [0;32mPASS[0m  RS06: suspend within 4793ms (expected <20s, not ~30s timer)
++ [L12] _result 'PASS  RS06: suspend within 4793ms (expected <20s, not ~30s timer)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'PASS  RS06: suspend within 4793ms (expected <20s, not ~30s timer)'
++ [L232] echo ''
+
++ [L233] echo '  [RS07] Order: clear_display → runtime suspend'
+  [RS07] Order: clear_display → runtime suspend
++ [L234] module_reload
++ [L92] rmmod ssd16xx
++ [L93] sleep 1
++ [L94] '[' -n '' ']'
++ [L97] insmod ''
++ [L97] modprobe ssd16xx
++ [L100] echo 'module ssd16xx +p'
++ [L101] sleep 1
+/root/tests_27sept_new8/common.sh: line 100: /sys/kernel/debug/dynamic_debug/control: No such file or directory
++ [L102] _rediscover
++ [L84] '[' -z /root/tests_27sept_new8 ']'
++ [L87] source /root/tests_27sept_new8/discover.sh
++++ [L11] modetest -M ssd16xx
+++ [L11] _MT='Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L235] ./modetest -M ssd16xx -w 36:clear_on_close:1
++ [L237] KMS=1430
++ [L238] sleep 2
++ [L236] ./kmstest
++ [L239] rm -f /tmp/dmesg_capture.log
++ [L240] dmesg -C
++ [L241] kill 1430
++ [L241] wait 1430
++ [L242] sleep 3
++ [L243] dmesg
++ [L244] echo '  dmesg ordering (clear_display should appear before runtime suspend):'
+  dmesg ordering (clear_display should appear before runtime suspend):
++ [L245] dmesg
++ [L245] grep -E 'clear_display|runtime suspend'
++ [L245] head -6
++ [L245] sed 's/^/    /'
+++ [L246] dmesg
+++ [L246] grep -n clear_display
+++ [L246] head -1
+++ [L246] cut -d: -f1
++ [L246] CLEAR_LINE=
+++ [L247] dmesg
+++ [L247] grep -n 'runtime suspend'
+++ [L247] head -1
+++ [L247] cut -d: -f1
++ [L247] SUSP_LINE=
++ [L248] '[' -n '' ']'
++ [L251] fail 'RS07: ordering wrong or events missing (clear_line= susp_line=)'
++ [L13] echo -e '  \033[0;31mFAIL\033[0m  RS07: ordering wrong or events missing (clear_line= susp_line=)'
++ [L13] (( FAIL_COUNT++ ))
++ [L13] _result 'FAIL  RS07: ordering wrong or events missing (clear_line= susp_line=)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
+  [0;31mFAIL[0m  RS07: ordering wrong or events missing (clear_line= susp_line=)
++ [L10] echo 'FAIL  RS07: ordering wrong or events missing (clear_line= susp_line=)'
++ [L254] module_reload
++ [L92] rmmod ssd16xx
++ [L93] sleep 1
++ [L94] '[' -n '' ']'
++ [L97] insmod ''
++ [L97] modprobe ssd16xx
++ [L100] echo 'module ssd16xx +p'
++ [L101] sleep 1
+/root/tests_27sept_new8/common.sh: line 100: /sys/kernel/debug/dynamic_debug/control: No such file or directory
++ [L102] _rediscover
++ [L84] '[' -z /root/tests_27sept_new8 ']'
++ [L87] source /root/tests_27sept_new8/discover.sh
++++ [L11] modetest -M ssd16xx
+++ [L11] _MT='Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L255] echo 3000
++ [L258] hdr '5.3 System suspend — active panel → MODE_2 (SS01-SS03)'
++ [L16] echo ''
++ [L16] echo '--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---'
++ [L16] _result ''
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
+
+--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---
++ [L16] _result '--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.3 System suspend — active panel → MODE_2 (SS01-SS03) ---'
++ [L259] '[' 1 -eq 1 ']'
++ [L260] skip 'SS01-SS03: system suspend (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  SS01-SS03: system suspend (--no-system-suspend)'
++ [L14] (( SKIP_COUNT++ ))
+  [1;33mSKIP[0m  SS01-SS03: system suspend (--no-system-suspend)
++ [L14] _result 'SKIP  SS01-SS03: system suspend (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  SS01-SS03: system suspend (--no-system-suspend)'
++ [L288] hdr '5.4 System suspend from MODE_1 — upgrading path (SS04-SS06)'
++ [L16] echo ''
+
++ [L16] echo '--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---'
++ [L16] _result ''
+--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L16] _result '--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.4 System suspend from MODE_1 — upgrading path (SS04-SS06) ---'
++ [L289] '[' 1 -eq 1 ']'
++ [L290] skip 'SS04-SS06: system suspend from MODE_1 (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)'
++ [L14] (( SKIP_COUNT++ ))
+  [1;33mSKIP[0m  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)
++ [L14] _result 'SKIP  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  SS04-SS06: system suspend from MODE_1 (--no-system-suspend)'
++ [L331] hdr '5.5 System suspend — edge cases (SS07-SS10)'
++ [L16] echo ''
++ [L16] echo '--- 5.5 System suspend — edge cases (SS07-SS10) ---'
+
++ [L16] _result ''
+--- 5.5 System suspend — edge cases (SS07-SS10) ---
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L16] _result '--- 5.5 System suspend — edge cases (SS07-SS10) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.5 System suspend — edge cases (SS07-SS10) ---'
++ [L332] '[' 1 -eq 1 ']'
++ [L333] skip 'SS07-SS10: system suspend edge cases (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  SS07-SS10: system suspend edge cases (--no-system-suspend)'
++ [L14] (( SKIP_COUNT++ ))
+  [1;33mSKIP[0m  SS07-SS10: system suspend edge cases (--no-system-suspend)
++ [L14] _result 'SKIP  SS07-SS10: system suspend edge cases (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  SS07-SS10: system suspend edge cases (--no-system-suspend)'
++ [L397] hdr '5.6 TEST4: System suspend + Resume — active app (T401-T404)'
++ [L16] echo ''
++ [L16] echo '--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---'
+
++ [L16] _result ''
+--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L16] _result '--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.6 TEST4: System suspend + Resume — active app (T401-T404) ---'
++ [L398] '[' 1 -eq 1 ']'
++ [L399] skip 'TEST4: system suspend (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  TEST4: system suspend (--no-system-suspend)'
++ [L14] (( SKIP_COUNT++ ))
+  [1;33mSKIP[0m  TEST4: system suspend (--no-system-suspend)
++ [L14] _result 'SKIP  TEST4: system suspend (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  TEST4: system suspend (--no-system-suspend)'
++ [L430] hdr '5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506)'
++ [L16] echo ''
++ [L16] echo '--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---'
+
++ [L16] _result ''
+--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L16] _result '--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '--- 5.7 TEST5: Runtime PM idle + System suspend + Resume (T501-T506) ---'
++ [L431] '[' 1 -eq 1 ']'
++ [L432] skip 'TEST5: system suspend (--no-system-suspend)'
++ [L14] echo -e '  \033[1;33mSKIP\033[0m  TEST5: system suspend (--no-system-suspend)'
++ [L14] (( SKIP_COUNT++ ))
+  [1;33mSKIP[0m  TEST5: system suspend (--no-system-suspend)
++ [L14] _result 'SKIP  TEST5: system suspend (--no-system-suspend)'
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo 'SKIP  TEST5: system suspend (--no-system-suspend)'
++ [L480] echo ''
+
++ [L481] echo 35000
++ [L482] info 'Autosuspend delay restored to 35000ms'
++ [L15] echo -e '  \033[0;36mINFO\033[0m  Autosuspend delay restored to 35000ms'
+  [0;36mINFO[0m  Autosuspend delay restored to 35000ms
++ [L483] module_reload
++ [L92] rmmod ssd16xx
++ [L93] sleep 1
++ [L94] '[' -n '' ']'
++ [L97] insmod ''
++ [L97] modprobe ssd16xx
++ [L100] echo 'module ssd16xx +p'
++ [L101] sleep 1
++ [L102] _rediscover
++ [L84] '[' -z /root/tests_27sept_new8 ']'
++ [L87] source /root/tests_27sept_new8/discover.sh
++++ [L11] modetest -M ssd16xx
+++ [L11] _MT='Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L13] awk '/^Connectors:/{f=1} f && /\tconnected\t/{print $1; exit}'
+++ [L13] C=35
++++ [L14] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L14] awk '/^Connectors:/{cf=1} cf && /\tconnected\t/{mf=1} mf && /^  [0-9]+x[0-9]+/{print $1; exit}'
+++ [L14] MODE=
++++ [L15] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L15] awk '/^CRTCs:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L15] CRTC=38
++++ [L16] echo 'Encoders:
+id	crtc	type	possible crtcs	possible clones	
+39	38	none	0x00000001	0x00000001
+
+Connectors:
+id	encoder	status		name		size (mm)	modes	encoders
+35	39	connected	SPI-1          	85x64		1	39
+  modes:
+	index name refresh (Hz) hdisp hss hse htot vdisp vss vse vtot
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	1 EDID:
+		flags: immutable blob
+		blobs:
+
+		value:
+	2 DPMS:
+		flags: enum
+		enums: On=0 Standby=1 Suspend=2 Off=3
+		value: 0
+	5 link-status:
+		flags: enum
+		enums: Good=0 Bad=1
+		value: 0
+	7 non-desktop:
+		flags: immutable range
+		values: 0 1
+		value: 0
+	4 TILE:
+		flags: immutable blob
+		blobs:
+
+		value:
+
+CRTCs:
+id	fb	pos	size
+38	41	(0,0)	(400x300)
+  #0 400x300 0.01 400 400 400 400 300 300 300 300 1 flags: ; type: preferred, driver
+  props:
+	25 VRR_ENABLED:
+		flags: range
+		values: 0 1
+		value: 0
+
+Planes:
+id	crtc	fb	CRTC x,y	x,y	gamma size	possible crtcs
+36	38	41	0,0		0,0	0       	0x00000001
+  formats: XR24 R1
+  props:
+	9 type:
+		flags: immutable enum
+		enums: Overlay=0 Primary=1 Cursor=2
+		value: 1
+	32 IN_FORMATS:
+		flags: immutable blob
+		blobs:
+
+		value:
+			01000000000000000200000018000000
+			01000000200000005852323452312020
+			03000000000000000000000000000000
+			0000000000000000
+		in_formats blob decoded:
+			 XR24:  LINEAR(0x0)
+			 R1:  LINEAR(0x0)
+	40 refresh_mode:
+		flags: enum
+		enums: partial=0 full=1 fast=2
+		value: 0
+
+Frame buffers:
+id	size	pitch'
++++ [L16] awk '/^Planes:/{f=1;next}  f && /^[0-9]+\t/{print $1; exit}'
+++ [L16] P=36
+++ [L19] MODE=400x300
+++ [L22] export C CRTC P MODE
++ [L484] rm -f /tmp/dmesg_capture.log
++ [L486] summary
++ [L19] local totals
+++ [L20] printf '  PASS: %-4d  FAIL: %-4d  SKIP: %-4d' 17 9 8
++ [L20] totals='  PASS: 17    FAIL: 9     SKIP: 8   '
++ [L21] echo ''
++ [L22] echo ================================================
+
+================================================
++ [L23] echo '  PASS: 17    FAIL: 9     SKIP: 8   '
+  PASS: 17    FAIL: 9     SKIP: 8   
++ [L24] echo ================================================
++ [L25] _result ''
+================================================
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ''
++ [L25] _result ================================================
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ================================================
++ [L26] _result '  PASS: 17    FAIL: 9     SKIP: 8   '
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo '  PASS: 17    FAIL: 9     SKIP: 8   '
++ [L26] _result ================================================
++ [L10] '[' -n /root/tests_27sept_new8/results/test_pm_20250529_190039.result ']'
++ [L10] echo ================================================
++ [L27] '[' 9 -eq 0 ']'
++ [L1] cleanup
++ [L265] exec
+++ [L265] jobs -p
++ [L265] kill ''
++ [L265] wait
