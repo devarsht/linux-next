@@ -259,6 +259,8 @@ struct ssd16xx_device_config {
 	const u8 *booster_soft_start_data; /* Optional command 0x0C bytes */
 	u8        booster_soft_start_len;
 
+	bool x_mirror; /* Controller scans this panel's RAM X in reverse */
+
 	const struct drm_display_mode *mode;
 };
 
@@ -416,6 +418,7 @@ static const struct ssd16xx_device_config ssd16xx_device_configs[] = {
 		.default_clear_on_disable = -1,
 		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
 		.red_supported = false,  /* 2-colour black/white panel */
+		.x_mirror = false,
 		.default_color_mode = SSD16XX_COLOR_MODE_BW,
 		.mode = &gdey042t81_mode,
 	},
@@ -933,7 +936,7 @@ static bool ssd16xx_pixel_is_red(struct iosys_map *src,
  */
 static void ssd16xx_convert_fb(u8 *bw_dst, u8 *red_dst, struct iosys_map *src,
 			       struct drm_framebuffer *fb, struct drm_rect *rect,
-			       unsigned int orientation)
+			       unsigned int orientation, bool x_mirror)
 {
 	bool portrait = orientation == 90 || orientation == 270;
 	bool r1 = fb->format->format == DRM_FORMAT_R1;
@@ -944,7 +947,8 @@ static void ssd16xx_convert_fb(u8 *bw_dst, u8 *red_dst, struct iosys_map *src,
 	unsigned int bit_pos = 0;
 	unsigned int dst_idx = 0;
 
-	bool r1_fast = r1 && !red_dst && orientation == 0 && rect->x1 % 8 == 0;
+	bool r1_fast = r1 && !red_dst && orientation == 0 && rect->x1 % 8 == 0 &&
+		       !x_mirror;
 
 	drm_dbg(fb->dev,
 		"convert_fb: fmt=%p4cc rect=(%d,%d)-(%d,%d) orient=%u° path=%s\n",
@@ -967,8 +971,11 @@ static void ssd16xx_convert_fb(u8 *bw_dst, u8 *red_dst, struct iosys_map *src,
 
 	for (i = 0; i < outer_len; i++) {
 		for (j = 0; j < inner_len; j++) {
-			x = portrait ? rect->x2 - 1 - i : rect->x1 + j;
-			y = portrait ? rect->y1 + j : rect->y1 + i;
+			/* The inner loop walks RAM X; reverse it for x_mirror. */
+			unsigned int k = x_mirror ? inner_len - 1 - j : j;
+
+			x = portrait ? rect->x2 - 1 - i : rect->x1 + k;
+			y = portrait ? rect->y1 + k : rect->y1 + i;
 
 			if (red_dst && r1) {
 				/* Set R1 bits are red ink (RED=1, BW=0), clear ones white. */
@@ -1035,7 +1042,8 @@ static int ssd16xx_fb_dirty(struct drm_framebuffer *fb,
 	 * In 3-colour mode R1 bits are red ink on white; otherwise they are
 	 * luma (1 = white, 0 = black).
 	 */
-	ssd16xx_convert_fb(mono_buffer, red_buffer, &map, fb, rect, device->orientation);
+	ssd16xx_convert_fb(mono_buffer, red_buffer, &map, fb, rect, device->orientation,
+			   device->device_cfg->x_mirror);
 
 	drm_dbg(&device->drm,
 		"fb_dirty: mono[0..3]=0x%02x 0x%02x 0x%02x 0x%02x (data_size=%u)\n",
