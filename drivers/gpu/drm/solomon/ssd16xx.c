@@ -286,7 +286,7 @@ struct ssd16xx_device {
 	u8 deep_sleep_mode;   /* Command 0x10 value for the next suspend */
 	enum ssd16xx_refresh_mode refresh_mode; /* Active refresh mode */
 	enum ssd16xx_color_mode color_mode;     /* Active color mode (BW or 3-color) */
-	bool fast_lut_pending; /* LUT pre-load needed before next fast refresh */
+	bool fast_lut_loaded; /* Controller holds the fast-refresh LUT */
 
 	/* Border waveform (as enum indices) */
 	int border_waveform_init_idx;   /* Border waveform during clear/init */
@@ -305,7 +305,18 @@ struct ssd16xx_device {
 	u8  *tx_red_buf; /* 1bpp red-channel buffer (3-color panels only) */
 	u16 *tx_buf9;    /* 9-bit SPI expansion buffer (3-wire mode only) */
 	u8  spi_buf[64] ____cacheline_aligned; /* DMA-safe buffer for SPI transfers */
+
+	struct drm_property *refresh_mode_property;
 };
+
+/* Plane state subclass carrying the refresh_mode property. */
+struct ssd16xx_plane_state {
+	struct drm_shadow_plane_state base;
+	enum ssd16xx_refresh_mode refresh_mode; /* Pending refresh mode */
+};
+
+#define to_ssd16xx_plane_state(s) \
+	container_of((s), struct ssd16xx_plane_state, base.base)
 
 static inline struct ssd16xx_device *to_ssd16xx_device(struct drm_device *drm)
 {
@@ -616,13 +627,27 @@ static void ssd16xx_hw_reset(struct ssd16xx_device *device)
 	usleep_range(10000, 11000);
 }
 
+/* Record which LUT a refresh of the given mode leaves loaded. */
+static void ssd16xx_track_lut(struct ssd16xx_device *device,
+			      enum ssd16xx_refresh_mode mode)
+{
+	if (mode == SSD16XX_REFRESH_FULL)
+		device->fast_lut_loaded = true;
+	else if (mode == SSD16XX_REFRESH_PARTIAL)
+		device->fast_lut_loaded = false;
+}
+
 /*
- * Fast refresh (0xC7) does not load a LUT itself; load the full-refresh LUT
- * beforehand without updating the display.
+ * Fast refresh (0xC7) uses the full-refresh LUT but does not load it itself.
+ * fast_lut_loaded tracks whether it is still loaded: a reset or a partial
+ * update drops it, a full update loads it as well.
  */
 static int ssd16xx_preload_fast_lut(struct ssd16xx_device *device)
 {
 	int err = 0;
+
+	if (device->fast_lut_loaded)
+		return 0;
 
 	ssd16xx_send_cmd(device, SSD16XX_CMD_DISPLAY_UPDATE_CONTROL1, &err);
 	ssd16xx_send_data(device, device->controller_cfg->ctrl1_bypass_red_ram, &err);
@@ -634,6 +659,7 @@ static int ssd16xx_preload_fast_lut(struct ssd16xx_device *device)
 	ssd16xx_send_cmd(device, SSD16XX_CMD_MASTER_ACTIVATION, &err);
 	ssd16xx_wait_for_device(device, &err);
 
+	device->fast_lut_loaded = !err;
 	return err;
 }
 
@@ -665,8 +691,8 @@ static int ssd16xx_hw_init(struct ssd16xx_device *device)
 	ssd16xx_send_y_param(device, device->height - 1, &err);
 	ssd16xx_send_data(device, device->device_cfg->driver_output_ctrl_byte3, &err);
 
-	if (!err && device->refresh_mode == SSD16XX_REFRESH_FAST)
-		err = ssd16xx_preload_fast_lut(device);
+	/* The reset dropped any fast LUT; it is loaded again on first use. */
+	device->fast_lut_loaded = false;
 
 	/* The RAM window and cursor are programmed by fb_dirty. */
 	switch (device->orientation) {
@@ -773,6 +799,7 @@ static int ssd16xx_clear_display(struct ssd16xx_device *device,
 					cfg->ctrl1_normal : cfg->ctrl1_bypass_red_ram,
 			       SSD16XX_CTRL1_BYTE2_DEFAULT,
 			       cfg->ctrl2_refresh[mode], &err);
+	ssd16xx_track_lut(device, mode);
 
 	/* RED RAM becomes the baseline for the next partial update. */
 	if (mode == SSD16XX_REFRESH_PARTIAL) {
@@ -1067,6 +1094,7 @@ static int ssd16xx_fb_dirty(struct drm_framebuffer *fb,
 			mono_buffer[0]);
 		break;
 	}
+	ssd16xx_track_lut(device, device->refresh_mode);
 
 	return err;
 }
@@ -1080,11 +1108,88 @@ static void ssd16xx_plane_destroy(struct drm_plane *plane)
 	drm_plane_cleanup(plane);
 }
 
+static struct drm_plane_state *ssd16xx_plane_atomic_create_state(struct drm_plane *plane)
+{
+	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
+	struct ssd16xx_plane_state *ssd_state;
+
+	ssd_state = kzalloc_obj(*ssd_state, GFP_KERNEL);
+	if (!ssd_state)
+		return ERR_PTR(-ENOMEM);
+
+	__drm_gem_shadow_plane_state_init(plane, &ssd_state->base);
+	ssd_state->refresh_mode = device->refresh_mode;
+
+	return &ssd_state->base.base;
+}
+
+static struct drm_plane_state *
+ssd16xx_plane_atomic_duplicate_state(struct drm_plane *plane)
+{
+	struct ssd16xx_plane_state *old_ssd_state, *ssd_state;
+
+	if (WARN_ON(!plane->state))
+		return NULL;
+
+	old_ssd_state = to_ssd16xx_plane_state(plane->state);
+	ssd_state = kmemdup(old_ssd_state, sizeof(*ssd_state), GFP_KERNEL);
+	if (!ssd_state)
+		return NULL;
+
+	__drm_gem_duplicate_shadow_plane_state(plane, &ssd_state->base);
+	return &ssd_state->base.base;
+}
+
+static void ssd16xx_plane_atomic_destroy_state(struct drm_plane *plane,
+					       struct drm_plane_state *state)
+{
+	struct ssd16xx_plane_state *ssd_state = to_ssd16xx_plane_state(state);
+
+	__drm_gem_destroy_shadow_plane_state(&ssd_state->base);
+	kfree(ssd_state);
+}
+
+static int ssd16xx_plane_atomic_get_property(struct drm_plane *plane,
+					     const struct drm_plane_state *state,
+					     struct drm_property *property,
+					     uint64_t *val)
+{
+	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
+	const struct ssd16xx_plane_state *ssd_state = to_ssd16xx_plane_state(state);
+
+	if (property == device->refresh_mode_property) {
+		*val = ssd_state->refresh_mode;
+		return 0;
+	}
+	return -EINVAL;
+}
+
+static int ssd16xx_plane_atomic_set_property(struct drm_plane *plane,
+					     struct drm_plane_state *state,
+					     struct drm_property *property,
+					     uint64_t val)
+{
+	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
+	struct ssd16xx_plane_state *ssd_state = to_ssd16xx_plane_state(state);
+
+	if (property == device->refresh_mode_property) {
+		if (val > SSD16XX_REFRESH_FAST)
+			return -EINVAL;
+		ssd_state->refresh_mode = val;
+		return 0;
+	}
+	return -EINVAL;
+}
+
 static const struct drm_plane_funcs ssd16xx_plane_funcs = {
 	.update_plane = drm_atomic_helper_update_plane,
 	.disable_plane = drm_atomic_helper_disable_plane,
 	.destroy = ssd16xx_plane_destroy,
-	DRM_GEM_SHADOW_PLANE_FUNCS,
+	.atomic_create_state = ssd16xx_plane_atomic_create_state,
+	.atomic_duplicate_state = ssd16xx_plane_atomic_duplicate_state,
+	.atomic_destroy_state = ssd16xx_plane_atomic_destroy_state,
+	.atomic_get_property = ssd16xx_plane_atomic_get_property,
+	.atomic_set_property = ssd16xx_plane_atomic_set_property,
 };
 
 static int ssd16xx_plane_atomic_check(struct drm_plane *plane,
@@ -1112,6 +1217,7 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	struct drm_plane_state *new_state = drm_atomic_get_new_plane_state(state, plane);
 	struct drm_shadow_plane_state *shadow_state = to_drm_shadow_plane_state(new_state);
 	struct ssd16xx_device *device = plane_to_ssd16xx_device(plane);
+	struct ssd16xx_plane_state *new_ssd = to_ssd16xx_plane_state(new_state);
 	enum ssd16xx_refresh_mode saved_mode;
 	u8 saved_border_waveform_idx;
 	struct drm_framebuffer *fb = new_state->fb;
@@ -1160,6 +1266,8 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	if (ret)
 		drm_err(&device->drm, "plane_atomic_update: clear on init failed: %d\n", ret);
 
+	device->refresh_mode = new_ssd->refresh_mode;
+
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
 	 * frame only, then restore the user-configured refresh_mode so
@@ -1175,14 +1283,12 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 	if (device->ram_lost && device->refresh_mode == SSD16XX_REFRESH_PARTIAL)
 		device->refresh_mode = SSD16XX_REFRESH_FULL;
 
-	if (device->fast_lut_pending) {
+	/* Fast refresh (0xC7) does not load a LUT itself. */
+	if (device->refresh_mode == SSD16XX_REFRESH_FAST) {
 		ret = ssd16xx_preload_fast_lut(device);
-		if (ret) {
+		if (ret)
 			drm_err(&device->drm,
 				"plane_atomic_update: fast LUT preload failed: %d\n", ret);
-		}
-
-		device->fast_lut_pending = false;
 	}
 
 	ret = drm_gem_fb_begin_cpu_access(fb, DMA_FROM_DEVICE);
@@ -1357,6 +1463,29 @@ static int ssd16xx_connector_get_modes(struct drm_connector *connector)
 static const struct drm_connector_helper_funcs ssd16xx_connector_helper_funcs = {
 	.get_modes = ssd16xx_connector_get_modes,
 };
+
+static const struct drm_prop_enum_list ssd16xx_refresh_mode_enum[] = {
+	{ SSD16XX_REFRESH_PARTIAL, "partial" },
+	{ SSD16XX_REFRESH_FULL,    "full"    },
+	{ SSD16XX_REFRESH_FAST,    "fast"    },
+};
+
+static int ssd16xx_plane_create_properties(struct ssd16xx_device *device)
+{
+	struct drm_device *drm = &device->drm;
+	struct drm_mode_object *plane_obj = &device->primary_plane.base;
+
+	device->refresh_mode_property =
+		drm_property_create_enum(drm, 0, "refresh_mode",
+					 ssd16xx_refresh_mode_enum,
+					 ARRAY_SIZE(ssd16xx_refresh_mode_enum));
+	if (!device->refresh_mode_property)
+		return -ENOMEM;
+	drm_object_attach_property(plane_obj,
+				   device->refresh_mode_property,
+				   device->refresh_mode);
+	return 0;
+}
 
 static const struct drm_connector_funcs ssd16xx_connector_funcs = {
 	.reset = drm_atomic_helper_connector_reset,
@@ -1647,6 +1776,9 @@ static int ssd16xx_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
+	ret = ssd16xx_plane_create_properties(device);
+	if (ret)
+		return ret;
 	drm_mode_config_reset(drm);
 
 	device->deep_sleep_mode = device->controller_cfg->deep_sleep_mode_level1;
