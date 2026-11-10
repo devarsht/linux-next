@@ -235,6 +235,10 @@ struct ssd16xx_device_config {
 	bool default_border_refresh_on_every_update;
 	int default_refresh_mode_init; /* -1 = disabled */
 
+	int default_clear_on_init;    /* -1 = disabled, else enum ssd16xx_refresh_mode */
+	int default_clear_on_close;   /* Same encoding as default_clear_on_init */
+	int default_clear_on_disable; /* Same encoding as default_clear_on_init */
+
 	bool red_supported; /* Panel has a red colour plane */
 	enum ssd16xx_color_mode default_color_mode;
 
@@ -264,6 +268,9 @@ struct ssd16xx_device {
 
 	bool initialized;
 	bool init_refresh_pending; /* First frame after refresh_mode_init enable */
+	bool first_clear_done;  /* clear_on_init has already fired once */
+	bool cleared_on_disable; /* Avoid redundant clear in atomic_disable */
+	bool cleared_on_close;   /* Avoid redundant clear in master_drop */
 
 	int orientation; /* Display orientation in degrees: 0/90/180/270 */
 	enum ssd16xx_refresh_mode refresh_mode; /* Active refresh mode */
@@ -277,6 +284,9 @@ struct ssd16xx_device {
 	bool border_waveform_pending;   /* One-shot: send border cmd on next update */
 
 	/* Display control */
+	int clear_on_init;    /* -1 = disabled, else enum ssd16xx_refresh_mode */
+	int clear_on_close;
+	int clear_on_disable;
 	int refresh_mode_init; /* -1=disabled, else use this mode for the first frame */
 
 	u8  *tx_buf;     /* 1bpp frame buffer (mono + white) */
@@ -334,6 +344,9 @@ static const struct ssd16xx_device_config ssd16xx_device_configs[] = {
 		.default_border_waveform_init   = SSD16XX_BORDER_LUT1,  /* white, clean clear */
 		.default_border_waveform_update = SSD16XX_BORDER_HIZ,   /* floating, preserve */
 		.default_border_refresh_on_every_update = false,
+		.default_clear_on_init    = -1,
+		.default_clear_on_close   = -1,
+		.default_clear_on_disable = -1,
 		.default_refresh_mode_init = SSD16XX_REFRESH_FULL,
 		.red_supported = false,  /* 2-colour black/white panel */
 		.default_color_mode = SSD16XX_COLOR_MODE_BW,
@@ -623,6 +636,126 @@ static int ssd16xx_hw_init(struct ssd16xx_device *device)
 	return err;
 }
 
+/*
+ * Decrementing data entry (90°/180°) takes the window end-before-start and
+ * starts the cursor at (max, max).
+ */
+static void ssd16xx_set_full_ram_window(struct ssd16xx_device *device, int *err)
+{
+	u16 x_end, y_end = device->height - 1;
+	bool dec = device->orientation == 90 || device->orientation == 180;
+
+	if (device->controller_cfg->ram_x_address_bits == 8)
+		x_end = DIV_ROUND_UP(device->width, 8) - 1;
+	else
+		x_end = device->width - 1;
+
+	ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_X_ADDRESS_START_END, err);
+	ssd16xx_send_x_param(device, dec ? x_end : 0, err);
+	ssd16xx_send_x_param(device, dec ? 0 : x_end, err);
+
+	ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_Y_ADDRESS_START_END, err);
+	ssd16xx_send_y_param(device, dec ? y_end : 0, err);
+	ssd16xx_send_y_param(device, dec ? 0 : y_end, err);
+
+	ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, err);
+	ssd16xx_send_x_param(device, dec ? x_end : 0, err);
+
+	ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, err);
+	ssd16xx_send_y_param(device, dec ? y_end : 0, err);
+}
+
+/* Clear to white, following ssd16xx_fb_dirty()'s RAM protocol for @mode. */
+static int ssd16xx_clear_display(struct ssd16xx_device *device,
+				 enum ssd16xx_refresh_mode mode)
+{
+	const u8 *bw_tbl = device->controller_cfg->border_waveform_table;
+	const struct ssd16xx_controller_config *cfg = device->controller_cfg;
+	unsigned int data_size = DIV_ROUND_UP(device->width, 8) * device->height;
+	bool three_color = device->color_mode == SSD16XX_COLOR_MODE_3COLOR &&
+			   device->tx_red_buf;
+	u8 *white_buffer = device->tx_buf;
+	u8 *red_buffer = white_buffer;
+	int err = 0;
+
+	if (mode >= ARRAY_SIZE(cfg->ctrl2_refresh))
+		mode = SSD16XX_REFRESH_FULL;
+
+	/* 3-colour cannot do partial refresh, RED RAM is the red plane. */
+	if (three_color && mode == SSD16XX_REFRESH_PARTIAL)
+		mode = SSD16XX_REFRESH_FULL;
+
+	if (mode == SSD16XX_REFRESH_FAST)
+		err = ssd16xx_preload_fast_lut(device);
+
+	memset(white_buffer, 0xFF, data_size);
+	if (three_color) {
+		red_buffer = device->tx_red_buf;
+		memset(red_buffer, 0x00, data_size);
+	}
+
+	ssd16xx_set_full_ram_window(device, &err);
+	ssd16xx_send_cmd(device, SSD16XX_CMD_WRITE_RAM_BW, &err);
+	ssd16xx_send_data_bulk(device, white_buffer, data_size, &err);
+
+	if (mode != SSD16XX_REFRESH_PARTIAL) {
+		ssd16xx_set_full_ram_window(device, &err);
+		ssd16xx_send_cmd(device, SSD1683_CMD_WRITE_RAM_RED, &err);
+		ssd16xx_send_data_bulk(device, red_buffer, data_size, &err);
+	}
+
+	drm_dbg(&device->drm, "clear_display: mode=%d border=0x%02x\n",
+		mode, bw_tbl[device->border_waveform_init_idx]);
+	ssd16xx_send_cmd(device, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
+	ssd16xx_send_data(device, bw_tbl[device->border_waveform_init_idx], &err);
+
+	ssd16xx_display_update(device,
+			       three_color || mode == SSD16XX_REFRESH_PARTIAL ?
+					cfg->ctrl1_normal : cfg->ctrl1_bypass_red_ram,
+			       SSD16XX_CTRL1_BYTE2_DEFAULT,
+			       cfg->ctrl2_refresh[mode], &err);
+
+	/* RED RAM becomes the baseline for the next partial update. */
+	if (mode == SSD16XX_REFRESH_PARTIAL) {
+		ssd16xx_set_full_ram_window(device, &err);
+		ssd16xx_send_cmd(device, SSD1683_CMD_WRITE_RAM_RED, &err);
+		ssd16xx_send_data_bulk(device, red_buffer, data_size, &err);
+	}
+
+	ssd16xx_send_cmd(device, SSD16XX_CMD_BORDER_WAVEFORM_CONTROL, &err);
+	ssd16xx_send_data(device, bw_tbl[device->border_waveform_update_idx], &err);
+
+	return err;
+}
+
+/* Clear once per master session; master_set/master_drop re-arm it. */
+static int ssd16xx_clear_display_on_init(struct ssd16xx_device *device)
+{
+	int ret;
+
+	if (device->clear_on_init < 0 || device->first_clear_done)
+		return 0;
+
+	drm_dbg(&device->drm, "clear_on_init: running, mode=%d\n",
+		device->clear_on_init);
+	ret = ssd16xx_clear_display(device, device->clear_on_init);
+	if (ret)
+		return ret;
+
+	device->first_clear_done = true;
+	return 0;
+}
+
+static int ssd16xx_clear_display_on_exit(struct ssd16xx_device *device)
+{
+	if (device->clear_on_close < 0)
+		return 0;
+
+	drm_dbg(&device->drm, "clear_on_close: running, mode=%d\n",
+		device->clear_on_close);
+	return ssd16xx_clear_display(device, device->clear_on_close);
+}
+
 /* ITU-R BT.601 luminance (0-255) of an XRGB8888 pixel. */
 static u8 ssd16xx_pixel_luma(struct iosys_map *src,
 			     struct drm_framebuffer *fb,
@@ -759,7 +892,6 @@ static int ssd16xx_fb_dirty(struct drm_framebuffer *fb,
 	unsigned int data_size = DIV_ROUND_UP(device->width, 8) * device->height;
 	u8 *mono_buffer = NULL;
 	u8 *red_buffer = NULL;
-	u16 ram_x_start, ram_x_end, ram_y_start, ram_y_end;
 	struct drm_rect src = drm_plane_state_src(plane_state);
 	struct drm_rect full, *rect = &full;
 
@@ -796,51 +928,7 @@ static int ssd16xx_fb_dirty(struct drm_framebuffer *fb,
 		mono_buffer[0], mono_buffer[1], mono_buffer[2], mono_buffer[3],
 		data_size);
 
-	/* Byte-addressed X counts in units of 8 pixels. */
-	ram_x_start = 0;
-	if (device->controller_cfg->ram_x_address_bits == 8)
-		ram_x_end = DIV_ROUND_UP(device->width, 8) - 1;
-	else
-		ram_x_end = device->width - 1;
-	ram_y_start = 0;
-	ram_y_end = device->height - 1;
-
-	switch (device->orientation) {
-	case 90:
-	case 180:
-		/* 90°/180°: XDEC_YDEC mode, send end-before-start; cursor at (max, max). */
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_X_ADDRESS_START_END, &err);
-		ssd16xx_send_x_param(device, ram_x_end, &err);
-		ssd16xx_send_x_param(device, ram_x_start, &err);
-
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_Y_ADDRESS_START_END, &err);
-		ssd16xx_send_y_param(device, ram_y_end, &err);
-		ssd16xx_send_y_param(device, ram_y_start, &err);
-
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-		ssd16xx_send_x_param(device, ram_x_end, &err);
-
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-		ssd16xx_send_y_param(device, ram_y_end, &err);
-		break;
-
-	default: /* 0°/270° */
-		/* 0°/270°: XINC_YINC mode, cursor at (0, 0). */
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_X_ADDRESS_START_END, &err);
-		ssd16xx_send_x_param(device, ram_x_start, &err);
-		ssd16xx_send_x_param(device, ram_x_end, &err);
-
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_Y_ADDRESS_START_END, &err);
-		ssd16xx_send_y_param(device, ram_y_start, &err);
-		ssd16xx_send_y_param(device, ram_y_end, &err);
-
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_X_ADDRESS_COUNTER, &err);
-		ssd16xx_send_x_param(device, ram_x_start, &err);
-
-		ssd16xx_send_cmd(device, SSD16XX_CMD_SET_RAM_Y_ADDRESS_COUNTER, &err);
-		ssd16xx_send_y_param(device, ram_y_start, &err);
-		break;
-	}
+	ssd16xx_set_full_ram_window(device, &err);
 
 	ssd16xx_send_cmd(device, SSD16XX_CMD_WRITE_RAM_BW, &err);
 	ssd16xx_send_data_bulk(device, mono_buffer, data_size, &err);
@@ -992,6 +1080,15 @@ static void ssd16xx_plane_atomic_update(struct drm_plane *plane,
 
 	drm_dbg(&device->drm, "plane_atomic_update: calling fb_dirty rect=(%d,%d)-(%d,%d)\n",
 		rect.x1, rect.y1, rect.x2, rect.y2);
+
+	/*
+	 * A new master may start drawing on a CRTC that is already enabled
+	 * (e.g. left on by fbdev), in which case atomic_enable did not run.
+	 */
+	ret = ssd16xx_clear_display_on_init(device);
+	if (ret)
+		drm_err(&device->drm, "plane_atomic_update: clear on init failed: %d\n", ret);
+
 	/*
 	 * When refresh_mode_init was set, use the specified mode for this first
 	 * frame only, then restore the user-configured refresh_mode so
@@ -1082,6 +1179,31 @@ static int ssd16xx_crtc_atomic_check(struct drm_crtc *crtc,
 	return drm_atomic_helper_check_crtc_primary_plane(new_crtc_state);
 }
 
+static void ssd16xx_crtc_atomic_disable(struct drm_crtc *crtc,
+					struct drm_atomic_commit *state)
+{
+	struct ssd16xx_device *device = crtc_to_ssd16xx_device(crtc);
+	int ret, idx;
+
+	if (!drm_dev_enter(&device->drm, &idx))
+		return;
+
+	if (device->clear_on_disable < 0 || device->cleared_on_disable)
+		goto out;
+
+	drm_dbg(&device->drm, "clear_on_disable: running, mode=%d\n",
+		device->clear_on_disable);
+	ret = ssd16xx_clear_display(device, device->clear_on_disable);
+	if (ret) {
+		drm_err(&device->drm, "atomic_disable: clear failed: %d\n", ret);
+		goto out;
+	}
+
+	device->cleared_on_disable = true;
+out:
+	drm_dev_exit(idx);
+}
+
 static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 				       struct drm_atomic_commit *state)
 {
@@ -1103,6 +1225,11 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 		}
 		device->initialized = true;
 	}
+	device->cleared_on_disable = false;
+
+	ret = ssd16xx_clear_display_on_init(device);
+	if (ret)
+		drm_err(&device->drm, "crtc_atomic_enable: clear on init failed: %d\n", ret);
 
 	if (device->refresh_mode_init >= 0) {
 		drm_dbg(&device->drm,
@@ -1117,6 +1244,7 @@ static void ssd16xx_crtc_atomic_enable(struct drm_crtc *crtc,
 static const struct drm_crtc_helper_funcs ssd16xx_crtc_helper_funcs = {
 	.mode_valid     = ssd16xx_crtc_mode_valid,
 	.atomic_check   = ssd16xx_crtc_atomic_check,
+	.atomic_disable = ssd16xx_crtc_atomic_disable,
 	.atomic_enable  = ssd16xx_crtc_atomic_enable,
 };
 
@@ -1156,6 +1284,9 @@ static void ssd16xx_drm_master_set(struct drm_device *drm,
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(drm);
 
+	device->cleared_on_close = false;
+	device->first_clear_done = false;
+
 	if (device->refresh_mode_init >= 0)
 		device->init_refresh_pending = true;
 }
@@ -1164,8 +1295,24 @@ static void ssd16xx_drm_master_drop(struct drm_device *drm,
 				    struct drm_file *file)
 {
 	struct ssd16xx_device *device = to_ssd16xx_device(drm);
+	int ret, idx;
 
 	device->init_refresh_pending = false;
+	device->first_clear_done = false;
+
+	if (device->clear_on_close < 0 || device->cleared_on_close ||
+	    device->cleared_on_disable)
+		return;
+
+	if (!drm_dev_enter(drm, &idx))
+		return;
+
+	ret = ssd16xx_clear_display_on_exit(device);
+	if (ret)
+		drm_err(drm, "master_drop: clear on close failed: %d\n", ret);
+
+	device->cleared_on_close = true;
+	drm_dev_exit(idx);
 }
 
 static struct drm_driver ssd16xx_drm_driver = {
@@ -1290,6 +1437,9 @@ static int ssd16xx_probe(struct spi_device *spi)
 	device->border_waveform_update_idx = device->device_cfg->default_border_waveform_update;
 	device->border_refresh_on_every_update =
 		device->device_cfg->default_border_refresh_on_every_update;
+	device->clear_on_init    = device->device_cfg->default_clear_on_init;
+	device->clear_on_close   = device->device_cfg->default_clear_on_close;
+	device->clear_on_disable = device->device_cfg->default_clear_on_disable;
 	device->refresh_mode_init = device->device_cfg->default_refresh_mode_init;
 
 	device_property_read_u32(dev, "rotation", &dt_rotation);
