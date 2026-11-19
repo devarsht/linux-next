@@ -16,8 +16,7 @@ Texas Instruments · 2026-11 · v2 (v1 was presented at the DisplayNext Hackfest
 6. [KMS property requirements](#kms-property-requirements)
 7. [E-paper behaviour is use-case specific](#e-paper-behaviour-is-use-case-specific)
 8. [Classification](#classification)
-9. [Proposal: generic e-paper plane properties](#proposal-generic-e-paper-plane-properties)
-10. [Next steps](#next-steps)
+9. [Proposal: generic e-paper properties](#proposal-generic-e-paper-properties)
 
 ---
 
@@ -118,64 +117,94 @@ drivers offer more than one refresh mode.
 ✅ = offered by the driver. — = not offered in the source checked. For grey-level
 controllers the waveform names are given with the description from the source.
 
-| Driver | Status | Partial | Full | Fast | Other modes | Related proposed property |
-|--------|--------|:-------:|:----:|:----:|-------------|---------------------------|
-| Waveshare 2.13" V4, SSD1680 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | — | `refresh_mode` |
-| Waveshare 4.2" V2, SSD1683 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | 4-grey | `refresh_mode` |
-| Waveshare 2.9" V2 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | 4-grey | `refresh_mode` |
-| Waveshare 7.5" V2, UC8179 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | 4-grey | `refresh_mode` |
-| Waveshare 7.3" E, 6-colour [[5]](#src-5) | Vendor userspace driver | — | ✅ | — | — | None: one mode only |
-| GxEPD2 [[6]](#src-6) | Community library (Arduino) | ✅ | ✅ | — | — | `refresh_mode`; each panel driver declares `hasPartialUpdate`, like a driver declaring its supported modes |
-| Waveshare IT8951 HAT [[7]](#src-7) | Vendor userspace driver | — | GC16 ("display 16 grayscale image") | A2 ("fast refresh without flash") | INIT ("for every init or some time after A2 mode refresh"); every mode can update a rectangle | `refresh_mode` |
-| `rockchip_ebc` (PineNote) [[8]](#src-8) [[9]](#src-9) | Out-of-tree DRM driver, not merged | `diff_mode` ("only compute waveforms for changed pixels") | GC16 ("high-quality but flashy") | A2 ("fast transitions between black and white only") | RESET, DU, DU4, GCC16, GL16, GLR16, GLD16 | `refresh_mode`; `clear_on_disable` (the PineNote tree has an `OFF_SCREEN` ioctl for the image shown on disable or suspend) |
-| NXP i.MX EPDC [[10]](#src-10) | Downstream vendor kernel (fbdev) | ✅ (`UPDATE_MODE_PARTIAL`) | ✅ (`UPDATE_MODE_FULL`) | — | Waveform chosen per update: INIT, DU, GC4, GC8, GC16, GC32, GLR16, GLD16, AUTO | `refresh_mode` |
+| Driver | Status | Partial | Full | Fast | Other modes | How userspace chooses |
+|--------|--------|:-------:|:----:|:----:|-------------|-----------------------|
+| Waveshare 2.13" V4, SSD1680 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | — | One function per mode |
+| Waveshare 4.2" V2, SSD1683 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | 4-grey | One function per mode |
+| Waveshare 2.9" V2 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | 4-grey | One function per mode |
+| Waveshare 7.5" V2, UC8179 [[5]](#src-5) | Vendor userspace driver | ✅ | ✅ | ✅ | 4-grey | One function per mode |
+| Waveshare 7.3" E, 6-colour [[5]](#src-5) | Vendor userspace driver | — | ✅ | — | — | One mode only |
+| GxEPD2 [[6]](#src-6) | Community library (Arduino) | ✅ | ✅ | — | — | A bool argument; each panel driver declares `hasPartialUpdate` |
+| Waveshare IT8951 HAT [[7]](#src-7) | Vendor userspace driver | — | GC16 ("display 16 grayscale image") | A2 ("fast refresh without flash") | INIT ("for every init or some time after A2 mode refresh") | A mode code passed with each area update |
+| `rockchip_ebc`, Samuel Holland's branch [[8]](#src-8) | Out-of-tree DRM driver, not merged | ✅ (every frame) | ✅ (only at reset and on CRTC disable) | — | Waveforms RESET, A2, DU, DU4, GC16, GCC16, GL16, GLR16, GLD16 | None per frame; one `default_waveform` module parameter |
+| `rockchip_ebc`, PineNote community tree [[9]](#src-9) | Out-of-tree DRM driver, not merged | ✅ (every frame) | ✅ (at probe, on a private ioctl, or automatically after enough partial updates) | — | Same waveforms | None per frame; `default_waveform` / `refresh_waveform` module parameters and a private `GLOBAL_REFRESH` ioctl |
+| NXP i.MX EPDC [[10]](#src-10) | Downstream vendor kernel (fbdev) | ✅ (`UPDATE_MODE_PARTIAL`) | ✅ (`UPDATE_MODE_FULL`) | — | A waveform number per update; the app maps INIT, DU, GC4, GC8, GC16 and GC32 to numbers. `GLR16`, `GLD16` and `AUTO` are defined | Per update, through a private fbdev ioctl |
 
-Without a common uAPI, each out-of-tree driver uses its own interface: one
-function per mode (Waveshare), a bool argument (GxEPD2), a mode code per update
-(IT8951), module parameters and private DRM ioctls (`rockchip_ebc`), and private
-fbdev ioctls (i.MX EPDC).
+For `rockchip_ebc`, "full" is the driver's global refresh, which redraws the whole
+panel (`rockchip_ebc_global_refresh()`); every other frame uses
+`rockchip_ebc_partial_refresh()`. Neither tree lets userspace pick the refresh mode for
+a given frame. The PineNote tree also has an `OFF_SCREEN` ioctl, which sets the image
+drawn when the display is disabled or suspended.
+
+Without a common uAPI, each of these uses its own interface. A generic
+`epaper_refresh` property, as proposed below, would give DRM drivers one standard way.
 
 ### Sources
 
-All were read on 2026-11-18. In-tree files are from drm-misc-next at `c88084027d0e`.
+All were read on 2026-11-19, at the commits linked below. Line numbers refer to
+those commits.
 
-1. <a id="src-1"></a>`drivers/gpu/drm/tiny/repaper.c`: the `cleared` / `partial` logic in the
-   framebuffer update path.
-   <https://gitlab.freedesktop.org/drm/misc/kernel/-/tree/drm-misc-next/drivers/gpu/drm/tiny/repaper.c>
-2. <a id="src-2"></a>`drivers/gpu/drm/tiny/pixpaper.c`: `PIXPAPER_CMD_DISPLAY_REFRESH` (`0x12`).
-   <https://gitlab.freedesktop.org/drm/misc/kernel/-/tree/drm-misc-next/drivers/gpu/drm/tiny/pixpaper.c>
-3. <a id="src-3"></a>`drivers/video/fbdev/broadsheetfb.c` (`broadsheet_store_waveform_to_spiflash()`) and
-   `drivers/video/fbdev/metronomefb.c` (`request_firmware(..., "metronome.wbf", ...)`).
-   <https://gitlab.freedesktop.org/drm/misc/kernel/-/tree/drm-misc-next/drivers/video/fbdev>
+1. <a id="src-1"></a>`drivers/gpu/drm/tiny/repaper.c` at drm-misc-next `c88084027d0e`:
+   ["repaper can't do partial updates"](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/tiny/repaper.c#L529) and the
+   `partial` / `cleared` first-frame logic
+   ([L555–581](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/tiny/repaper.c#L555-581)).
+2. <a id="src-2"></a>`drivers/gpu/drm/tiny/pixpaper.c` at `c88084027d0e`:
+   [`PIXPAPER_CMD_DISPLAY_REFRESH`](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/tiny/pixpaper.c#L46), sent at
+   [L915](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/tiny/pixpaper.c#L915).
+3. <a id="src-3"></a>At `c88084027d0e`:
+   [`broadsheet_store_waveform_to_spiflash()`](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/video/fbdev/broadsheetfb.c#L715)
+   in `broadsheetfb.c`, and
+   [`request_firmware(..., "metronome.wbf", ...)`](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/video/fbdev/metronomefb.c#L623)
+   in `metronomefb.c`.
 4. <a id="src-4"></a>ssd16xx v3 series, message-id `20261019213726.4145532-1-devarsht@ti.com`.
    <https://lore.kernel.org/all/20261019213726.4145532-1-devarsht@ti.com/>
-5. <a id="src-5"></a>Waveshare e-Paper, `RaspberryPi_JetsonNano/python/lib/waveshare_epd/`, branch `master`:
-   [`epd2in13_V4.py`](https://github.com/waveshareteam/e-Paper/blob/master/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd2in13_V4.py),
-   [`epd4in2_V2.py`](https://github.com/waveshareteam/e-Paper/blob/master/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd4in2_V2.py),
-   [`epd2in9_V2.py`](https://github.com/waveshareteam/e-Paper/blob/master/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd2in9_V2.py),
-   [`epd7in5_V2.py`](https://github.com/waveshareteam/e-Paper/blob/master/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd7in5_V2.py),
-   [`epd7in3e.py`](https://github.com/waveshareteam/e-Paper/blob/master/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd7in3e.py).
-6. <a id="src-6"></a>GxEPD2 by Jean-Marc Zingg, branch `master`: panel list in
-   [`README.md`](https://github.com/ZinggJM/GxEPD2/blob/master/README.md);
-   `hasPartialUpdate`, `hasFastPartialUpdate` and `refresh()` in
-   [`src/GxEPD2_EPD.h`](https://github.com/ZinggJM/GxEPD2/blob/master/src/GxEPD2_EPD.h).
-7. <a id="src-7"></a>Waveshare IT8951-ePaper, branch `master`:
-   [`Raspberry/lib/e-Paper/EPD_IT8951.c`](https://github.com/waveshareteam/IT8951-ePaper/blob/master/Raspberry/lib/e-Paper/EPD_IT8951.c)
-   (`INIT_Mode`, `GC16_Mode`, `A2_Mode`) and
-   [`EPD_IT8951.h`](https://github.com/waveshareteam/IT8951-ePaper/blob/master/Raspberry/lib/e-Paper/EPD_IT8951.h).
-8. <a id="src-8"></a>Samuel Holland, branch `rk35/ebc-drm-v5`:
-   [`drivers/gpu/drm/rockchip/rockchip_ebc.c`](https://github.com/smaeul/linux/blob/rk35/ebc-drm-v5/drivers/gpu/drm/rockchip/rockchip_ebc.c)
-   (`default_waveform` module parameter) and
-   [`include/drm/drm_epd_helper.h`](https://github.com/smaeul/linux/blob/rk35/ebc-drm-v5/include/drm/drm_epd_helper.h)
-   (`enum drm_epd_waveform`).
-9. <a id="src-9"></a>PineNote community kernel (GitHub `m-weigand/linux`), branch `branch_pinenote_6-6-22`:
-   [`drivers/gpu/drm/rockchip/rockchip_ebc.c`](https://github.com/m-weigand/linux/blob/branch_pinenote_6-6-22/drivers/gpu/drm/rockchip/rockchip_ebc.c)
-   (module parameters, `OFF_SCREEN` handling on CRTC disable) and
-   [`include/uapi/drm/rockchip_ebc_drm.h`](https://github.com/m-weigand/linux/blob/branch_pinenote_6-6-22/include/uapi/drm/rockchip_ebc_drm.h)
-   (ioctls).
-10. <a id="src-10"></a>NXP linux-imx, branch `lf-5.10.y`:
-    [`include/uapi/linux/mxcfb.h`](https://github.com/nxp-imx/linux-imx/blob/lf-5.10.y/include/uapi/linux/mxcfb.h)
-    (`struct mxcfb_update_data`, `struct mxcfb_waveform_modes`, `MXCFB_*` ioctls).
+5. <a id="src-5"></a>Waveshare e-Paper at `d28b3c4cfc78`, `RaspberryPi_JetsonNano/python/lib/waveshare_epd/`:
+   - [`epd2in13_V4.py`](https://github.com/waveshareteam/e-Paper/blob/d28b3c4cfc78eef1c6cd6e6e3013654e449d2864/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd2in13_V4.py#L268-L287): `display()`, `display_fast()`,
+     `displayPartial()`, sending CTRL2 [`0xF7`, `0xC7`, `0xFF`](https://github.com/waveshareteam/e-Paper/blob/d28b3c4cfc78eef1c6cd6e6e3013654e449d2864/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd2in13_V4.py#L104-L126)
+   - [`epd4in2_V2.py`](https://github.com/waveshareteam/e-Paper/blob/d28b3c4cfc78eef1c6cd6e6e3013654e449d2864/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd4in2_V2.py#L396-L446): `display()`, `display_Fast()`,
+     `display_Partial()`, `display_4Gray()`
+   - [`epd2in9_V2.py`](https://github.com/waveshareteam/e-Paper/blob/d28b3c4cfc78eef1c6cd6e6e3013654e449d2864/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd2in9_V2.py#L259): `init_Fast()`, plus `display()`,
+     `display_Partial()` and `display_4Gray()`
+   - [`epd7in5_V2.py`](https://github.com/waveshareteam/e-Paper/blob/d28b3c4cfc78eef1c6cd6e6e3013654e449d2864/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd7in5_V2.py#L95-L205): `init()`, `init_fast()`,
+     `init_part()`, `init_4Gray()`
+   - [`epd7in3e.py`](https://github.com/waveshareteam/e-Paper/blob/d28b3c4cfc78eef1c6cd6e6e3013654e449d2864/RaspberryPi_JetsonNano/python/lib/waveshare_epd/epd7in3e.py#L107-L221): only `init()`, `display()`, `Clear()`
+     and `sleep()`
+6. <a id="src-6"></a>GxEPD2 by Jean-Marc Zingg at `de82887e77a7`:
+   [`hasPartialUpdate`, `hasFastPartialUpdate`](https://github.com/ZinggJM/GxEPD2/blob/de82887e77a78528ea386e68bba2cb0291d2c319/src/GxEPD2_EPD.h#L31-L32) and
+   [`refresh(bool partial_update_mode)`](https://github.com/ZinggJM/GxEPD2/blob/de82887e77a78528ea386e68bba2cb0291d2c319/src/GxEPD2_EPD.h#L88) in `src/GxEPD2_EPD.h`;
+   panel list in [`README.md`](https://github.com/ZinggJM/GxEPD2/blob/de82887e77a78528ea386e68bba2cb0291d2c319/README.md).
+7. <a id="src-7"></a>Waveshare IT8951-ePaper at `86406933d8f2`, `Raspberry/lib/e-Paper/`:
+   mode descriptions in [`EPD_IT8951.h`](https://github.com/waveshareteam/IT8951-ePaper/blob/86406933d8f22af9fd3f2152b4958610c054b9a8/Raspberry/lib/e-Paper/EPD_IT8951.h#L39-L44), values
+   [`INIT_Mode = 0`, `GC16_Mode = 2`, `A2_Mode = 6`](https://github.com/waveshareteam/IT8951-ePaper/blob/86406933d8f22af9fd3f2152b4958610c054b9a8/Raspberry/lib/e-Paper/EPD_IT8951.c#L35-L38) in
+   `EPD_IT8951.c`, and the per-area
+   [`EPD_IT8951_1bp_Refresh(..., Mode, ...)`](https://github.com/waveshareteam/IT8951-ePaper/blob/86406933d8f22af9fd3f2152b4958610c054b9a8/Raspberry/lib/e-Paper/EPD_IT8951.h#L197).
+8. <a id="src-8"></a>Samuel Holland's `rk35/ebc-drm-v5` branch at `e6d78cec7673`:
+   - in `drivers/gpu/drm/rockchip/rockchip_ebc.c`: the
+     [`default_waveform` module parameter](https://github.com/smaeul/linux/blob/e6d78cec7673f6b00d5b775b9ddc8a53c5c74be2/drivers/gpu/drm/rockchip/rockchip_ebc.c#L157-L158),
+     [`rockchip_ebc_global_refresh()`](https://github.com/smaeul/linux/blob/e6d78cec7673f6b00d5b775b9ddc8a53c5c74be2/drivers/gpu/drm/rockchip/rockchip_ebc.c#L308) and
+     [`rockchip_ebc_partial_refresh()`](https://github.com/smaeul/linux/blob/e6d78cec7673f6b00d5b775b9ddc8a53c5c74be2/drivers/gpu/drm/rockchip/rockchip_ebc.c#L475), and
+     where each is used: [reset](https://github.com/smaeul/linux/blob/e6d78cec7673f6b00d5b775b9ddc8a53c5c74be2/drivers/gpu/drm/rockchip/rockchip_ebc.c#L734),
+     [every frame](https://github.com/smaeul/linux/blob/e6d78cec7673f6b00d5b775b9ddc8a53c5c74be2/drivers/gpu/drm/rockchip/rockchip_ebc.c#L738),
+     [CRTC disable](https://github.com/smaeul/linux/blob/e6d78cec7673f6b00d5b775b9ddc8a53c5c74be2/drivers/gpu/drm/rockchip/rockchip_ebc.c#L751)
+   - [`enum drm_epd_waveform`](https://github.com/smaeul/linux/blob/e6d78cec7673f6b00d5b775b9ddc8a53c5c74be2/include/drm/drm_epd_helper.h#L17-L35) in
+     `include/drm/drm_epd_helper.h`
+9. <a id="src-9"></a>PineNote community kernel (GitHub `m-weigand/linux`), branch
+   `branch_pinenote_6-6-22` at `11a849851a8d`:
+   - [`DRM_IOCTL_ROCKCHIP_EBC_GLOBAL_REFRESH` and `OFF_SCREEN`](https://github.com/m-weigand/linux/blob/11a849851a8d31dd8f0eec003d45763dd3212c77/include/uapi/drm/rockchip_ebc_drm.h#L31-L32)
+     in `include/uapi/drm/rockchip_ebc_drm.h`
+   - in `drivers/gpu/drm/rockchip/rockchip_ebc.c`: the ioctl
+     [sets `do_one_full_refresh`](https://github.com/m-weigand/linux/blob/11a849851a8d31dd8f0eec003d45763dd3212c77/drivers/gpu/drm/rockchip/rockchip_ebc.c#L300-L315);
+     the refresh thread then runs a
+     [global refresh with `refresh_waveform`](https://github.com/m-weigand/linux/blob/11a849851a8d31dd8f0eec003d45763dd3212c77/drivers/gpu/drm/rockchip/rockchip_ebc.c#L1433),
+     and otherwise a
+     [partial refresh with `default_waveform`](https://github.com/m-weigand/linux/blob/11a849851a8d31dd8f0eec003d45763dd3212c77/drivers/gpu/drm/rockchip/rockchip_ebc.c#L1436);
+     the [`auto_refresh` threshold](https://github.com/m-weigand/linux/blob/11a849851a8d31dd8f0eec003d45763dd3212c77/drivers/gpu/drm/rockchip/rockchip_ebc.c#L1322-L1328);
+     and the [`OFF_SCREEN` image drawn on disable](https://github.com/m-weigand/linux/blob/11a849851a8d31dd8f0eec003d45763dd3212c77/drivers/gpu/drm/rockchip/rockchip_ebc.c#L1457-L1472)
+10. <a id="src-10"></a>NXP linux-imx, branch `lf-5.10.y` at `06213bb0115f`, in
+    `include/uapi/linux/mxcfb.h`: [`UPDATE_MODE_PARTIAL` / `FULL`](https://github.com/nxp-imx/linux-imx/blob/06213bb0115f587f55ec1f45fac03544855f97a7/include/uapi/linux/mxcfb.h#L94-L95),
+    the [`waveform_mode` and `update_mode` fields](https://github.com/nxp-imx/linux-imx/blob/06213bb0115f587f55ec1f45fac03544855f97a7/include/uapi/linux/mxcfb.h#L131-L134) of
+    `struct mxcfb_update_data`, [`struct mxcfb_waveform_modes`](https://github.com/nxp-imx/linux-imx/blob/06213bb0115f587f55ec1f45fac03544855f97a7/include/uapi/linux/mxcfb.h#L153-L158),
+    and the [`MXCFB_SEND_UPDATE`](https://github.com/nxp-imx/linux-imx/blob/06213bb0115f587f55ec1f45fac03544855f97a7/include/uapi/linux/mxcfb.h#L190) ioctl.
 
 ## KMS property requirements
 
@@ -258,48 +287,70 @@ It does not need a matching dynamic property; runtime rotation is the case above
 | RAM X mirror                   | ❌ No: hardware | Depends on panel wiring, so the panel compatible / DT describes it, not uAPI |
 | Deep sleep level, LUT tracking | ❌ No: kernel   | Sleep with or without RAM retention is a generic idea, but it is a kernel PM decision; fast-LUT tracking is a controller internal |
 
-## Proposal: generic e-paper plane properties
+## Proposal: generic e-paper properties
 
-This grew out of the hackfest `drm_epaper_init()` sketch and is shaped to meet the core rules:
+This grew out of the hackfest `drm_epaper_init()` sketch. To meet the core rules,
+it now follows the pattern of existing standard properties.
+
+### Where it belongs: the CRTC
+
+An e-paper refresh runs one waveform over the whole panel, after all planes are
+composed. The standard KMS properties split by what they describe (drm-misc-next):
+
+| Object | Standard properties | Describe |
+|--------|---------------------|----------|
+| Plane | `FB_ID`, `CRTC_*` / `SRC_*`, `alpha`, `pixel blend mode`, `rotation`, `zpos`, `COLOR_ENCODING`, `COLOR_RANGE`, `FB_DAMAGE_CLIPS`, `SCALING_FILTER` | One layer: which buffer, where it goes, how it blends |
+| CRTC | `ACTIVE`, `MODE_ID`, `VRR_ENABLED`, `DEGAMMA_LUT`, `CTM`, `GAMMA_LUT`, `BACKGROUND_COLOR`, `OUT_FENCE_PTR`, `SCALING_FILTER`, `SHARPNESS_STRENGTH` | The composed output frame, and how it is presented |
+| Connector | `CRTC_ID`, `DPMS`, `link-status`, `max bpc`, `Colorspace`, `content type`, `scaling mode`, `non-desktop`, `panel_type` | The sink and its link |
+
+- **CRTC (proposed).** The refresh mode applies to the composed frame, not to one
+  layer. `VRR_ENABLED` is the closest precedent: a standard CRTC hint,
+  [decoded by the core](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/drm_atomic_uapi.c#L421) into `crtc_state->vrr_enabled`, about how the output presents the next frames.
+  The session properties fit too: `clear_on_disable` acts when the CRTC is disabled,
+  and the first-frame mode and `clear_on_init` concern a new master's first commit to
+  the output.
+- **Not the plane.** With several planes, two planes could ask for different refresh
+  modes in the same commit, and the driver would have to choose one or reject the
+  commit. ssd16xx v3 used the plane because the driver has one plane.
+- **Not the connector.** Connector properties describe the sink and its link, not how
+  a frame is presented. ssd16xx v3 also first had these properties on the connector: a
+  commit that changed only a connector property never reached the plane update, so the
+  change was silently lost.
+
+A CRTC property still arrives with each frame. Adding a plane to an atomic commit also
+adds its CRTC's state (`drm_atomic_get_plane_state()` in `drivers/gpu/drm/drm_atomic.c`),
+so the driver reads the mode from the new CRTC state in the same commit as `FB_ID`
+([drm_atomic.c#L697](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/drm_atomic.c#L697) at drm-misc-next `c88084027d0e`).
+
+### The existing pattern
+
+[`drm_crtc_create_scaling_filter_property()`](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/drm_crtc.c#L948) (`drivers/gpu/drm/drm_crtc.c`) takes a
+bitmask of the values the hardware supports and creates a property with a fixed name.
+The core [decodes it into the CRTC state](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/drm_atomic_uapi.c#L477) (`drivers/gpu/drm/drm_atomic_uapi.c`), so
+drivers only read `new_crtc_state->scaling_filter`:
 
 ```c
-/* Driver: which modes this panel supports, and its defaults */
-static const struct drm_epaper_caps caps = {
-        .refresh_modes   = BIT(DRM_EPAPER_REFRESH_PARTIAL) |
-                           BIT(DRM_EPAPER_REFRESH_FULL) |
-                           BIT(DRM_EPAPER_REFRESH_FAST),
-        .default_refresh = DRM_EPAPER_REFRESH_PARTIAL,
-        .default_init    = DRM_EPAPER_REFRESH_FULL,
-        .session_clear   = true,  /* clear_on_init/close/disable */
-};
-drm_plane_create_epaper_properties(plane, &caps);
-
-/* Creates: epaper_refresh, epaper_refresh_init,
- *          epaper_clear_on_init, epaper_clear_on_close,
- *          epaper_clear_on_disable
- * Decoded by the core into new_plane_state->epaper */
+} else if (property == crtc->scaling_filter_property) {
+        state->scaling_filter = val;
 ```
 
-- They are **plane** properties because they belong to the update that carries the framebuffer.
-- Deliverables: a core helper with kernel-doc, an IGT test, and support in the LVGL DRM backend.
+[`drm_plane_create_rotation_property()`](https://gitlab.freedesktop.org/drm/misc/kernel/-/blob/c88084027d0e922dd925b96e5a0d184ba04a8f43/drivers/gpu/drm/drm_blend.c#L293) (`drivers/gpu/drm/drm_blend.c`) does the same for
+planes, and also takes the default value.
 
-## Next steps
+### Refresh mode, following that pattern
 
-**ssd16xx v4 (driver series)**
+```c
+/* Driver: the refresh modes this panel supports, and the default */
+drm_crtc_create_epaper_refresh_property(crtc,
+                                        DRM_EPAPER_REFRESH_PARTIAL,   /* default */
+                                        BIT(DRM_EPAPER_REFRESH_PARTIAL) |
+                                        BIT(DRM_EPAPER_REFRESH_FULL) |
+                                        BIT(DRM_EPAPER_REFRESH_FAST));
 
-- Rebase on drm-misc-next.
-- Drop the refresh mode, colour mode and session property patches.
-- Keep `clear_on_init` / `clear_on_close` / `clear_on_disable` and the first-frame refresh
-  as opt-in per-panel defaults (session management patch).
+/* Creates the "epaper_refresh" enum property: "partial", "full", "fast",
+ * limited to the supported subset. Decoded by the core into
+ * new_crtc_state->epaper_refresh. */
+```
 
-**Separate RFC: generic e-paper plane properties**
-
-- Phase 1: `refresh_mode` + `refresh_mode_init`.
-- Phase 2: `clear_on_init` / `clear_on_close` / `clear_on_disable`.
-- A core helper, documented uAPI and an IGT test.
-- Open-source user: LVGL (an application or the upstream DRM backend).
-- Convert ssd16xx. Offer the helper to repaper / pixpaper and to out-of-tree
-  drivers such as `rockchip_ebc`, which today use module parameters and private ioctls.
-
-**Later / to discuss:** dynamic rotation via the core `rotation` property, `color_mode`
-(property or pixel format), border waveform.
+The first-frame mode and the session clears would follow as separate CRTC properties.
+These names are proposals; no such helper exists in the kernel yet.
